@@ -1,14 +1,24 @@
-function [fig, axes] = Figs_Publication(m,n,options)
+function [fig, axes] = Figs(m,n,options)
 arguments
     m = 1
     n = 1
     options.FontName = 'Helvetica'
+    options.FigSize {mustBeMember(options.FigSize, ["large", "normal"])} = "large"
 end
 %%
-ax_size = [7 7];
-ax_bias = [2.8 1.8];
 fig_size = [10.5 9.9]; % 3x2 A4 size
 fig_bias = [5 5];
+ax_size = [7 7]; 
+ax_bias = [2.8 1.8];
+
+if options.FigSize == "large"
+    fig_size = fig_size*2; % 3x2 A4 size
+    fig_bias = fig_bias*2;
+    ax_size = ax_size*2;
+    ax_bias = ax_bias*2;
+elseif options.FigSize == "normal"
+
+end
 %%
 fig = figure();
 set(fig,'unit', 'centimeters',...
@@ -28,8 +38,13 @@ for i = 1:m
             [ax_bias(1) + fig_size(1)*(j-1),...
              ax_bias(2) + fig_size(2)*(m-i),...
              ax_size]);
-        set(axes(i,j), 'FontSize', 18, 'FontName', options.FontName);
-        set(axes(i,j), 'LineWidth',1,'Box','on')
+        set(axes(i,j), 'LineWidth',1,'Box','on', 'FontName', options.FontName)
+
+        if options.FigSize == "large"
+            set(axes(i,j), 'FontSize', 24);
+        elseif options.FigSize == "normal"
+            set(axes(i,j), 'FontSize', 18);
+        end
         % title(axes(i,j), "("+alphabet_list(p)+")", 'Position',[-0.32, 1.05], 'Units','centimeters')
     end
 end
