@@ -1,0 +1,3 @@
+function EIGEN = EIGEN_one(WAVEFUNC,U)
+EIGEN = (WAVEFUNC)'*(U*WAVEFUNC);
+end

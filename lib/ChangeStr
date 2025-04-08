@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# 设置要替换的单词
+OLD_WORD="matrixes"
+NEW_WORD="matrices"
+
+# 设置文件夹路径（可以修改为目标文件夹路径）
+FOLDER_PATH="."
+
+# 遍历文件夹中的所有文件
+find "$FOLDER_PATH" -type f -name "*.m" | while read file; do
+    # 输出当前处理的文件
+    echo "Processing $file..."
+
+    # 使用 sed 替换文件中的单词
+    sed -i '' "s/$OLD_WORD/$NEW_WORD/g" "$file"
+done
+
+echo "Word replacement completed!"
