@@ -1,4 +1,4 @@
-function [fig, axes] = Figs(m,n,options)
+function [fig, axes] = Figs_Publication(m,n,options)
 arguments
     m = 1
     n = 1
@@ -23,6 +23,7 @@ for i = 1:m
     for j = 1:n
         p = p+1;
         axes(i,j) = subplot(m,n,p);
+        hold(axes(i,j), "on")
         set(axes(i,j), 'unit', 'centimeters', 'Position',...
             [ax_bias(1) + fig_size(1)*(j-1),...
              ax_bias(2) + fig_size(2)*(m-i),...

@@ -33,6 +33,8 @@ plot_funcs_path = "src/functions_plot";
 %   dosplot               - DOS_plot
 %   heatplot              - 
 %   POSCAR_play           - note: POSCAR is Direct mode
+%% Tools functions with the files in VASP formats and etc
+api_funcs_path = "src/functions_tools";
 %% API functions with the files in VASP formats and etc
 api_funcs_path = "src/functions_api";
 %  READ

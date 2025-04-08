@@ -27,19 +27,22 @@ function [klist_cart, klist_l, klist_frac, kpoints_l, kpoints_name] = kpathgen3D
     elseif nargin < 3
         [kpoints, nodes, kpoints_name] = KPOINTS_read(kpoints);  % Read nodes if kpoints are given
     end
-    
+    % bug
+    dim = max(size(Rm));
+    clear length
+    %
     %% Initialize Parameters
     % Calculate the reciprocal lattice matrix (Gk)
-    Gk = (eye(length(Rm)) * 2 * pi / Rm)';  
+    Gk = (eye(dim) * 2 * pi / Rm)';  
     n = size(kpoints, 1) / 2;  % Number of k-point segments
     
     %% Handle Nodes (if only one node count is provided)
-    if length(nodes) == 1
+    if max(size(nodes)) == 1
         nodes = ones(n, 1) * nodes;  % If only one node value is provided, expand it for each segment
     end
     
     %% Generate K-points (Fractional, Linear, and Cartesian)
-    if length(Rm) == 3  % 3D case (real space)
+    if dim == 3  % 3D case (real space)
         klist_frac = [];  % Initialize fractional k-points
         
         % Interpolate k-points in fractional space (3D)
@@ -67,7 +70,7 @@ function [klist_cart, klist_l, klist_frac, kpoints_l, kpoints_name] = kpathgen3D
         % Calculate k-points in Cartesian (real) space for calculation purposes
         klist_cart = klist_frac * Gk;  % Convert fractional k-points to Cartesian space
         
-    elseif length(Rm) == 2  % 2D case (real space)
+    elseif dim == 2  % 2D case (real space)
         klist_frac = [];  % Initialize fractional k-points
         
         % Interpolate k-points in fractional space (2D)

@@ -66,14 +66,12 @@ end
         titlestring  = options.title;
     end
     if isempty(options.ax)
-        Fig =  Figs(1,1);
-        ax = Fig.axes(1);
+        [Fig,ax] =  Figs(1,1);
     else
         if isvalid(options.ax)
             ax = options.ax;
         else
-            Fig =  Figs(1,1);
-            ax = Fig.axes(1);
+            [Fig,ax] =  Figs(1,1);
         end
     end
 %--------  juge  --------
