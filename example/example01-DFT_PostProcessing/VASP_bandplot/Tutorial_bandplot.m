@@ -8,7 +8,7 @@
 % - POSCAR: Contains atomic structure information
 % - KPOINTS: Defines the k-point sampling for the band structure
 % - EIGENVAL: Contains eigenvalue data for the bands
-% - DOSCAR: (Optional) Contains density of states data
+% - DOSCAR: (Optional) Ger Fermi
 
 % Use the 'ls' command to list the files in the current directory:
 ls 
@@ -27,7 +27,7 @@ bandplot; % Calls the bandplot function using default parameters.
 % This will produce a structured matrix known as `EIGENCAR`, which contains the eigenvalue data.
 
 EIGENCAR = EIGENVAL_read(); % Load eigenvalue data from the output of a VASP calculation.
-
+% EIGENVAL_read('vasp','EIGENVAL', 4.11551932) % omit DOSCAR with a ued-defined Fermi Energy 
 %% Step 4: Define Parameters for the Band Plot
 % The full syntax for calling the `bandplot` function with various parameters is as follows:
 %   [fig, ax] = bandplot(EIGENCAR, Ecut, titlestring, color, klist_l, kpoints_l, kpoints_name, fontname, fig, ax)
