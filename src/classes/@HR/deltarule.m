@@ -1,130 +1,168 @@
-function H_hr = deltarule(H_hr,level_cut,mode,options)
+function H_hr = deltarule(H_hr, level_cut, mode, options)
+% DELTARULE Applies exponential decay substitution to Hamiltonian and overlap matrix coefficients
+%   This function modifies the symbolic coefficients of an HR object's Hamiltonian and overlap matrix
+%   using a delta rule substitution. It replaces higher-order interaction terms with exponentially
+%   decaying functions of lower-order terms, based on nearest-neighbor distances.
+%
+% INPUTS:
+%   H_hr       - HR object containing Hamiltonian (HcoeL) and overlap (ScoeL) symbolic expressions
+%   level_cut  - Maximum interaction order to consider (default: 1, use -1 for full interaction range)
+%   mode       - Substitution mode (0: no substitution, 1: single delta parameter, 2: per-term delta)
+%   options.Rd - Custom decay reference distance(s) (default: -1 uses H_hr.Rnn)
+%
+% OUTPUTS:
+%   H_hr       - Modified HR object with updated symbolic coefficients
+%
+% NOTES:
+%   - mode 1 uses a single delta parameter for all substitutions
+%   - mode 2 uses unique delta parameters for each interaction type
+%   - level_cut determines the maximum interaction order (e.g., 3 includes 1st, 2nd, 3rd neighbors)
+%   - Valid interaction types include VssS, VspS, VppS, etc., for Hamiltonian
+%   - SssS, SspS, SppS, etc., are supported for overlap matrix when H_hr.overlap is true
+%   - The substitution formula is: V_n = V_1 * exp(-(Rnn(j) - Rd)/delta)
+
 arguments
-H_hr HR;
-level_cut double{mustBeInteger} = 1;
-mode double = 0;
-options.Rd = -1;
+    H_hr HR;
+    level_cut double{mustBeInteger, mustBeNonnegative} = 1;
+    mode double{mustBeMember(mode, [0, 1, 2])} = 0;
+    options.Rd = -1;
 end
-import park.*;
+
+% Handle special cases
 if mode == 0
-return;
+    return;
 end
+
 if level_cut == -1
-level_cut = length(H_hr.Rnn);
+    level_cut = length(H_hr.Rnn);
 end
+
+% Extract nearest-neighbor distances
 Rnn = H_hr.nn_information();
-base_string = ["VssS","VspS","VsdS","VppS","VpdS","VppP","VpdP","VddS","VddP","VddD"];
+
+% Define interaction types and symbolic variable patterns
+base_string = ["VssS", "VspS", "VsdS", "VppS", "VpdS", "VppP", "VpdP", "VddS", "VddP", "VddD"];
 strvar_list = string(H_hr.symvar_list);
-base_symvar_min = sym([]);
-base_num_min = ones(1,length(base_string));
+
+% Initialize substitution parameters for Hamiltonian
+base_symvar = sym([]);
+base_num = [];
 count = 0;
-for ibase_string = base_string
-for i = 1:level_cut
-if contains(ibase_string+"_"+string(i),strvar_list)
-count = count +1;
-base_symvar_min(count) = sym(ibase_string+"_"+string(i),'real');
-base_num_min(count) = i;
-base_string(count) = ibase_string;
-break;
+
+% Identify lowest-order terms for each interaction type
+for ibase = base_string
+    for i = 1:level_cut
+        term = string(ibase) + "_" + num2str(i);
+        if any(contains(strvar_list, term))
+            count = count + 1;
+            base_symvar(count) = sym(term, 'real');
+            base_num(count) = i;
+            break;
+        end
+    end
 end
-end
-end
-base_string(count+1:end) = [];
-base_num_min(count+1:end) = [];
+
+% Handle overlap matrix if present
 if H_hr.overlap
-base_string_S = ["SssS","SspS","SsdS","SppS","SpdS","SppP","SpdP","SddS","SddP","SddD"];
-symvar_list_S = symvar(TBkitobj.ScoeL);
-strvar_list_S  = [string(symvar_list_S)];
-base_symvar_min_S = sym([]);
-base_num_min_S = ones(1,length(base_string));
-count_S = 0;
-for ibase_string_S = base_string_S
-for i = 1:level_cut
-if contains(ibase_string_S+"_"+string(i),strvar_list_S)
-count_S = count_S +1;
-base_symvar_min_S(count_S) = sym(ibase_string_S+"_"+string(i),'real');
-base_num_min_S(count_S) = i;
-base_string_S(count_S) = ibase_string_S;
-break;
+    base_string_S = ["SssS", "SspS", "SsdS", "SppS", "SpdS", "SppP", "SpdP", "SddS", "SddP", "SddD"];
+    symvar_list_S = string(symvar(H_hr.ScoeL));
+    
+    base_symvar_S = sym([]);
+    base_num_S = [];
+    count_S = 0;
+    
+    for ibase_S = base_string_S
+        for i = 1:level_cut
+            term = string(ibase_S) + "_" + num2str(i);
+            if any(contains(symvar_list_S, term))
+                count_S = count_S + 1;
+                base_symvar_S(count_S) = sym(term, 'real');
+                base_num_S(count_S) = i;
+                break;
+            end
+        end
+    end
 end
-end
-end
-base_string_S(count+1:end) = [];
-base_num_min_S(count+1:end) = [];
-end
+
+% Configure decay reference distances
 if options.Rd == -1
-RdL = Rnn;
+    RdL = Rnn;
 else
-disp(base_string);
-if length(options.Rd) > 1
-RdL = repmat(options.Rd,[1 count]);
-else
-RdL = options.Rd;
+    if length(options.Rd) > 1
+        RdL = repmat(options.Rd, [1, count]);
+    else
+        RdL = options.Rd;
+    end
+    base_num = 1:count; % Reset to use all identified terms
+    if H_hr.overlap
+        base_num_S = 1:count_S;
+    end
 end
-base_num_min = 1:count;
-if H_hr.overlap
-base_num_min_S = 1:count_S;
-end
-end
+
+% Apply substitution rules based on mode
 switch mode
-case 0
-return;
-case 1
-for j = 2:level_cut
-for i= 1:length(base_string)
-ibase_string = base_string(i);
-V_n = ibase_string+"_"+string(j);
-if strcontain(V_n ,strvar_list)
-delta = sym('delta','real');
-Coeffs_tmp =  (Rnn(j) - RdL(base_num_min(i)));
-V_subs = base_symvar_min(i)*exp(-Coeffs_tmp/delta);
-H_hr.HcoeL = subs(H_hr.HcoeL,sym(V_n),V_subs);
-if H_hr.overlap
-H_hr.ScoeL = subs(H_hr.ScoeL,sym(V_n),V_subs);
+    case 1
+        % Single delta parameter for all interactions
+        delta = sym('delta', 'real');
+        
+        % Substitute Hamiltonian terms
+        for j = 2:level_cut
+            for i = 1:count
+                V_n = string(base_symvar(i)) + "_" + num2str(j);
+                if any(contains(strvar_list, V_n))
+                    coeff = (Rnn(j) - RdL(base_num(i)));
+                    subs_expr = base_symvar(i) * exp(-coeff / delta);
+                    H_hr.HcoeL = subs(H_hr.HcoeL, sym(V_n), subs_expr);
+                end
+            end
+        end
+        
+        % Substitute overlap terms if present
+        if H_hr.overlap
+            delta_S = sym('delta__2', 'real');
+            for j = 2:level_cut
+                for i = 1:count_S
+                    S_n = string(base_symvar_S(i)) + "_" + num2str(j);
+                    if any(contains(symvar_list_S, S_n))
+                        coeff = (Rnn(j) - RdL(base_num_S(i)));
+                        subs_expr = base_symvar_S(i) * exp(-coeff / delta_S);
+                        H_hr.ScoeL = subs(H_hr.ScoeL, sym(S_n), subs_expr);
+                    end
+                end
+            end
+        end
+        
+    case 2
+        % Unique delta parameters for each interaction type
+        for j = 2:level_cut
+            for i = 1:count
+                V_n = string(base_symvar(i)) + "_" + num2str(j);
+                if any(contains(strvar_list, V_n))
+                    delta = sym(['delta_', num2str(i)], 'real');
+                    coeff = (Rnn(j) - RdL(base_num(i)));
+                    subs_expr = base_symvar(i) * exp(-coeff / delta);
+                    H_hr.HcoeL = subs(H_hr.HcoeL, sym(V_n), subs_expr);
+                end
+            end
+        end
+        
+        % Substitute overlap terms if present
+        if H_hr.overlap
+            for j = 2:level_cut
+                for i = 1:count_S
+                    S_n = string(base_symvar_S(i)) + "_" + num2str(j);
+                    if any(contains(symvar_list_S, S_n))
+                        delta = sym(['delta__2_', num2str(i)], 'real');
+                        coeff = (Rnn(j) - RdL(base_num_S(i)));
+                        subs_expr = base_symvar_S(i) * exp(-coeff / delta);
+                        H_hr.ScoeL = subs(H_hr.ScoeL, sym(S_n), subs_expr);
+                    end
+                end
+            end
+        end
 end
-end
-end
-end
-if H_hr.overlap
-for j = 2:level_cut
-for i= 1:length(base_string_S)
-ibase_string_S = base_string_S(i);
-S_n = ibase_string_S+"_"+string(j);
-if strcontain(S_n ,strvar_list_S)
-delta = sym('delta__2','real');
-Coeffs_tmp =  (Rnn(j) - RdL(base_num_min_S(i)));
-S_subs = base_num_min_S(i)*exp(-Coeffs_tmp/delta);
-H_hr.ScoeL = subs(H_hr.ScoeL,sym(S_n),S_subs);
-end
-end
-end
-end
-case 2
-for j = 2:level_cut
-for i= 1:length(base_string)
-ibase_string = base_string(i);
-V_n = ibase_string+"_"+string(j);
-if strcontain(V_n ,strvar_list)
-delta = sym(['delta_',num2str(i)],'real');
-Coeffs_tmp =  (Rnn(j) - RdL(base_num_min(i)));
-V_subs = base_symvar_min(i)*exp(-Coeffs_tmp/delta);
-H_hr.HcoeL = subs(H_hr.HcoeL,sym(V_n),V_subs);
-end
-end
-end
-if H_hr.overlap
-for j = 2:level_cut
-for i= 1:length(base_string_S)
-ibase_string_S = base_string_S(i);
-S_n = ibase_string_S+"_"+string(j);
-if strcontain(S_n ,strvar_list_S)
-delta = sym(['delta__2_',num2str(i)],'real');
-Coeffs_tmp =  (Rnn(j) - RdL(base_num_min_S(i)));
-S_subs = base_num_min_S(i)*exp(-Coeffs_tmp/delta);
-H_hr.ScoeL = subs(H_hr.ScoeL,sym(S_n),S_subs);
-end
-end
-end
-end
-end
+
+% Finalize HR object state
+H_hr.num = true;
+H_hr.coe = false;
 end
