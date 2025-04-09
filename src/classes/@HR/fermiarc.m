@@ -1,4 +1,37 @@
 function [DOSCAR_l,DOSCAR_b,DOSCAR_r,klist1,klist2] = fermiarc(H_hr,w_arc,fin_dir,kmesh,kfermiarc,principle_layer,eta,fermi,mode)
+% FERMIARC Calculate Fermi arc surface states
+%
+%   [DOSCAR_l,DOSCAR_b,DOSCAR_r,klist1,klist2] = FERMIARC(H_hr,w_arc,fin_dir,kmesh,kfermiarc,principle_layer,eta,fermi,mode)
+%   computes surface Green's functions and density of states for Fermi arcs.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Bulk Hamiltonian in HR format
+%       w_arc - Energy range (relative to fermi)
+%       fin_dir - Termination direction (1-3, default: 3)
+%       kmesh - k-point mesh dimensions (default: [100 100])
+%       kfermiarc - k-path basis (default: standard square path)
+%       principle_layer - Number of principle layers (default: 2)
+%       eta - Broadening parameter (default: 0.01)
+%       fermi - Fermi level (default: 0)
+%       mode - Green's function calculation mode (default: 'Green_iter')
+%
+%   OUTPUT ARGUMENTS:
+%       DOSCAR_l - Left surface DOS
+%       DOSCAR_b - Bulk DOS
+%       DOSCAR_r - Right surface DOS
+%       klist1,klist2 - k-point coordinates
+%
+%   NOTES:
+%       - Uses recursive Green's function method
+%       - Returns reshaped DOSCARs matching kmesh dimensions
+%
+%   SEE ALSO:
+%       HR, GREENCAR_gen, DOSCAR_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if nargin < 9
 mode = 'Green_iter';
 end

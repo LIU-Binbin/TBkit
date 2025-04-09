@@ -1,4 +1,38 @@
 function [DOSCAR_l,DOSCAR_b,DOSCAR_r,klist1,klist2,E_list] = fermiarc3D(H_hr,w_range,fin_dir,kmesh,kfermiarc,options)
+% FERMIARC3D Calculate 3D Fermi arc surface states
+%
+%   [DOSCAR_l,DOSCAR_b,DOSCAR_r,klist1,klist2,E_list] = FERMIARC3D(H_hr,w_range,fin_dir,kmesh,kfermiarc,options)
+%   computes surface Green's functions and DOS over energy range.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Bulk Hamiltonian in HR format
+%       w_range - Energy range [start,end,n] or vector
+%       fin_dir - Termination direction (1-3, default: 3)
+%       kmesh - k-point mesh dimensions (default: [100 100])
+%       kfermiarc - k-path basis (default: standard square path)
+%       options - Structure with parameters:
+%           principle_layer: Number of layers (default: 1)
+%           eta: Broadening (default: 0.01)
+%           fermi: Fermi level (default: 0)
+%           mode: Calculation mode (default: 'Green_iter')
+%
+%   OUTPUT ARGUMENTS:
+%       DOSCAR_l - Left surface DOS (3D array)
+%       DOSCAR_b - Bulk DOS (3D array)
+%       DOSCAR_r - Right surface DOS (3D array)
+%       klist1,klist2 - k-point coordinates
+%       E_list - Energy values
+%
+%   NOTES:
+%       - Returns 3D arrays (kmesh x energy) for each DOS type
+%       - Supports both linear range and explicit energy lists
+%
+%   SEE ALSO:
+%       HR, fermiarc, GREENCAR_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 arguments
 H_hr HR;
 w_range double;

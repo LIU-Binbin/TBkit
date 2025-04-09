@@ -1,4 +1,29 @@
 function H_hr = enlarge(H_hr,dir,amp)
+% ENLARGE Amplify Hamiltonian elements in specified direction
+%
+%   H_hr = ENLARGE(H_hr,dir,amp) multiplies Hamiltonian elements in the
+%   specified direction by given amplitude factor.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Hamiltonian in HR format
+%       dir - Direction ('x','y','z') or vector for selection
+%       amp - Amplification factor
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Modified Hamiltonian with amplified elements
+%
+%   NOTES:
+%       - When dir is char, selects elements based on orbital differences
+%       - When dir is vector, selects elements directly
+%       - Modifies the Hamiltonian in place
+%
+%   SEE ALSO:
+%       HR
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if isa(dir,'char')
 H_hr = H_hr.rewrite;
 vectorList = H_hr.vectorL;

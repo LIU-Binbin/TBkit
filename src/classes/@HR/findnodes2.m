@@ -1,4 +1,31 @@
 function [klist_cart,klist_frac,gap_list,fig] = findnodes2(H_hr,kzf_list,Noccupy,tolerance)
+% FINDNODES2 Locate band crossing nodes along kz direction
+%
+%   [klist_cart,klist_frac,gap_list,fig] = FINDNODES2(H_hr,kzf_list,Noccupy,tolerance)
+%   searches for band crossings by scanning kz values.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Hamiltonian in HR format
+%       kzf_list - List of kz values to scan (default: 0:0.01:1)
+%       Noccupy - Number of occupied bands (default: WAN_NUM/2)
+%       tolerance - Gap threshold for node detection (default: 0.01)
+%
+%   OUTPUT ARGUMENTS:
+%       klist_cart - Node positions in cartesian coordinates
+%       klist_frac - Node positions in fractional coordinates
+%       gap_list - Band gaps at node positions
+%       fig - Figure handle for band gap plot
+%
+%   NOTES:
+%       - Plots band gap vs kz during search
+%       - Returns only points where gap < tolerance
+%
+%   SEE ALSO:
+%       HR, EIGENCAR_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 if nargin < 4
 tolerance = 0.01;
 end

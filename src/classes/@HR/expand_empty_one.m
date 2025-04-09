@@ -1,4 +1,30 @@
 function H_hr = expand_empty_one(H_hr,orbOne,QuantumOne,elementOne)
+% EXPAND_EMPTY_ONE Add empty orbitals to HR object
+%
+%   H_hr = EXPAND_EMPTY_ONE(H_hr,orbOne,QuantumOne,elementOne) adds empty
+%   orbitals to the Hamiltonian with specified properties.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Hamiltonian in HR format
+%       orbOne - Orbital positions (default: zeros(1,Dim))
+%       QuantumOne - Quantum numbers (default: [1,0,0,1])
+%       elementOne - Element identifiers (default: 1)
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Modified Hamiltonian with added empty orbitals
+%
+%   NOTES:
+%       - Expands both orbital list and Hamiltonian matrices
+%       - Handles both 'list' and 'mat' Hamiltonian types
+%       - Initializes new elements to zero
+%
+%   SEE ALSO:
+%       HR
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
 H_hr;
 orbOne = zeros(1,H_hr.Dim);

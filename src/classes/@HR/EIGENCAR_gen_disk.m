@@ -1,4 +1,34 @@
 function [EIGENCAR,orb_list,WAVECAR] = EIGENCAR_gen_disk(H_hr,Nslab,fermi,norb_enforce,kpoints,vacuum_mode,np)
+% EIGENCAR_GEN_DISK Generate eigenstate data for disk/nanowire geometry
+%
+%   [EIGENCAR,orb_list,WAVECAR] = EIGENCAR_GEN_DISK(H_hr,Nslab,fermi,norb_enforce,kpoints,vacuum_mode,np)
+%   calculates eigenstates for a disk or nanowire geometry derived from the bulk Hamiltonian.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Bulk Hamiltonian in HR format
+%       Nslab - Nanowire dimensions [Nx,Ny,Nz] (default: [10,10,0])
+%       fermi - Fermi level (default: 0)
+%       norb_enforce - Number of bands to enforce (-1 for all, default: -1)
+%       kpoints - k-points to calculate (default: [0,0,0])
+%       vacuum_mode - Vacuum boundary mode (default: 1)
+%       np - Parallel processing flag (default: 0)
+%
+%   OUTPUT ARGUMENTS:
+%       EIGENCAR - Eigenvalue data
+%       orb_list - Orbital list
+%       WAVECAR - Wavefunction data
+%
+%   NOTES:
+%       - Can handle parallel processing when np > 1
+%       - Automatically generates nanowire Hamiltonian if Nslab specified
+%
+%   SEE ALSO:
+%       HR, Hnanowire_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 import TBkit_tool.*
 if nargin < 2
 Nslab = [10 10 0];

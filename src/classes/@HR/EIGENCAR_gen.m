@@ -1,4 +1,40 @@
 function varargout = EIGENCAR_gen(H_hr,options)
+
+% EIGENCAR_GEN Generate eigenstate data from HR Hamiltonian
+%
+%   varargout = EIGENCAR_GEN(H_hr,options) calculates eigenvalues and
+%   optionally wavefunctions and weight data for given Hamiltonian.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Hamiltonian in HR format
+%       options - Structure with calculation parameters:
+%           fermi: Fermi level (default: 0)
+%           norb: Number of orbitals (-1 for all, default: -1)
+%           klist: k-point list (default: H_hr.klist_frac)
+%           convention: 'I' or 'II' for different conventions (default: 'II')
+%           WEIGHTCAR: Calculate weight data (logical, default: false)
+%           LWAVE: Calculate wavefunctions (logical, default: true)
+%           ProjectionMethod: Method for projection ('hinge','surf',etc.)
+%           Hermite: Force Hermitian output (logical, default: true)
+%
+%   OUTPUT ARGUMENTS (varargout):
+%       1: EIGENCAR - Eigenvalue data
+%       2: WAVECAR - Wavefunction data (if LWAVE=true)
+%       3: WEIGHTCAR - Weight data (if WEIGHTCAR=true)
+%       4: Hout - Hamiltonian matrix (if returnH=true)
+%
+%   NOTES:
+%       - Supports both sparse and dense Hamiltonian formats
+%       - Can handle overlap matrices for generalized eigenvalue problems
+%       - Includes progress reporting when printmode=true
+%
+%   SEE ALSO:
+%       HR, COLORCAR_gen, Observecar_gen, sorteig
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
     H_hr HR;
     options.fermi double = 0;

@@ -1,4 +1,28 @@
 function [H_hr,VectorDistMat] = dualizeOper(H_hr,SymOper)
+% DUALIZEOPER Apply dual operation to Hamiltonian in HR format
+%
+%   [H_hr,VectorDistMat] = DUALIZEOPER(H_hr,SymOper) applies symmetry
+%   operation to the Hamiltonian in HR format and returns the transformed
+%   Hamiltonian along with a distance matrix.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Hamiltonian in HR format (HR object)
+%       SymOper - Symmetry operation structure with fields R and U
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Transformed Hamiltonian in HR format
+%       VectorDistMat - Distance matrix between vector points
+%
+%   NOTES:
+%       - Uses an accuracy threshold of 1e-6 for numerical comparisons
+%       - Modifies the input HR object by adding empty points when needed
+%
+%   SEE ALSO:
+%       HR, Oper.Rc2Rf
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 Accuracy = 1e-6;
 NRPTS_ = H_hr.NRPTS;
 Rf = double(Oper.Rc2Rf(inv(SymOper.R),H_hr.Rm));

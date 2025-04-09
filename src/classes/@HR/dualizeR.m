@@ -1,4 +1,28 @@
 function [H_hr,R_vector_dist_] = dualizeR(H_hr,Rf)
+% DUALIZER Apply dual R operation to Hamiltonian in HR format
+%
+%   [H_hr,R_vector_dist_] = DUALIZER(H_hr,Rf) transforms the Hamiltonian
+%   using the given R matrix and returns the modified Hamiltonian along
+%   with distance vectors.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Hamiltonian in HR format (HR object)
+%       Rf - Transformation matrix (3x3 double)
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Modified Hamiltonian in HR format
+%       R_vector_dist_ - Distance vectors between transformed points
+%
+%   NOTES:
+%       - Modifies the input HR object by adding empty points when needed
+%       - Uses floor operation for vector calculations
+%
+%   SEE ALSO:
+%       HR, timtj_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 NRPTS_ = H_hr.NRPTS;
 ONESLIST = ones(NRPTS_,1);
 H_hr = H_hr.timtj_gen();
