@@ -1,4 +1,39 @@
 function [EIGENCAR,orb_list,WEIGHTCAR,klist_l,kpoints_l,kpoints_name] = EIGENCAR_gen_wire(H_hr,Nslab,fermi,norb_enforce,KPOINTS_wire,vacuum_mode,np)
+
+% EIGENCAR_GEN_WIRE Generate eigenstate data for nanowire geometry
+%
+%   [EIGENCAR,orb_list,WEIGHTCAR,klist_l,kpoints_l,kpoints_name] = EIGENCAR_GEN_WIRE(H_hr,Nslab,fermi,norb_enforce,KPOINTS_wire,vacuum_mode,np)
+%   calculates eigenstates for a nanowire derived from bulk Hamiltonian.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Bulk Hamiltonian in HR format
+%       Nslab - Nanowire dimensions [Nx,Ny,Nz] (default: [0,0,0] for bulk)
+%       fermi - Fermi level (default: 0)
+%       norb_enforce - Number of bands to enforce (-1 for all, default: -1)
+%       KPOINTS_wire - k-point path file or string (default: 'KPOINTS_wire')
+%       vacuum_mode - Vacuum boundary mode (default: 1)
+%       np - Number of parallel workers (default: 0, no parallel)
+%
+%   OUTPUT ARGUMENTS:
+%       EIGENCAR - Eigenvalue data (NBANDS x kn array)
+%       orb_list - Orbital list
+%       WEIGHTCAR - Weight data for hinge states
+%       klist_l - k-point list in lattice coordinates
+%       kpoints_l - k-point coordinates
+%       kpoints_name - k-point labels
+%
+%   NOTES:
+%       - Supports parallel computation when np > 1
+%       - Automatically generates nanowire Hamiltonian if Nslab specified
+%       - Uses sparse matrix operations for efficiency
+%
+%   SEE ALSO:
+%       HR, Hnanowire_gen, COLORCAR_gen, sorteig
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 import TBkit_tool.*
 if nargin < 2
 Nslab = [0 0 0];

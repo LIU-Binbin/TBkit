@@ -1,4 +1,33 @@
 function EIGENCARout = EIGENCAR_gen_sparse(H_hr,fermi,norb_enforce,klist_s_tmp)
+
+% EIGENCAR_GEN_SPARSE Generate eigenstate data from sparse HR Hamiltonian
+%
+%   EIGENCARout = EIGENCAR_GEN_SPARSE(H_hr,fermi,norb_enforce,klist_s_tmp)
+%   calculates eigenstates for a sparse Hamiltonian along given k-path.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Sparse Hamiltonian in HR format
+%       fermi - Fermi level (default: 0)
+%       norb_enforce - Number of bands to enforce (-1 for all, default: -1)
+%       klist_s_tmp - k-point path (default: generates kpath using kpathgen3D)
+%
+%   OUTPUT ARGUMENTS:
+%       EIGENCARout - Structure containing:
+%           EIGENCAR: Eigenvalue data
+%           WAVECAR: Wavefunction data (for single k-point)
+%
+%   NOTES:
+%       - Automatically handles large systems (WANNUM > 500) with reduced printing
+%       - Uses sparse matrix operations for efficiency
+%       - For single k-point, returns both eigenvalues and wavefunctions
+%
+%   SEE ALSO:
+%       HR, kpathgen3D, sorteig
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
             % -------------- nargin ------------------
             if nargin <2
                 fermi = 0;
