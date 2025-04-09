@@ -1,4 +1,4 @@
-function StrM = str2mat(StrL, delimiter, dim)
+function StrM = str2mat_overwrited(StrL, delimiter, dim)
 % STR2MAT Converts a string array into a matrix by splitting each string.
 % Each string is split by the specified delimiter, and the result is stored
 % in a matrix where each row corresponds to a string and each column contains

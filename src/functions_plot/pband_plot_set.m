@@ -82,7 +82,7 @@ for i = Selected_projs
     color = cmap(i,:);
     %disp(color);
     WEIGHTCAR_vector = WEIGHTCAR_cell{i}(:);
-    displayname = Name_list(i,:);
+    displayname = Name_list{i};
     ax = pband_plot_one_bubble(klist_vector,EIGENCAR_vector,WEIGHTCAR_vector,color,displayname,optionsplotcell{:});
 end
 %--------  post  --------

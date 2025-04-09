@@ -1,145 +1,157 @@
-%% WEIGHTCAR gen for VASPKIT -> dat
-%
-%
-% * Label: data
-%
-%% Description of the Function:
-%%
-%% Usage: 
-%
-% * [WEIGHTCAR,EIGENCAR,KPATH] = WEIGHTCAR_gen(filename,seq_list,mode) 
-% * [WEIGHTCAR,EIGENCAR,KPATH] = WEIGHTCAR_gen(filename,seq_list) 
-% * [WEIGHTCAR,EIGENCAR,KPATH] = WEIGHTCAR_gen(filename) 
-%
-%% Input:
-%  
-% # input1:
-% # input2:
-% # input3:
-%
+function [WEIGHTCAR, EIGENCAR, KPATH] = WEIGHTCAR_read(filename, seq_list, mode)
+% WEIGHTCAR_READ Reads and processes VASP band structure and DOS projection data
+% Input Parameters:
+%   filename  - Input data file name
+%   seq_list  - Orbital indices to sum (default: all orbitals)
+%   mode      - Processing mode ('vaspkit-band', 'vaspkit-dos', etc.)
+% Output Parameters:
+%   WEIGHTCAR - Weight data matrix/array
+%   EIGENCAR  - Eigenvalue data
+%   KPATH     - K-point path coordinates (band mode only)
 
-function [WEIGHTCAR,EIGENCAR,KPATH] = WEIGHTCAR_read(filename,seq_list,mode) 
-%--------  init  --------
-   import TBkit_tool.*
-   import linux_matlab.*
-%--------  narg  --------
-    if nargin < 3
-        mode = 'vaspkit';
-    end
-    if nargin < 2
-        seq_list = -1 ;
-    end
-%--------  chek  --------
-
-%--------  fbug  --------
-
-%--------  juge  --------
-    if strcmp(mode,'vaspkit-band')
-        fprintf('support vaspkit 1.2.0');
-        %         command_str = "!cp "+filename+" temp_Pband.dat";
-        %         eval(command_str);
-        % copy for delete
-        %copyfile(filename,'temp_Pband.dat');
-        [Bandindex,~] = grep(filename,'Band','silence');
-        [~,rm_num_list] = grep(filename,'#','silence');
-
-        rm_line(filename,rm_num_list,'temp_Pband.dat');
-        WEIGHTCAR_init = load('temp_Pband.dat');
-        %--------  init  --------
-        Band_index = length(Bandindex);
-        [TOTnum,width] = size(WEIGHTCAR_init);
-        K_num = TOTnum/Band_index;
-        %--------  print  --------
-        if width >10
-            fprintf('s py pz px dxy dyz dz2 dxz dx2-y2 fy3x2  fxyz  fyz2 fz3 fxz2  fzx2  fx3 tot');
-            fprintf('1  2  3  4   5   6   7   8      9    10    11    12  13   14  	 15   16  17');
-        else
-            fprintf('s py pz px dxy dyz dz2 dxz dx2-y2 tot');
-            fprintf('1  2  3  4   5   6   7   8      9  10');
-        end
-        KPATH = reshape(WEIGHTCAR_init(:,1),K_num,Band_index);
-        KPATH = KPATH(:,1);
-        EIGENCAR = reshape(WEIGHTCAR_init(:,2),K_num,Band_index);
-        EIGENCAR = EIGENCAR.';
-        WEIGHTCAR_init(:,[1,2]) = [];
-        if seq_list > 0
-            WEIGHTCAR_init2 = sum(WEIGHTCAR_init(:,seq_list),2);
-            WEIGHTCAR = reshape(WEIGHTCAR_init2,K_num,Band_index).';
-            WEIGHTCAR(2:2:Band_index,:) = flip(WEIGHTCAR(2:2:Band_index,:),2);
-        else
-            disp('WEIGHTCAR with whole projection');
-            for i =1:width-2
-                WEIGHTCAR(:,:,i) = reshape(WEIGHTCAR_init(:,i),K_num,Band_index).';
-                WEIGHTCAR(2:2:Band_index,:,i) = flip(WEIGHTCAR(2:2:Band_index,:,i),2);
-            end
-        end
-    elseif strcmp(mode,'vaspkit-band-silence')
-        [Bandindex,~] = grep(filename,'Band','silence');
-        [~,rm_num_list] = grep(filename,'#','silence');
-        rm_line(filename,rm_num_list,'temp_Pband.DAT');
-        WEIGHTCAR_init = load('temp_Pband.DAT');
-        %--------  init  --------
-        Band_index = length(Bandindex);
-        [TOTnum,width] = size(WEIGHTCAR_init);
-        K_num = TOTnum/Band_index;
-        %--------  print  --------
-        KPATH = reshape(WEIGHTCAR_init(:,1),K_num,Band_index);
-        KPATH = KPATH(:,1);
-        EIGENCAR = reshape(WEIGHTCAR_init(:,2),K_num,Band_index);
-        EIGENCAR = EIGENCAR.';
-        WEIGHTCAR_init(:,[1,2]) = [];
-        if seq_list > 0
-            WEIGHTCAR_init2 = sum(WEIGHTCAR_init(:,seq_list),2);
-            WEIGHTCAR = reshape(WEIGHTCAR_init2,K_num,Band_index).';
-            WEIGHTCAR(2:2:Band_index,:) = flip(WEIGHTCAR(2:2:Band_index,:),2);
-        else
-            for i =1:width-2
-                WEIGHTCAR(:,:,i) = reshape(WEIGHTCAR_init(:,i),K_num,Band_index).';
-                WEIGHTCAR(2:2:Band_index,:,i) = flip(WEIGHTCAR(2:2:Band_index,:,i),2);
-            end
-        end
-
-    elseif strcmp(mode,'vaspkit-DOS')
-        disp('support vaspkit 1.2.0 - DOS');
-        WEIGHTCAR_init = textread(filename,'','headerlines',1);
-        [~,width] = size(WEIGHTCAR_init);
-        if width < 12
-            disp('  Energy     s     py     pz     px    dxy    dyz    dz2    dxz  x2-y2    tot') ;
-            disp('s py pz px dxy dyz dz2 dxz dx2-y2 tot');
-            disp('1 2  3  4  5   6   7   8   9  	10');
-        elseif width >12
-            disp('   Energy 	    s  	   py  	   pz  	   px  	  dxy  	  dyz  	  dz2  	  dxz  	x2-y2  	fy3x2  	 fxyz  	 fyz2  	  fz3  	 fxz2  	 fzx2  	  fx3  	  tot');
-            disp('s py pz px dxy dyz dz2 dxz dx2-y2 fy3x2  fxyz  fyz2 fz3 fxz2  fzx2  fx3 tot');
-            disp('1 2  3  4  5   6   7   8   9  	10     11  	 12   13  14  	15    16  17');
-        end
-        EIGENCAR = WEIGHTCAR_init(:,1);
-        WEIGHTCAR_init(:,1) = [];
-        if seq_list > 0
-            WEIGHTCAR = sum(WEIGHTCAR_init(:,seq_list),2);
-        else
-            disp('WEIGHTCAR with whole projection');
-            for i =1:width-2
-                WEIGHTCAR = WEIGHTCAR_init;
-            end
-        end
-    elseif strcmp(mode,'vaspkit-DOS-silence')
-        disp('support vaspkit 1.2.0 - DOS');
-        KPATH = [];
-        WEIGHTCAR_init = textread(filename,'','headerlines',1);
-        [TOTnum,width] = size(WEIGHTCAR_init);
-        EIGENCAR = WEIGHTCAR_init(:,1);
-        WEIGHTCAR_init(:,1) = [];
-        if seq_list > 0
-            WEIGHTCAR = sum(WEIGHTCAR_init(:,seq_list),2);
-        else
-            WEIGHTCAR = WEIGHTCAR_init;
-        end
-    elseif strcmp(mode,'PROCAR')
-    elseif strcmp(mode,'WT')
-    elseif strcmp(mode,'origin file')
-    end
-
-%-------- return --------    
+% Parameter initialization
+arguments
+    filename 
+    seq_list  = -1;
+    mode = 'vaspkit-band';
 end
 
+% Initialize output variables
+[WEIGHTCAR, EIGENCAR, KPATH] = deal([]);
 
+try
+    % Main processing logic
+    if contains(lower(mode), 'band')
+        processBandData();
+    elseif contains(lower(mode), 'dos')
+        processDOSData();
+    else
+        error('Unsupported processing mode: %s', mode);
+    end
+catch ME
+    handleCleanup();
+    rethrow(ME);
+end
+
+% Final cleanup
+handleCleanup();
+
+% ================== Nested Functions ================== %
+    function processBandData()
+        % Process band structure data
+        silentMode = contains(mode, 'silent');
+        
+        % Read and preprocess data
+        [data, nBands] = readAndFilterData();
+        
+        % Extract K-path and eigenvalues
+        KPATH = data(1:size(data,1)/nBands, 1);
+        EIGENCAR = reshape(data(:,2), [], nBands).';
+        
+        % Process projection data
+        projData = data(:, 3:end);
+        [nKpts, nOrbitals] = deal(size(projData,1)/nBands, size(projData,2));
+        
+        % Reshape and handle band ordering
+        proj3D = permute(reshape(projData, nKpts, nBands, nOrbitals), [2 1 3]);
+        proj3D(2:2:end,:,:) = flip(proj3D(2:2:end,:,:), 2);
+        
+        % Handle orbital selection
+        if ~usingDefaultSeq()
+            validateOrbitalIndices(nOrbitals);
+            WEIGHTCAR = sum(proj3D(:,:,seq_list), 3);
+        else
+            WEIGHTCAR = proj3D;
+        end
+        
+        % Output information
+        if ~silentMode
+            printBandHeader(nOrbitals);
+        end
+    end
+
+    function processDOSData()
+        % Process DOS data
+        silentMode = contains(mode, 'silent');
+        
+        % Read data
+        data = readmatrix(filename, 'NumHeaderLines', 1);
+        EIGENCAR = data(:,1);
+        projData = data(:,2:end);
+        [~, nOrbitals] = size(projData);
+        
+        % Handle orbital selection
+        if ~usingDefaultSeq()
+            validateOrbitalIndices(nOrbitals);
+            WEIGHTCAR = sum(projData(:,seq_list), 2);
+        else
+            WEIGHTCAR = projData;
+        end
+        
+        % Output information
+        if ~silentMode
+            printDOSHeader(nOrbitals);
+        end
+    end
+
+    function [data, nBands] = readAndFilterData()
+        % Read and filter band data
+        fileContent = fileread(filename);
+        lines = splitlines(fileContent);
+        
+        % Remove comment lines and headers
+        validLines = ~contains(lines, {'#', 'Band'});
+        dataLines = lines(validLines);
+        
+        % Convert to numeric matrix
+        % 超大数据量优化版
+        all_data = strjoin(dataLines, ' ');
+        data = sscanf(all_data, '%f', [numel(str2num(dataLines{1})), numel(dataLines)])';
+        nBands = sum(contains(lines, 'Band'));
+        
+        % Validate data integrity
+        if mod(size(data,1), nBands) ~= 0
+            error('Data row count mismatch with number of bands');
+        end
+    end
+
+    function flag = usingDefaultSeq()
+        % Check for default orbital selection
+        flag = isequal(seq_list, -1) || isempty(seq_list);
+    end
+
+    function validateOrbitalIndices(maxOrbital)
+        % Validate orbital indices
+        if any(seq_list > maxOrbital) || any(seq_list < 1)
+            error('Orbital indices out of range [1-%d]', maxOrbital);
+        end
+    end
+
+    function printBandHeader(nOrbitals)
+        % Display band structure header
+        fprintf('Vaspkit 1.2.0 band format supported\n');
+        if nOrbitals >= 17
+            fprintf('Orbital components: s py pz px dxy dyz dz2 dxz dx2-y2 fy3x2 fxyz fyz2 fz3 fxz2 fzx2 fx3 tot\n');
+        else
+            fprintf('Orbital components: s py pz px dxy dyz dz2 dxz dx2-y2 tot\n');
+        end
+    end
+
+    function printDOSHeader(nOrbitals)
+        % Display DOS header
+        fprintf('Vaspkit 1.2.0 DOS format supported\n');
+        if nOrbitals >= 17
+            fprintf('Orbital components: s py pz px dxy dyz dz2 dxz dx2-y2 fy3x2 fxyz fyz2 fz3 fxz2 fzx2 fx3 tot\n');
+        else
+            fprintf('Orbital components: s py pz px dxy dyz dz2 dxz dx2-y2 tot\n');
+        end
+    end
+
+    function handleCleanup()
+        % Cleanup temporary files
+        tempFiles = {'temp_Pband.dat', 'temp_Pband.DAT'};
+        for f = tempFiles
+            if exist(f{1}, 'file'), delete(f{1}); end
+        end
+    end
+end
