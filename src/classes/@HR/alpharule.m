@@ -1,184 +1,147 @@
-function H_hr = alpharule(H_hr,level_cut,mode,options)
+function H_hr = alpharule(H_hr, level_cut, mode, options)
+%ALPHARULE Apply parameter scaling rules to tight-binding Hamiltonian
+%   This function implements distance-dependent parameter scaling rules for
+%   Slater-Koster parameters in tight-binding models. Supports multiple scaling
+%   modes with automatic or manual reference distance (Rd) selection.
+%
+%   Inputs:
+%       H_hr       - HR object containing Hamiltonian data
+%       level_cut  - Maximum neighbor shell to process (-1=auto detect)
+%       mode       - Scaling rule mode:
+%                    0: No operation
+%                    1: Uniform alpha scaling
+%                    2: Per-parameter alpha scaling
+%       options.Rd - Reference distance(s) for scaling (default=-1 auto)
+%       options.silence - Suppress information output (default=true)
+%
+%   Output:
+%       H_hr       - Modified HR object with parameter substitution rules
+%
+%   Features:
+%       - Handles both Hamiltonian (HcoeL) and overlap (ScoeL) matrices
+%       - Supports automatic reference distance detection from nearest neighbors
+%       - Generates exponential scaling rules: V(R) = V(Rd)*exp(-(R-Rd)/Rd*alpha)
+%       - Maintains symbolic/numeric consistency based on input parameters
+
+% Argument validation with type checking
 arguments
-H_hr HR;
-level_cut double{mustBeInteger} = -1;
-mode double = 0;
-options.Rd double = -1;
-options.silence = true;
+    H_hr HR;
+    level_cut double {mustBeInteger} = -1;
+    mode double = 0;
+    options.Rd double = -1;
+    options.silence logical = true;
 end
-if options.Rd == -1
-Auto_Rd = true;
-else
-Auto_Rd = false;
-end
+
+% Early return for mode 0
 if mode == 0
-return;
+    return;
 end
+
+% Auto-detect neighbor shell count if needed
 if level_cut == -1
-level_cut = length(H_hr.Rnn);
+    level_cut = length(H_hr.Rnn);
 end
+
+% Get neighbor distance information
 Rnn = H_hr.nn_information(options.silence);
-base_string = ["VssS","VspS","VsdS","VppS","VpdS","VppP","VpdP","VddS","VddP","VddD"];
-strvar_list = string(H_hr.symvar_list);
-base_symvar_min = sym([]);
-base_num_min = ones(1,length(base_string));
-count = 0;
-for ibase_string = base_string
-for i = 1:level_cut
-if contains(ibase_string+"_"+string(i),strvar_list)
-count = count +1;
-base_symvar_min(count) = sym(ibase_string+"_"+string(i),'real');
-base_num_min(count) = i;
-base_string(count) = ibase_string;
-break;
-end
-end
-end
-base_string(count+1:end) = [];
-base_num_min(count+1:end) = [];
+
+% Initialize base parameter templates
+base_hamiltonian = ["VssS","VspS","VsdS","VppS","VpdS","VppP","VpdP","VddS","VddP","VddD"];
+base_overlap = ["SssS","SspS","SsdS","SppS","SpdS","SppP","SpdP","SddS","SddP","SddD"];
+
+% Find minimum-order parameters in symbolic expressions
+[base_symvar, base_idx] = process_base_parameters(H_hr.symvar_list, base_hamiltonian, level_cut);
 if H_hr.overlap
-base_string_S = ["SssS","SspS","SsdS","SppS","SpdS","SppP","SpdP","SddS","SddP","SddD"];
-symvar_list_S = symvar(H_hr.ScoeL);
-strvar_list_S  = [string(symvar_list_S)];
-base_symvar_min_S = sym([]);
-base_num_min_S = ones(1,length(base_string));
-count_S = 0;
-for ibase_string_S = base_string_S
-for i = 1:level_cut
-if contains(ibase_string_S+"_"+string(i),strvar_list_S)
-count_S = count_S +1;
-base_symvar_min_S(count_S) = sym(ibase_string_S+"_"+string(i),'real');
-base_num_min_S(count_S) = i;
-base_string_S(count_S) = ibase_string_S;
-break;
+    [base_symvar_S, base_idx_S] = process_base_parameters(symvar(H_hr.ScoeL), base_overlap, level_cut);
 end
-end
-end
-base_string_S(count_S+1:end) = [];
-base_num_min_S(count_S+1:end) = [];
-end
-N_base_string = length(base_string);
-V_n_str_L = repmat(base_string.',[level_cut-1,1]);
-level_cut_str_L = string(kron((2:level_cut).',ones(N_base_string,1)));
-V_n_list = sym(strcat(V_n_str_L,repmat('_',[(level_cut-1)*N_base_string,1]),level_cut_str_L),'real');
-V_subs_list = sym(zeros((level_cut-1)*N_base_string,1));
+
+% Generate substitution rules for different shells
+[V_subs, S_subs] = generate_substitution_rules(mode, level_cut, base_symvar, base_idx, Rnn, options);
+
+% Apply substitutions to Hamiltonian
+H_hr.HcoeL = subs(H_hr.HcoeL, V_subs.names, V_subs.values);
 if H_hr.overlap
-N_base_string_S = length(base_string_S);
-S_n_str_L = repmat(base_string_S.',[level_cut-1,1]);
-S_n_list = sym(strcat(S_n_str_L,repmat('_',[(level_cut-1)*N_base_string_S,1]),level_cut_str_L),'real');
-S_subs_list = sym(zeros((level_cut-1)*N_base_string_S,1));
+    H_hr.ScoeL = subs(H_hr.ScoeL, S_subs.names, S_subs.values);
 end
-switch mode
-case 0
-return;
-case 1
-alpha = sym('alpha');
-if Auto_Rd
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-Coeffs_tmp =  (Rnn(j) - Rnn(base_num_min(i)))/Rnn(base_num_min(i));
-V_subs_list(n) = base_symvar_min(i)*exp(-Coeffs_tmp*alpha);
-end
-if H_hr.overlap
-alpha = sym('alpha__2');
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-Coeffs_tmp =  (Rnn(j) - Rnn(base_num_min_S(i)))/Rnn(base_num_min_S(i));
-S_subs_list(n) = base_symvar_min_S(i)*exp(-Coeffs_tmp*alpha);
-end
-end
-else
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-Coeffs_tmp =  (Rnn(j) - options.Rd)/options.Rd;
-V_subs_list(n) = base_symvar_min(i)*exp(-Coeffs_tmp*alpha);
-end
-if H_hr.overlap
-alpha = sym('alpha__2');
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-Coeffs_tmp =  (Rnn(j) - options.Rd)/options.Rd;
-S_subs_list(n) = base_symvar_min_S(i)*exp(-Coeffs_tmp*alpha);
-end
-end
-end
-case 2
-if Auto_Rd
-Rd = Rnn(base_num_min);
-for k = 1:length(base_symvar_min)
-if isa(Rd(k),'sym')
-fprintf('%s : %s \\AA\n',base_symvar_min(k),string(Rd(k)));
-else
-fprintf('%s : %5.3f \\AA\n',base_symvar_min(k),Rd(k));
-end
-end
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-alpha = sym(['alpha_',num2str(i),'_', char(base_symvar_min(i))]);
-Coeffs_tmp =  (Rnn(j) - Rnn(base_num_min(i)))/Rnn(base_num_min(i));
-V_subs_list(n) = base_symvar_min(i)*exp(-Coeffs_tmp*alpha);
-end
-if H_hr.overlap
-Rd = Rnn(base_num_min_S);
-for k = 1:length(base_symvar_min_S)
-if isa(Rd(k),'sym')
-fprintf('%s : %s \\AA\n',base_symvar_min_S(k),string(Rd(k)));
-else
-fprintf('%s : %5.3f \\AA\n',base_symvar_min_S(k),Rd(k));
-end
-end
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-alpha = sym(['alpha__2_',num2str(i),'_', char(base_symvar_min_S(i))]);
-Coeffs_tmp =  (Rnn(j) - Rnn(base_num_min_S(i)))/Rnn(base_num_min_S(i));
-S_subs_list(n) = base_symvar_min_S(i)*exp(-Coeffs_tmp*alpha);
-end
-end
-else
-Rd = options.Rd;
-if length(Rd) == 1
-Rd = repmat(Rd,[N_base_string 1]);
-end
-for k = 1:length(base_symvar_min)
-if isa(Rd(k),'sym')
-fprintf('%s : %s \\AA\n',base_symvar_min(k),string(Rd(k)));
-else
-fprintf('%s : %5.3f \\AA\n',base_symvar_min(k),Rd(k));
-end
-end
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-alpha = sym(['alpha_',num2str(i),'_', char(base_symvar_min(i))]);
-Coeffs_tmp =  (Rnn(j) - Rd(i))/Rd(i);
-V_subs_list(n) = base_symvar_min(i)*exp(-Coeffs_tmp*alpha);
-end
-if H_hr.overlap
-for k = 1:length(base_symvar_min_S)
-if isa(Rd(k),'sym')
-fprintf('%s : %s \\AA\n',base_symvar_min_S(k),string(Rd(k)));
-else
-fprintf('%s : %5.3f \\AA\n',base_symvar_min_S(k),Rd(k));
-end
-end
-for n = 1:(level_cut-1)*N_base_string
-[j,i] = ind2sub([level_cut-1,N_base_string],n);
-j = j+1;
-alpha = sym(['alpha__2_',num2str(i),'_', char(base_symvar_min_S(i))]);
-Coeffs_tmp =  (Rnn(j) -Rd(i))/Rd(i);
-S_subs_list(n) = base_symvar_min_S(i)*exp(-Coeffs_tmp*alpha);
-end
-end
-end
-end
-H_hr.HcoeL = subs(H_hr.HcoeL,V_n_list,V_subs_list);
-if H_hr.overlap
-H_hr.ScoeL = subs(H_hr.ScoeL,S_n_list,S_subs_list);
-end
+
+% Nested helper functions
+    function [base_sym, base_num] = process_base_parameters(sym_list, base_names, max_level)
+        % Find minimum existing parameters for each base type
+        base_sym = sym([]);
+        base_num = [];
+        for name = base_names
+            for level = 1:max_level
+                param = sym(sprintf("%s_%d", name, level));
+                if ismember(string(param), string(sym_list))
+                    base_sym(end+1) = param;
+                    base_num(end+1) = level;
+                    break;
+                end
+            end
+        end
+    end
+
+    function [H_subs, S_subs] = generate_substitution_rules(mode, max_shell, base_sym, base_idx, Rnn, opts)
+        % Core substitution rule generator
+        H_subs = struct('names',[], 'values',[]);
+        S_subs = struct('names',[], 'values',[]);
+        
+        switch mode
+            case 1 % Uniform alpha scaling
+                alpha = sym('alpha');
+                H_subs = create_uniform_subs(base_sym, base_idx, Rnn, max_shell, alpha, opts);
+                if H_hr.overlap
+                    alpha_S = sym('alpha_S');
+                    S_subs = create_uniform_subs(base_sym_S, base_idx_S, Rnn, max_shell, alpha_S, opts);
+                end
+                
+            case 2 % Per-parameter alpha scaling
+                H_subs = create_per_param_subs(base_sym, base_idx, Rnn, max_shell, opts);
+                if H_hr.overlap
+                    S_subs = create_per_param_subs(base_sym_S, base_idx_S, Rnn, max_shell, opts);
+                end
+        end
+    end
+
+    function subs = create_uniform_subs(base_sym, base_idx, Rnn, max_shell, alpha, opts)
+        % Create uniform alpha substitution rules
+        subs.names = [];
+        subs.values = [];
+        for i = 1:length(base_sym)
+            ref_level = base_idx(i);
+            for shell = (ref_level+1):max_shell
+                param_name = sym(sprintf("%s_%d", strrep(char(base_sym(i)), '_1', ''), shell));
+                if opts.Rd == -1
+                    Rd = Rnn(ref_level);
+                else
+                    Rd = opts.Rd(min(i, length(opts.Rd)));
+                end
+                exponent = -(Rnn(shell) - Rd)/Rd * alpha;
+                subs.names(end+1) = param_name;
+                subs.values(end+1) = base_sym(i) * exp(exponent);
+            end
+        end
+    end
+
+    function subs = create_per_param_subs(base_sym, base_idx, Rnn, max_shell, opts)
+        % Create per-parameter alpha substitution rules
+        subs.names = [];
+        subs.values = [];
+        for i = 1:length(base_sym)
+            param_base = strsplit(char(base_sym(i)), '_');
+            alpha_name = sym(sprintf("alpha_%s", strjoin(param_base(1:end-1), '_')));
+            ref_level = base_idx(i);
+            for shell = (ref_level+1):max_shell
+                param_name = sym(sprintf("%s_%d", strjoin(param_base(1:end-1), '_'), shell));
+                if opts.Rd == -1
+                    Rd = Rnn(ref_level);
+                else
+                    Rd = opts.Rd(min(i, length(opts.Rd)));
+                end
+                exponent = -(Rnn(shell) - Rd)/Rd * alpha_name;
+                subs.names(end+1) = param_name;
+                subs.values(end+1) = base_sym(i) * exp(exponent);
+            end
+        end
+    end
 end
