@@ -1,186 +1,232 @@
-function H_hr = autohermi(H_hr,mode,options)
-arguments
-H_hr HR;
-mode =  'sym';
-options.enforce_list = true;
-end
-if nargin<2
-mode = 'sym';
-end
-if options.enforce_list
-if ~strcmp(H_hr.type, 'list')
-H_hr = H_hr.rewrite();
-giveback  = true;
-else
-giveback  = false;
-end
-else
-giveback  = true;
-end
-H_hr_tmp = H_hr;
-switch mode
-case 'sym'
-fprintf('For sym Hr, The requirement is strick!');
-fprintf('The sym vasiable is real or ');
-fprintf('in the original Hr, use conj()\n');
-switch H_hr.type
-case 'mat'
-for i = 1:H_hr.NRPTS
-vector_tmp = H_hr.vectorL(i,:);
-vector_tmp_oppo = -vector_tmp;
-[~,j]=ismember(vector_tmp_oppo,H_hr_tmp.vectorL,'rows');
-fprintf('check %3d th : NRPT,\n the vector is %3d %3d %3d,\n the opposite vector is %3d,%3d,%3d the %3d th NRPT\n',i,...
-vector_tmp(1),vector_tmp(2),vector_tmp(3),...
-vector_tmp_oppo(1),vector_tmp_oppo(2),vector_tmp_oppo(3),j);
-if i == j
-if ~isequal(H_hr.HcoeL(:,:,i) ,H_hr_tmp.HcoeL(:,:,j)')
-fprintf('The homecell hamilton is not hermi, never mind, we will hermi it enforcely!\n');
-disp(H_hr.HcoeL(:,:,i));
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HcoeL(:,:,i)'/2+H_hr_tmp.HcoeL(:,:,j)/2,[0,0,0],'sym');
-fprintf('change into\n');
-disp(H_hr_tmp.HcoeL(:,:,i));
-end
-continue;
-end
-if j == 0
-fprintf('The opposite vector hamilton does not exist, build it!\n');
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HcoeL(:,:,i)',-vector_tmp,'sym');
-disp(H_hr_tmp.HcoeL(:,:,i)');
-continue;
-elseif ~isequal(H_hr.HcoeL(:,:,i) ,H_hr_tmp.HcoeL(:,:,j)')
-fprintf('The opposite vector hamilton is not hermi, replace it by strong mat! \n');
-N1 = nnz(H_hr.HcoeL(:,:,i));
-N2 = nnz(H_hr_tmp.HcoeL(:,:,j)');
-if N1 >= N2
-fprintf('The %3d th NRPT is stonger!\n',i);
-disp(H_hr.HcoeL(:,:,i));
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HcoeL(:,:,i)',-vector_tmp,'sym');
-elseif N1 < N2
-fprintf('The %3d th NRPT is stonger!\n',j);
-disp(H_hr_tmp.HcoeL(:,:,j)');
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr_tmp.HcoeL(:,:,j)',vector_tmp,'sym');
-else
-end
-elseif isequal(H_hr.HcoeL(:,:,i),H_hr_tmp.HcoeL(:,:,j)')
-disp('hermi test pasts');
-else
-warning('!!!!!');
-end
-end
-case 'list'
-DIM = H_hr.Dim;
-for i = 1:H_hr.NRPTS
-vector_tmp = H_hr.vectorL(i,:);
-vector_tmp_oppo(1:DIM) = -vector_tmp(1:DIM);
-vector_tmp_oppo(DIM+1) = vector_tmp(DIM+2);
-vector_tmp_oppo(DIM+2) = vector_tmp(DIM+1);
-[~,j]=ismember(vector_tmp_oppo,H_hr_tmp.vectorL,'rows');
-if i == j
-if ~isequal(H_hr.HcoeL(i) ,H_hr_tmp.HcoeL(j)')
-if H_hr.HcoeL(i)== sym(0)
-FORMAT = strcat("The testing homecell hamilton ",fold(@strcat,repmat("
-Input = num2cell(vector_tmp);
-Input{DIM+3} = string(H_hr.HcoeL(j)');
-fprintf(FORMAT,Input{:});
-H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(j)',vector_tmp(DIM+1),vector_tmp(DIM+2),vector_tmp(1:H_hr.Dim),'sym');
-elseif H_hr.HcoeL(j)== sym(0)
-FORMAT = strcat("The opposite homecell  hamilton ",fold(@strcat,repmat("
-Input = num2cell(vector_tmp);
-Input{DIM+3} = string(H_hr.HcoeL(i)');
-fprintf(FORMAT, Input{:});
-H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(i)',vector_tmp_oppo(DIM+1),vector_tmp_oppo(DIM+2),vector_tmp_oppo(1:H_hr.Dim),'sym');
-else
-fprintf('The homecell hamilton is not hermi, never mind, we will not hermi it enforcely!\n');
-end
-end
-continue;
-end
-if j == 0
-FORMAT = strcat("The opposite vector  hamilton ",fold(@strcat,repmat("
-Input = num2cell(vector_tmp);
-Input{DIM+3} = string(H_hr.HcoeL(i)');
-fprintf(FORMAT, Input{:});
-H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(i)',vector_tmp_oppo(DIM+1),vector_tmp_oppo(DIM+2),vector_tmp_oppo(1:H_hr.Dim),'sym');
-continue;
-end
-if ~isequal(H_hr.HcoeL(i) ,H_hr_tmp.HcoeL(j)')
-if H_hr.HcoeL(i)== sym(0)
-FORMAT = strcat("The testing vector hamilton ",fold(@strcat,repmat("
-Input = num2cell(vector_tmp);
-Input{DIM+3} = string(H_hr.HcoeL(j)');
-fprintf(FORMAT,Input{:});
-H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(j)',vector_tmp(DIM+1),vector_tmp(DIM+2),vector_tmp(1:H_hr.Dim),'sym');
-elseif H_hr.HcoeL(j)== sym(0)
-FORMAT = strcat("The opposite vector hamilton ",fold(@strcat,repmat("
-Input = num2cell(vector_tmp);
-Input{DIM+3} = string(H_hr.HcoeL(j)');
-fprintf(FORMAT,Input{:});
-H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(i)',vector_tmp_oppo(DIM+1),vector_tmp_oppo(DIM+2),vector_tmp_oppo(1:H_hr.Dim),'sym');
-else
-FORMAT = strcat("check on the
-"[i:
-'find in the
-Input1 = num2cell(vector_tmp);
-Input2 = num2cell(vector_tmp_oppo);
-Input = [{i},Input1,Input2,{j}];
-fprintf(FORMAT,Input{:});
-%                                         fprintf(['check on the %3d th NRPT,\n' ...
-tmpsym = (H_hr.HcoeL(i)+H_hr.HcoeL(j)')/2;
-H_hr_tmp = H_hr_tmp.set_hop(tmpsym,vector_tmp(DIM+1),vector_tmp(DIM+2),vector_tmp(1:H_hr.Dim),'sym');
-H_hr_tmp = H_hr_tmp.set_hop(tmpsym',vector_tmp_oppo(DIM+1),vector_tmp_oppo(DIM+2),vector_tmp_oppo(1:H_hr.Dim),'sym');
-end
-end
-end
-otherwise
-end
-case 'num'
-fprintf('For num Hr, The requirement is less strick!');
-for i = 1:H_hr.NRPTS
-vector_tmp = H_hr.vectorL(i,:);
-vector_tmp_oppo = -vector_tmp;
-[~,j]=ismember(vector_tmp_oppo,H_hr_tmp.vectorL,'rows');
-fprintf('check %d th : NRPT,\n the vector is %d %d %d,\n the opposite vector is %d,%d,%d the %d th NRPT\n',i,...
-vector_tmp(1),vector_tmp(2),vector_tmp(3),...
-vector_tmp_oppo(1),vector_tmp_oppo(2),vector_tmp_oppo(3),j);
-if i == j
-if ~isequal(H_hr.HnumL(:,:,i) ,H_hr_tmp.HnumL(:,:,j)')
-fprintf('The homecell hamilton is not hermi, never mind, we will hermi it enforcely!\n');
-disp(H_hr.HnumL(:,:,i));
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HnumL(:,:,i)'/2+H_hr_tmp.HnumL(:,:,j)/2,[0,0,0],'set');
-fprintf('change into\n');
-disp(H_hr_tmp.HnumL(:,:,i));
-end
-continue;
-end
-if j == 0
-fprintf('The opposite vector hamilton does not exist, build it!\n');
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HnumL(:,:,i)',-vector_tmp,'set');
-disp(H_hr_tmp.HnumL(:,:,i)');
-continue;
-elseif ~isequal(H_hr.HnumL(:,:,i) ,H_hr_tmp.HnumL(:,:,j)')
-fprintf('The opposite vector hamilton is not hermi, replace it by strong mat! \n');
-N1 = nnz(H_hr.HnumL(:,:,i));
-N2 = nnz(H_hr_tmp.HnumL(:,:,j)');
-if N1 >= N2
-fprintf('The %d th NRPT is stonger!\n',i);
-disp(H_hr.HnumL(:,:,i));
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HnumL(:,:,i)',-vector_tmp,'set');
-elseif N1 < N2
-fprintf('The %d th NRPT is stonger!\n',j);
-disp(H_hr_tmp.HnumL(:,:,j)');
-H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr_tmp.HnumL(:,:,j)',vector_tmp,'set');
-else
-end
-elseif isequal(H_hr.HnumL(:,:,i),H_hr_tmp.HnumL(:,:,j)')
-disp('hermi test pasts');
-else
-warning('!!!!!');
-end
-end
-end
-if giveback
-H_hr = H_hr_tmp.rewind();
-else
-H_hr = H_hr_tmp;
-end
+function H_hr = autohermi(H_hr, mode, options)
+% AUTOHERMI Automatically enforce Hermitian symmetry on Hamiltonian
+%
+%   This function ensures the Hamiltonian matrix satisfies the Hermitian 
+%   condition H(r) = H†(-r). It supports both symbolic ('sym') and numeric 
+%   ('num') matrix modes.
+%
+%   Inputs:
+%       H_hr    - HR object containing Hamiltonian data
+%       mode    - Operation mode: 'sym' for symbolic, 'num' for numeric
+%                 (default: 'sym')
+%       options - Optional parameters structure:
+%           enforce_list - Force conversion to list format (default: true)
+%
+%   Output:
+%       H_hr    - Modified HR object with Hermitian-enforced Hamiltonian
+%
+%   Usage Example:
+%       H_herm = autohermi(H_hr, 'sym', struct('enforce_list', true));
+%
+%   See also HR, SET_HOP, SET_HOP_MAT
+
+    arguments
+        H_hr HR;
+        mode =  'sym';
+        options.enforce_list = true;
+    end
+
+    % Handle input defaults
+    if nargin < 2
+        mode = 'sym';
+    end
+
+    % Handle format conversion
+    if options.enforce_list
+        if ~strcmp(H_hr.type, 'list')
+            H_hr = H_hr.rewrite();
+            giveback = true;
+        else
+            giveback = false;
+        end
+    else
+        giveback = true;
+    end
+
+    H_hr_tmp = H_hr;  % Working copy of Hamiltonian
+
+    switch mode
+        case 'sym'  % Symbolic matrix processing
+            fprintf('Strict Hermitian enforcement for symbolic Hr\n');
+            fprintf('Requires real variables or explicit conj() in original Hr\n');
+            
+            switch H_hr.type
+                case 'mat'  % Matrix format processing
+                    for i = 1:H_hr.NRPTS
+                        process_sym_matrix(i);
+                    end
+                    
+                case 'list'  % List format processing
+                    DIM = H_hr.Dim;
+                    for i = 1:H_hr.NRPTS
+                        process_sym_list(i, DIM);
+                    end
+                    
+                otherwise
+                    error('Unsupported format for sym mode');
+            end
+
+        case 'num'  % Numeric matrix processing
+            fprintf('Relaxed Hermitian enforcement for numeric Hr\n');
+            for i = 1:H_hr.NRPTS
+                process_num_matrix(i);
+            end
+
+        otherwise
+            error('Invalid mode. Use ''sym'' or ''num''');
+    end
+
+    % Final conversion if needed
+    if giveback
+        H_hr = H_hr_tmp.rewind();
+    else
+        H_hr = H_hr_tmp;
+    end
+
+    % Nested processing functions
+    function process_sym_matrix(i)
+        % Process symbolic matrix format
+        vector_tmp = H_hr.vectorL(i,:);
+        vector_tmp_oppo = -vector_tmp;
+        [~, j] = ismember(vector_tmp_oppo, H_hr_tmp.vectorL, 'rows');
+        
+        fprintf('Checking NRPT %d:\n Vector: [%d %d %d]\n Opposite: [%d %d %d] at NRPT %d\n',...
+                i, vector_tmp, vector_tmp_oppo, j);
+        
+        if i == j  % Diagonal term (home cell)
+            if ~isequal(H_hr.HcoeL(:,:,i), H_hr_tmp.HcoeL(:,:,j)')
+                enforce_homecell_hermi(i);
+            end
+        else
+            handle_offdiagonal_term(i, j, vector_tmp, vector_tmp_oppo);
+        end
+    end
+
+    function process_sym_list(i, DIM)
+        % Process symbolic list format
+        vector_tmp = H_hr.vectorL(i,:);
+        vector_tmp_oppo = zeros(1, DIM+2);
+        vector_tmp_oppo(1:DIM) = -vector_tmp(1:DIM);
+        vector_tmp_oppo(DIM+1) = vector_tmp(DIM+2);
+        vector_tmp_oppo(DIM+2) = vector_tmp(DIM+1);
+        [~, j] = ismember(vector_tmp_oppo, H_hr_tmp.vectorL, 'rows');
+        
+        if i == j  % Diagonal term
+            if ~isequal(H_hr.HcoeL(i), H_hr_tmp.HcoeL(j)')
+                handle_homecell_nonhermi(i, j, vector_tmp, DIM);
+            end
+        else
+            handle_list_offdiagonal(i, j, vector_tmp, vector_tmp_oppo, DIM);
+        end
+    end
+
+    function process_num_matrix(i)
+        % Process numeric matrix format
+        vector_tmp = H_hr.vectorL(i,:);
+        vector_tmp_oppo = -vector_tmp;
+        [~, j] = ismember(vector_tmp_oppo, H_hr_tmp.vectorL, 'rows');
+        
+        fprintf('Checking NRPT %d:\n Vector: [%d %d %d]\n Opposite: [%d %d %d] at NRPT %d\n',...
+                i, vector_tmp, vector_tmp_oppo, j);
+        
+        if i == j  % Diagonal term
+            if ~isequal(H_hr.HnumL(:,:,i), H_hr_tmp.HnumL(:,:,j)')
+                enforce_numeric_hermi(i, j);
+            end
+        else
+            handle_offdiagonal_num(i, j, vector_tmp);
+        end
+    end
+
+    % Helper functions
+    function enforce_homecell_hermi(i)
+        fprintf('Non-Hermitian homecell Hamiltonian found at NRPT %d\n', i);
+        disp('Original matrix:');
+        disp(H_hr.HcoeL(:,:,i));
+        corrected = (H_hr.HcoeL(:,:,i)' + H_hr_tmp.HcoeL(:,:,i))/2;
+        H_hr_tmp = H_hr_tmp.set_hop_mat(corrected, [0,0,0], 'sym');
+        disp('Corrected matrix:');
+        disp(H_hr_tmp.HcoeL(:,:,i));
+    end
+
+    function handle_offdiagonal_term(i, j, vec, vec_oppo)
+        if j == 0
+            fprintf('Creating missing opposite vector at NRPT %d\n', i);
+            H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HcoeL(:,:,i)', vec_oppo, 'sym');
+        else
+            compare_and_correct(i, j, vec, vec_oppo);
+        end
+    end
+
+    function compare_and_correct(i, j, vec, vec_oppo)
+        if ~isequal(H_hr.HcoeL(:,:,i), H_hr_tmp.HcoeL(:,:,j)')
+            fprintf('Hermitian mismatch between NRPT %d and %d\n', i, j);
+            n1 = nnz(H_hr.HcoeL(:,:,i));
+            n2 = nnz(H_hr_tmp.HcoeL(:,:,j)');
+            
+            if n1 >= n2
+                fprintf('Enforcing stronger term from NRPT %d\n', i);
+                H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HcoeL(:,:,i)', vec_oppo, 'sym');
+            else
+                fprintf('Enforcing stronger term from NRPT %d\n', j);
+                H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr_tmp.HcoeL(:,:,j)', vec, 'sym');
+            end
+        else
+            disp('Hermitian condition satisfied');
+        end
+    end
+
+    % Additional nested helper functions for list processing
+    function handle_homecell_nonhermi(i, j, vec, DIM)
+        if H_hr.HcoeL(i) == sym(0)
+            fprintf('Adding missing homecell term from NRPT %d\n', j);
+            H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(j)', vec(DIM+1), vec(DIM+2), vec(1:DIM), 'sym');
+        elseif H_hr.HcoeL(j) == sym(0)
+            fprintf('Adding missing homecell term from NRPT %d\n', i);
+            H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(i)', vec(DIM+1), vec(DIM+2), vec(1:DIM), 'sym');
+        else
+            fprintf('Averaging non-Hermitian homecell terms\n');
+            tmpsym = (H_hr.HcoeL(i) + H_hr.HcoeL(j)')/2;
+            H_hr_tmp = H_hr_tmp.set_hop(tmpsym, vec(DIM+1), vec(DIM+2), vec(1:DIM), 'sym');
+        end
+    end
+
+    function handle_list_offdiagonal(i, j, vec, vec_oppo, DIM)
+        if j == 0
+            fprintf('Creating missing opposite vector for NRPT %d\n', i);
+            H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(i)', vec_oppo(DIM+1), vec_oppo(DIM+2), vec_oppo(1:DIM), 'sym');
+        else
+            if ~isequal(H_hr.HcoeL(i), H_hr_tmp.HcoeL(j)')
+                fprintf('Resolving Hermitian mismatch between NRPT %d and %d\n', i, j);
+                tmpsym = (H_hr.HcoeL(i) + H_hr.HcoeL(j)')/2;
+                H_hr_tmp = H_hr_tmp.set_hop(tmpsym, vec(DIM+1), vec(DIM+2), vec(1:DIM), 'sym');
+                H_hr_tmp = H_hr_tmp.set_hop(tmpsym', vec_oppo(DIM+1), vec_oppo(DIM+2), vec_oppo(1:DIM), 'sym');
+            end
+        end
+    end
+
+    function enforce_numeric_hermi(i, j)
+        fprintf('Enforcing Hermiticity on numeric homecell at NRPT %d\n', i);
+        corrected = (H_hr.HnumL(:,:,i)' + H_hr_tmp.HnumL(:,:,j))/2;
+        H_hr_tmp = H_hr_tmp.set_hop_mat(corrected, [0,0,0], 'set');
+    end
+
+    function handle_offdiagonal_num(i, j, vec)
+        if j == 0
+            fprintf('Creating missing numeric opposite vector at NRPT %d\n', i);
+            H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HnumL(:,:,i)', -vec, 'set');
+        else
+            if ~isequal(H_hr.HnumL(:,:,i), H_hr_tmp.HnumL(:,:,j)')
+                fprintf('Correcting numeric Hermitian mismatch between NRPT %d and %d\n', i, j);
+                n1 = nnz(H_hr.HnumL(:,:,i));
+                n2 = nnz(H_hr_tmp.HnumL(:,:,j)');
+                if n1 >= n2
+                    H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr.HnumL(:,:,i)', -vec, 'set');
+                else
+                    H_hr_tmp = H_hr_tmp.set_hop_mat(H_hr_tmp.HnumL(:,:,j)', vec, 'set');
+                end
+            end
+        end
+    end
+
 end
