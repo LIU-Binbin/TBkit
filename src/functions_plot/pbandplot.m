@@ -170,12 +170,12 @@ elseif iscell(WEIGHTCAR_struct)
     WEIGHTCAR = WEIGHTCAR_struct;
     if length(WEIGHTCAR_struct) > 1
         plotMode = 'bubble_rough' ;
-        projNames(nWEIGHTCAR ,:) = "";
+        projNames(nProj ,:) = "";
     else
         plotMode = 'bubble_only' ;
-        projNames(nWEIGHTCAR ,:) = "";
+        projNames(nProj ,:) = "";
     end
-    for i = 1:nWEIGHTCAR
+    for i = 1:nProj
         projNames(i,:) = strcat('A',string(i));
     end
 elseif isnumeric(WEIGHTCAR_struct)
@@ -292,37 +292,39 @@ function varargout = handleMultiProjections(EIGENCAR, klist_l, kpoints_l,kpoints
         WEIGHTCAR_BK = [WEIGHTCAR_BK,WEIGHTCAR(selectedProjs)];
         projNames_BK = [projNames_BK,projNames(selectedProjs)];
     end
-    nProj = length(WEIGHTCAR_BK);
-    if isa(options.cmap, 'function_handle')
-        cmap = options.cmap(nProj);
-    else
-        cmap = options.cmap;
+    if nWEIGHTCAR_struct_cell>1
+        nProj = length(WEIGHTCAR_BK);
+        if isa(options.cmap, 'function_handle')
+            cmap = options.cmap(nProj);
+        else
+            cmap = options.cmap;
+        end
+        [~,ax(i+1)] =  Figs(1,1);
+        Nbands=size(EIGENCAR,1);
+        xmin=klist_l(1);
+        xmax=klist_l(length(klist_l));
+        Xcut = [xmin,xmax];
+        for Ei=1:Nbands
+            plot(ax(i+1),klist,EIGENCAR(Ei,:),...
+                'LineWidth',1.0,'Color',[0.1 0.1 0.1],'DisplayName',num2str(Ei),...
+                'HandleVisibility','off');
+        end
+        optionsplot.ax = ax(i+1);
+        optionsplotcell = namedargs2cell(optionsplot);
+        ax(i+1) = pband_plot_set(klist,EIGENCAR,WEIGHTCAR_BK,projNames_BK,1:nProj,...
+            'cmap',cmap,optionsplotcell{:});% waiting
+        %-------- Reference Lines & Labels --------
+        ax(i+1) = set_reference(kpoints_l,kpoints_name,Xcut,options.Ecut,...
+            'ax',ax(i+1),...
+            'fontname',options.fontname ...
+            );
+        legend(ax(i+1));
+        %--------  fbug  --------
+        if iscell(titlestring )
+            titlestring = cell2mat(titlestring);
+        end
+        title(ax(i+1),titlestring);
     end
-     [~,ax(i+1)] =  Figs(1,1);
-    Nbands=size(EIGENCAR,1);
-    xmin=klist_l(1);
-    xmax=klist_l(length(klist_l));
-    Xcut = [xmin,xmax];
-    for Ei=1:Nbands
-        plot(ax(i+1),klist,EIGENCAR(Ei,:),...
-            'LineWidth',1.0,'Color',[0.1 0.1 0.1],'DisplayName',num2str(Ei),...
-            'HandleVisibility','off');
-    end
-    optionsplot.ax = ax(i+1);
-    optionsplotcell = namedargs2cell(optionsplot);
-    ax(i+1) = pband_plot_set(klist,EIGENCAR,WEIGHTCAR_BK,projNames_BK,1:nProj,...
-        'cmap',cmap,optionsplotcell{:});% waiting
-    %-------- Reference Lines & Labels --------
-    ax(i+1) = set_reference(kpoints_l,kpoints_name,Xcut,options.Ecut,...
-        'ax',ax(i+1),...
-        'fontname',options.fontname ...
-        );
-    legend(ax(i+1));
-    %--------  fbug  --------
-    if iscell(titlestring )
-        titlestring = cell2mat(titlestring);
-    end
-    title(ax(i+1),titlestring);
     % Return handles based on the number of requested output arguments
     if nargout == 2
         varargout{1} = fig; % Return figure handles
