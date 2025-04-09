@@ -1,26 +1,40 @@
-function Parity_list = Parity_eight(Occupi, list)
-    % Generate a list of parity values for different label files.
-    % Inputs:
-    %   Occupi - Occupation states or any input required by the Parity function.
-    %   list   - A list of labels (default is [1, 2, ..., 8]).
-    %
-    % Output:
-    %   Parity_list - A structure with parity calculations for each label.
+function parityList = Parity_eight(occupancyData, labelIndices)
+% PARITY_EIGHT Calculate parity values for multiple label configurations
+%   This function computes parity values for a series of label files using
+%   the provided occupancy data. Supports custom label index ranges.
+%
+% Inputs:
+%   occupancyData  - Input occupancy data matrix/array
+%   labelIndices   - (Optional) Array of label indices to process. 
+%                    Default: 1:8
+%
+% Output:
+%   parityList     - Array of computed parity values corresponding to
+%                    each label index
+%
+% Example:
+%   parityResults = Parity_eight(occupancyMatrix, [1 3 5 7])
+
+% Handle optional input
+if nargin < 2
+    labelIndices = 1:8;
+end
+
+% Validate input format
+validateattributes(labelIndices, {'numeric'}, {'vector', 'integer', 'positive'}, ...
+                   'Parity_eight', 'labelIndices', 2);
+
+% Preallocate output array for performance
+% parityList = zeros(size(labelIndices));
+
+% Process each label index
+for idx = 1:numel(labelIndices)
+    currentIndex = labelIndices(idx);
     
-    % Set default value for 'list' if not provided
-    if nargin < 2
-        list = 1:8;  % Default list of labels from 1 to 8
-    end
+    % Generate formatted label filename
+    labelFile = sprintf('label_file_%d', currentIndex);
     
-    % Initialize an empty structure to store the parity results
-    Parity_list = struct();
-    
-    % Loop through the list of labels
-    for i = 1:length(list)
-        % Generate the label string (e.g., 'label_file_1', 'label_file_2', etc.)
-        label = sprintf('label_file_%d', list(i));
-        
-        % Store the result in the structure
-        Parity_list.(label) = Parity(label, Occupi);
-    end
+    % Calculate parity and store result
+    parityList(idx) = Parity(labelFile, occupancyData);
+end
 end
