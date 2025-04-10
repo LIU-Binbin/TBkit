@@ -1,4 +1,60 @@
 function [EIGENCAR,WAVECAR,WEIGHTCAR] = EIGENCAR_gen_wire(H_htrig,options)
+% EIGENCAR_GEN_WIRE Computes eigenvalues, eigenvectors (wavefunctions), and weights for a wire Hamiltonian.
+%
+% [EIGENCAR, WAVECAR, WEIGHTCAR] = EIGENCAR_gen_wire(H_htrig, options) generates eigenvalues, eigenvectors, and corresponding weights for each k-point along a specified path using Hamiltonian parameters encapsulated in H_htrig. It supports parameter sweeps and symmetry handling based on optional inputs.
+%
+% Inputs:
+%   H_htrig: Hamiltonian structure containing system parameters and symbolic/numeric terms. Includes:
+%       - Type: String specifying Hamiltonian type (e.g., 'sparse').
+%       - klist_cart: Matrix of Cartesian k-points (default used if options.klist is empty).
+%       - HnumL: Cell array of numeric Hamiltonian contributions (for 'sparse' type).
+%       - HsymL_trig: Cell array of symbolic terms for the Hamiltonian.
+%       - Hmat_pre: Precomputed matrix parts for each Hamiltonian term.
+%       - Basis_num: Integer indicating the number of basis functions.
+%       - Nslab: Integer specifying the number of slabs in the system.
+%       - orbL: Orbital positions matrix (columns: x, y, z coordinates).
+%       - VarsSeqLcart: List of variables in Cartesian coordinates for symbolic expressions.
+%       - Dim: Dimensionality of the Hamiltonian (e.g., 3 for 3D).
+%       - rm_list: Indices to remove from Hamiltonian matrix (e.g., for surface states).
+%       - Hfun: Function handle representing the Hamiltonian (if applicable).
+%       - Kinds: Number of terms/categories in the Hamiltonian (for 'sparse' type).
+%
+%   options: (Optional) Configuration structure with fields:
+%       - fermi: Double specifying Fermi energy level (default: 0).
+%       - norb: Integer defining the number of bands to compute. If <0, all bands are computed (default: -1).
+%       - klist: K-points path specification. Can be:
+%           + String (e.g., 'KPOINTS_wire') to generate a path via H_htrig.kpathgen3D.
+%           + Numeric matrix of Cartesian k-points (overrides default).
+%       - para: Numeric matrix of parameters for sweeps. Each row is a parameter set (required for parameter sweeps).
+%       - paraname: String array of parameter names used in symbolic expressions (must match options.para columns).
+%       - issym: Boolean flag to enable symmetry enforcement via spdB (default: false).
+%       - spdB: Double specifying symmetry-preserving energy shift (default: 0).
+%
+% Outputs:
+%   EIGENCAR: Matrix of eigenvalues (bands x k-points/parameters).
+%       - For parameter sweeps (options.para provided), each trial is stored in a cell.
+%       - For single k-point mode, this is a vector.
+%   WAVECAR: 3D array of eigenvectors (basis x bands x k-points/parameters).
+%       - Structure depends on input mode (k-point path vs parameter sweep).
+%   WEIGHTCAR: Matrix of weights for eigenvectors (bands x k-points/parameters).
+%       - Derived from orbital contributions using Htrig.COLORCAR_gen.
+% Notes:
+% - Automatically selects computational mode based on options.para presence and H_htrig.Type.
+% - Handles sparse Hamiltonians via HnumL and symbolic terms via HsymL_trig.
+% - Error checks verify parameter substitution and matrix validity during computation.
+% - Printing mode (progress reports) is activated automatically for large systems.
+% - Requires compatible functions: TBkit.HSVCAR_gen, park.sorteig, and Htrig.COLORCAR_gen.
+%
+% Example Usage:
+%   % Basic eigenvalue calculation for default k-path
+%   [eigen, wave, weight] = EIGENCAR_gen_wire(H, struct());
+%   
+%   % Parameter sweep with custom parameters
+%   opts.para = [param1; param2];
+%   opts.paraname = ["Variable1", "Variable2"];
+%   results = EIGENCAR_gen_wire(H, opts);
+%
+% See also: Htrig, TBkit.HSVCAR_gen, park.sorteig
 arguments
 H_htrig Htrig;
 options.fermi double = 0;

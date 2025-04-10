@@ -1,4 +1,47 @@
 function [H_htrig,Smat] = Smatgen(H_htrig,R,Accuracy)
+%SMATGEN  Generate symbolic transformation matrix for trig basis.
+%
+%   [H_htrig, Smat] = SMATGEN(H_htrig, R)
+%   constructs the symbolic transformation matrix Smat for the trig
+%   functions in H_htrig after a coordinate transformation defined by R.
+%
+%   [H_htrig, Smat] = SMATGEN(H_htrig, R, Accuracy)
+%   performs the same procedure but allows specification of numerical 
+%   rounding accuracy when R is numeric. Default Accuracy is 6 (i.e., 1e-6).
+%
+%   This function is useful in the context of tight-binding Hamiltonians
+%   represented symbolically using trigonometric basis functions. The
+%   transformation matrix Smat can be used to project or remap the 
+%   Hamiltonian to a rotated coordinate frame.
+%
+%   Inputs:
+%       H_htrig   - An instance of the Htrig class, containing symbolic
+%                   Hamiltonian trigonometric terms (HsymL_trig).
+%       R         - Coordinate transformation matrix (1x1, 2x2, or 3x3).
+%                   Can be symbolic or numeric. Defines how momentum
+%                   components [k_x, k_y, k_z] are linearly transformed.
+%       Accuracy  - (Optional) Accuracy for rounding numerical Smat values
+%                   if R is numeric. Default: 6 (i.e., round to 1e-6).
+%
+%   Outputs:
+%       H_htrig   - Updated Htrig object. Additional basis functions may be
+%                   added to HsymL_trig if new ones arise from transformation.
+%       Smat      - Transformation matrix (symbolic or numeric), such that:
+%                       H_transformed(k') = Smat * original_basis
+%
+%   Behavior:
+%       - Substitutes new k vector (k') into the Hamiltonian.
+%       - Extracts coefficients in terms of existing or extended basis.
+%       - Builds a transformation matrix Smat mapping new H(k') to old basis.
+%       - If R is numeric, result is rounded to given Accuracy using roundn.
+%
+%   Example:
+%       syms kx ky kz real
+%       H_htrig = Htrig();        % Create symbolic Htrig object
+%       R = [0 -1; 1 0];          % 90-degree rotation in k-space
+%       [H_htrig, Smat] = Smatgen(H_htrig, R, 6);
+%
+%   See also: Htrig, coeffs, simplify, subs
 arguments
 H_htrig Htrig;
 R  ;
