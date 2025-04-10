@@ -1,4 +1,21 @@
 function H_hr = times(A,B)
+%TIMES Overloaded multiplication for HR objects
+%
+%   H_HR = TIMES(A,B) performs element-wise multiplication between:
+%       - Two HR objects
+%       - An HR object and a numeric/symbolic matrix
+%
+%   Inputs:
+%       A - First operand (HR object or matrix)
+%       B - Second operand (HR object or matrix)
+%
+%   Output:
+%       H_hr - Resulting HR object after multiplication
+%
+%   Note:
+%       Requires matching WAN_NUM dimensions for HR objects
+%
+%   See also HR, MTIMES
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

@@ -1,4 +1,24 @@
 function [H_hr,Sublist,Unique_term] = unique(H_hr,seed,checklist,Accuracy)
+%UNIQUE Identify unique terms in HR object
+%
+%   [H_HR, SUBLIST, UNIQUE_TERM] = UNIQUE(H_HR, SEED, CHECKLIST, ACCURACY)
+%   Factorizes Hamiltonian terms and identifies unique components
+%
+%   Inputs:
+%       H_hr       - HR object to analyze
+%       seed       - Base name for symbolic variables (default = 'gamma')
+%       checklist  - List of symmetry relations to enforce
+%       Accuracy   - Numerical tolerance (default = 1e-6)
+%
+%   Outputs:
+%       H_hr       - HR object with factored terms
+%       Sublist    - Symbolic substitutions found
+%       Unique_term- List of unique symbolic factors
+%
+%   Note:
+%       Only works with 'list' storage format
+%
+%   See also HR, SYM, TBKIT.FACTORALL
 arguments
 H_hr HR;
 seed char = 'gamma';

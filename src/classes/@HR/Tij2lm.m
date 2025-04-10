@@ -1,4 +1,19 @@
 function [ml_cell,ij_list] = Tij2lm(H_hr,Rf)
+%TIJ2LM Transform orbital indices to angular momentum mappings
+%
+%   [ML_CELL, IJ_LIST] = TIJ2LM(H_HR, RF) computes the mapping between
+%   orbital indices and angular momentum quantum numbers for a given
+%   Hamiltonian and lattice vector.
+%
+%   Inputs:
+%       H_hr - HR object containing tight-binding Hamiltonian
+%       Rf   - Lattice vector for transformation
+%
+%   Outputs:
+%       ml_cell - Cell array containing angular momentum mappings
+%       ij_list - List of unique orbital index pairs
+%
+%   See also HR, TBkit.LatticeVectorTest
 NRPTS_ = H_hr.NRPTS;
 orblist = H_hr.orbL;
 Norb = size(orblist,1);

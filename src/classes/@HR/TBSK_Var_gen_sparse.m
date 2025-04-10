@@ -1,4 +1,27 @@
 function varargout = TBSK_Var_gen_sparse(L_1_L,L_2_L,m_1_L,m_2_L,Rlength_L,l_L,m_L,n_L,options)
+%TBSK_VAR_GEN_SPARSE Generate sparse Slater-Koster variables
+%
+%   HOPPINGL = TBSK_VAR_GEN_SPARSE(L_1_L, L_2_L, M_1_L, M_2_L, RLENGTH_L, L_L, M_L, N_L)
+%   Generates Slater-Koster hopping terms with distance-dependent scaling
+%
+%   Inputs:
+%       L_1_L, L_2_L - Arrays of angular momentum quantum numbers
+%       m_1_L, m_2_L - Arrays of magnetic quantum numbers
+%       Rlength_L    - Array of interatomic distances
+%       l_L, m_L, n_L - Arrays of direction cosines
+%       options.overlap    - Include overlap terms (default = false)
+%       options.deltarule  - Distance scaling rule (0-2, default = 0)
+%       options.alpharule  - Exponential scaling rule (0-2, default = 0)
+%       options.para       - Parameter structure containing strvar/numvar
+%       options.Rd         - Reference distances (default = -1)
+%
+%   Output:
+%       HoppingL - Array of computed hopping values
+%
+%   Note:
+%       Supports both uniform and orbital-specific distance scaling
+%
+%   See also TBSK_VAR_GEN, TBSK_VAR_GEN_SINGLE
 arguments
 L_1_L double{mustBeInteger};
 L_2_L double{mustBeInteger};

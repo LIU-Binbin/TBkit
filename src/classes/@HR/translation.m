@@ -1,4 +1,19 @@
 function H_hr = translation(H_hr,translation_vector,options)
+%TRANSLATION Translate atomic positions in HR object
+%
+%   H_HR = TRANSLATION(H_HR, TRANSLATION_VECTOR, OPTIONS) applies
+%   translation to the atomic positions in the HR object.
+%
+%   Inputs:
+%       H_hr               - HR object to translate
+%       translation_vector - Translation vector in fractional coordinates
+%       options.Accuracy   - Numerical accuracy threshold (default = 1e-6)
+%       options.force_list - Force output in list format (default = false)
+%
+%   Output:
+%       H_hr - Translated HR object
+%
+%   See also HR, MOD
 arguments
 H_hr HR;
 translation_vector double = [0,0,0];

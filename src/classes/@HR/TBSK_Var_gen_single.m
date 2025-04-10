@@ -1,4 +1,25 @@
 function varargout = TBSK_Var_gen_single(L_1,L_2,m_1,m_2,nn_level,l,m,n,options)
+%TBSK_VAR_GEN_SINGLE Generate Slater-Koster variables for single orbital pair
+%
+%   [COEFF, V_STR, S_STR] = TBSK_VAR_GEN_SINGLE(L_1, L_2, M_1, M_2, NN_LEVEL, L, M, N)
+%   Generates Slater-Koster coefficients and variable names for a single orbital pair
+%
+%   Inputs:
+%       L_1, L_2   - Angular momentum quantum numbers (0-3)
+%       m_1, m_2   - Magnetic quantum numbers (-L to L)
+%       nn_level   - Nearest neighbor level (default = -1)
+%       l, m, n    - Direction cosines (default = 0)
+%       options.overlap - Include overlap terms (default = false)
+%
+%   Outputs:
+%       Coeff      - Slater-Koster coefficients [3×1]
+%       V_str      - Hopping variable names {'VssS', 'VssP', 'VssD'}
+%       S_str      - Overlap variable names (when options.overlap=true)
+%
+%   Note:
+%       Automatically handles L_1 > L_2 case with proper sign changes
+%
+%   See also TBSK_VAR_GEN, HR.TBSK_Coeff_gen
 arguments
 L_1 double{mustBeInteger};
 L_2 double{mustBeInteger};

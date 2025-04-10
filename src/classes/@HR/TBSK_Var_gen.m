@@ -1,4 +1,26 @@
 function varargout = TBSK_Var_gen(L_1_L,L_2_L,m_1_L,m_2_L,nn_level_L,l_L,m_L,n_L,options)
+%TBSK_VAR_GEN Generate Tight-Binding Slater-Koster variables
+%
+%   [Coeff, V_str, S_str] = TBSK_VAR_GEN(L_1_L, L_2_L, m_1_L, m_2_L, nn_level_L, l_L, m_L, n_L)
+%   Generates Slater-Koster coefficients and variable names for tight-binding calculations
+%
+%   Inputs:
+%       L_1_L    - Angular momentum quantum numbers for first orbital (integer array)
+%       L_2_L    - Angular momentum quantum numbers for second orbital (integer array)
+%       m_1_L    - Magnetic quantum numbers for first orbital (integer array)
+%       m_2_L    - Magnetic quantum numbers for second orbital (integer array)
+%       nn_level_L - Nearest neighbor level (integer, default = -1)
+%       l_L      - Direction cosine l component (default = 0)
+%       m_L      - Direction cosine m component (default = 0)
+%       n_L      - Direction cosine n component (default = 0)
+%       options.overlap - Logical flag for overlap calculation (default = false)
+%
+%   Outputs:
+%       Coeff    - Slater-Koster coefficients matrix
+%       V_str    - Variable names for hopping terms
+%       S_str    - Variable names for overlap terms (when options.overlap=true)
+%
+%   See also HR.TBSK_Var_gen_single, HR.TBSK_Coeff_gen
 arguments
 L_1_L double{mustBeInteger};
 L_2_L double{mustBeInteger};
