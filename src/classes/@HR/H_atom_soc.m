@@ -1,4 +1,27 @@
 function H_atom_soc = H_atom_soc(H_hr)
+% H_ATOM_SOC Generate atomic spin-orbit coupling Hamiltonian
+%
+%   H_atom_soc = H_ATOM_SOC(H_hr) constructs the atomic spin-orbit
+%   coupling Hamiltonian from quantum numbers in HR object.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object with quantum numbers and elements
+%
+%   OUTPUT ARGUMENTS:
+%       H_atom_soc - Symbolic spin-orbit coupling Hamiltonian
+%
+%   NOTES:
+%       - Requires properly initialized quantum numbers
+%       - Checks for spin balance (up = down)
+%       - Uses soc_term_gen for matrix elements
+%
+%   SEE ALSO:
+%       HR, soc_term_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if isempty(H_hr.quantumL)
 error('you should provide quantum number list');
 end

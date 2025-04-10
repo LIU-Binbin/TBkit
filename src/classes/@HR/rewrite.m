@@ -1,4 +1,20 @@
 function H_hr = rewrite(H_hr,options)
+% REWRITE Convert HR object between storage formats
+%
+%   H_HR = REWRITE(H_HR,OPTIONS) converts HR object between storage formats
+%
+%   Inputs:
+%       H_hr - HR object to convert
+%       options.rewind - Flag to convert to matrix format [default: false]
+%       options.Accuracy - Rounding accuracy [default: 1e-6]
+%       options.type - Target format type [default: '']
+%   Output:
+%       H_hr - Converted HR object
+%
+%   Notes:
+%       - Handles conversions between 'sparse', 'list', and 'mat' formats
+%       - Preserves numeric and symbolic coefficients
+%       - Maintains overlap terms when present
 arguments
 H_hr HR;
 options.rewind = false;

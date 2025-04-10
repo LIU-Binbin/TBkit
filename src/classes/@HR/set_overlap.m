@@ -1,4 +1,23 @@
 function H_hr = set_overlap(H_hr,amp,si,sj,vector_list,mode)
+% SET_OVERLAP Set overlap terms in HR object
+%
+%   H_HR = SET_OVERLAP(H_HR,AMP,SI,SJ,VECTOR_LIST,MODE) sets overlap terms
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       amp - Overlap amplitude(s)
+%       si - Initial orbital index(es)
+%       sj - Final orbital index(es)
+%       vector_list - List of lattice vectors
+%       mode - Operation mode ('set', 'add', 'sym', 'symadd') [default: 'set']
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - High-level interface for setting overlaps
+%       - Handles scalar and matrix inputs
+%       - Dispatches to set_overlap_mat or set_overlap_single as needed
+%       - Supports WAN_NUM/2 subblock operations
 if nargin <6
 mode = 'set';
 end

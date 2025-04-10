@@ -1,4 +1,29 @@
 function [fig,ax] = show(H_hr,mode,options)
+% SHOW Visualize HR object contents
+%
+%   [FIG,AX] = SHOW(H_HR,MODE,OPTIONS) creates visualization of HR object
+%
+%   Inputs:
+%       H_hr - HR object to visualize
+%       mode - Visualization mode ('POSCAR', 'NRPTS', 'HOPPING') [default: 'HOPPING']
+%       options.fig - Figure handle [default: new maximized figure]
+%       options.scale - Scaling factor [default: 1]
+%       options.atomscale - Atom size scaling [default: 0.3]
+%       options.TwoD - 2D visualization flag [default: false]
+%       options.vectorList - Custom vector list [default: []]
+%       options.fast - Fast rendering flag [default: true]
+%       options.ax - Axes handle [default: []]
+%       options.Select - Term selection [default: []]
+%       options.cmap - Colormap [default: @parula]
+%       options.Title - Plot title [default: '']
+%   Outputs:
+%       fig - Figure handle
+%       ax - Axes handle
+%
+%   Notes:
+%       - Three visualization modes available
+%       - Handles both numeric and symbolic coefficients
+%       - Supports 2D and 3D views
 arguments
 H_hr HR;
 mode char {mustBeMember(mode,{'POSCAR','NRPTS','HOPPING'})} = 'HOPPING';

@@ -1,4 +1,32 @@
 function H_hr = Hnanowire_gen(H_hr,Nslab,np,vacuum_mode,options)
+% HNANOWIRE_GEN Generate nanowire Hamiltonian from bulk HR object
+%
+%   H_hr = HNANOWIRE_GEN(H_hr,Nslab,np,vacuum_mode,options) constructs
+%   a nanowire Hamiltonian by repeating the unit cell along specified directions.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - Bulk HR object
+%       Nslab - Supercell dimensions [Nx,Ny,Nz] (default: [1,1,1])
+%       np - Number of parallel workers (default: 1)
+%       vacuum_mode - Vacuum boundary mode (default: 0)
+%       options - Structure with parameters:
+%           symbolic: Use symbolic representation (logical, default: false)
+%           fast: Use fast mode (logical, default: true)
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Nanowire HR object
+%
+%   NOTES:
+%       - Supports parallel computation when np > 1
+%       - Handles both sparse and dense matrix formats
+%       - Automatically generates orbital positions
+%
+%   SEE ALSO:
+%       HR, Hnum_list_wire_iz_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 %---------------------------
 arguments
     H_hr HR;

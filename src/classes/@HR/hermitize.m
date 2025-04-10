@@ -1,4 +1,26 @@
 function H_hr = hermitize(H_hr)
+% HERMITIZE Enforce Hermiticity on HR object
+%
+%   H_hr = HERMITIZE(H_hr) ensures the Hamiltonian is Hermitian by
+%   averaging with its conjugate transpose.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object to hermitize
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Hermitized HR object
+%
+%   NOTES:
+%       - Handles both symbolic and numerical components
+%       - Preserves vector hopping representation
+%       - Uses symbolic solving for coefficient matching
+%
+%   SEE ALSO:
+%       HR, isolateAll
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 H_hr_bk = H_hr';
 if H_hr.vectorhopping
 H_hr = H_hr+H_hr_bk;

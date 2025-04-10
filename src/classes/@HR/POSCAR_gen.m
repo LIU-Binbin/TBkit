@@ -1,4 +1,24 @@
 function [H_hr_bk] = POSCAR_gen(H_hr,filename,options)
+% POSCAR_GEN Generate VASP POSCAR file from HR object
+%
+%   [H_HR_BK] = POSCAR_GEN(H_HR,FILENAME,OPTIONS) generates a VASP POSCAR
+%   file from orbital information
+%
+%   Inputs:
+%       H_hr - HR object containing orbital data
+%       filename - Output filename [default: 'POSCAR_gen.vasp']
+%       options.title - File header [default: includes date]
+%       options.a_crystal_constance - Scaling factor [default: 1]
+%       options.vacuum - Flag to add vacuum [default: false]
+%       options.fin_dir_list - Fin directions [default: [1 1 0]]
+%       options.vacuum_length - Vacuum thickness [default: 10]
+%   Output:
+%       H_hr_bk - Backup of original HR object
+%
+%   Notes:
+%       - Handles vacuum layer addition
+%       - Reads element information from 'elements.txt'
+%       - Preserves original HR object
 arguments
 H_hr HR;
 filename = 'POSCAR_gen.vasp';

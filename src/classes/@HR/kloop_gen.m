@@ -1,4 +1,22 @@
 function kloop = kloop_gen(H_hr,input_mat,mode)
+%KLOOP_GEN Generate k-point loop for band structure calculations
+%   Creates k-point paths for band structure calculations in different modes.
+%
+%   Syntax:
+%       kloop = kloop_gen(H_hr)
+%       kloop = kloop_gen(H_hr,input_mat)
+%       kloop = kloop_gen(H_hr,input_mat,mode)
+%
+%   Inputs:
+%       H_hr - HR object containing reciprocal lattice vectors
+%       input_mat - Input matrix defining k-path (default predefined)
+%       mode - Generation mode ('kline' or 'kplane') (default: 'kline')
+%
+%   Outputs:
+%       kloop - Generated k-point loop in fractional coordinates
+%
+%   Example:
+%       kpath = kloop_gen(H_hr, [0 0 0; 0 0 1; 0 1 101], 'kline');
 import spglib_matlab.*;
 if nargin < 3
 mode = 'kline';

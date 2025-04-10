@@ -1,4 +1,19 @@
 function H_hr = Subsall(H_hr,mode)
+% SUBSALL Complete substitution of all symbolic variables
+%
+%   H_HR = SUBSALL(H_HR,MODE) substitutes all symbolic variables
+%
+%   Inputs:
+%       H_hr - HR object
+%       mode - Substitution mode ('num','file','sym') [default: 'num']
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - 'num' mode converts to numeric
+%       - 'file' mode loads from para.mat
+%       - 'sym' mode performs symbolic simplification
+%       - Checks for unresolved variables
 if nargin <2
 mode = 'num';
 end
@@ -12,7 +27,7 @@ HcoeL_temp = subs(H_hr.HcoeL);
 symname = symvar(HcoeL_temp);
 if ~isempty(symname)
 for i = 1:length(symname)
-warning('this varible:
+warning('this varible:');
 end
 disp(symname);
 error('please introduce the varible value above or consider use sym mode');
@@ -30,7 +45,7 @@ ScoeL_temp = subs(H_hr.ScoeL);
 symname = symvar(ScoeL_temp);
 if ~isempty(symname)
 for i = 1:length(symname)
-warning('this varible:
+warning('this varible:');
 end
 disp(symname);
 error('please introduce the varible value above or consider use sym mode');

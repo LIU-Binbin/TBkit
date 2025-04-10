@@ -1,4 +1,27 @@
 function C = gt(B,A)
+% GT Overloaded greater-than operator for HR objects
+%
+%   C = GT(B,A) implements custom functionality for the > operator
+%   when used with HR objects.
+%
+%   INPUT ARGUMENTS:
+%       B - HR object or other type
+%       A - HR object or other type
+%
+%   OUTPUT ARGUMENTS:
+%       C - Result of operation (type depends on inputs)
+%
+%   NOTES:
+%       - Handles HR-HR, HR-char, and char-HR combinations
+%       - Special cases for 'P' (POSCAR) and 'W' (Wannier) inputs
+%
+%   SEE ALSO:
+%       HR, Gen_hr, kpathgen3D
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

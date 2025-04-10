@@ -1,4 +1,26 @@
 function [EIGENCAR_slab,klist_l,kpoints_l,kpoints_name] = slab(H_hr,repeatnum,fin_dir,KPOINTS_slab,norb_enforce,fermi)
+% SLAB Construct slab system and calculate band structure
+%
+%   [EIGENCAR,KLIST_L,KPOINTS_L,KPOINTS_NAME] = SLAB(H_HR,REPEATNUM,FIN_DIR,KPOINTS_SLAB,NORB_ENFORCE,FERMI)
+%   creates slab system and calculates band structure
+%
+%   Inputs:
+%       H_hr - Bulk HR object
+%       repeatnum - Slab repetition number [default: 10]
+%       fin_dir - Fin direction [default: 2]
+%       KPOINTS_slab - K-points file [default: 'KPOINTS_slab']
+%       norb_enforce - Orbital enforcement [default: -1]
+%       fermi - Fermi level [default: 0]
+%   Outputs:
+%       EIGENCAR_slab - Eigenvalue array
+%       klist_l - K-point list
+%       kpoints_l - K-point coordinates
+%       kpoints_name - K-point names
+%
+%   Notes:
+%       - Uses cut_piece to create slab
+%       - Calculates band structure along specified path
+%       - Returns eigenvalues and k-space information
 if nargin < 6
 fermi = 0;
 end

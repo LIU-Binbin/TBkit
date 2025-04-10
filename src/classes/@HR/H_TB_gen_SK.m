@@ -1,4 +1,33 @@
 function H_hr = H_TB_gen_SK(H_hr,options)
+% H_TB_GEN_SK Generate tight-binding Hamiltonian (Slater-Koster)
+%
+%   H_hr = H_TB_GEN_SK(H_hr,options) constructs a tight-binding
+%   Hamiltonian using Slater-Koster parameters.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object with neighbor information
+%       options - Structure with parameters:
+%           level_cut: Maximum hopping level
+%           onsite: Include onsite terms (logical)
+%           per_dir: Periodic directions
+%           chiral: Chiral filtering (logical)
+%           spin: Spin filtering (logical)
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - HR object with generated Hamiltonian
+%
+%   NOTES:
+%       - Requires precomputed nn_store_smart
+%       - Uses symbolic representation for coefficients
+%       - Includes progress reporting
+%
+%   SEE ALSO:
+%       HR, set_hop
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
 H_hr HR;
 options.level_cut {mustBeInteger} = 1;

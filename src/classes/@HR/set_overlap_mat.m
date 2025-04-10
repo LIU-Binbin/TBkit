@@ -1,4 +1,20 @@
 function H_hr = set_overlap_mat(H_hr,amp,vector,mode)
+% SET_OVERLAP_MAT Set overlap matrix elements in HR object
+%
+%   H_HR = SET_OVERLAP_MAT(H_HR,AMP,VECTOR,MODE) sets overlap matrix elements
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       amp - Overlap amplitude matrix
+%       vector - Lattice vector for overlap
+%       mode - Operation mode ('set', 'add', 'sym', 'symadd')
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - Analogous to set_hop_mat but for overlap terms
+%       - Maintains separate overlap storage
+%       - Handles all storage formats
 V = H_hr.vectorL_overlap;
 switch H_hr.Type
 case 'list'

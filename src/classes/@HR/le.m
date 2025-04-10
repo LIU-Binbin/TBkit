@@ -1,4 +1,23 @@
 function C = le(A,B)
+%LE Less than or equal to operation for HR objects
+%   Specialized comparison/operation function for HR objects.
+%
+%   Syntax:
+%       C = le(A,B)
+%
+%   Inputs:
+%       A - HR object
+%       B - HR object or other compatible type
+%
+%   Outputs:
+%       C - Result of operation
+%
+%   Note:
+%       Currently supports limited operations between HR objects and
+%       other data types.
+%
+%   Example:
+%       result = le(H_hr, 'POSCAR'); % Load POSCAR into HR object
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

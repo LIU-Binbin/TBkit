@@ -1,4 +1,19 @@
 function H_hr = rmhop(H_hr,vectorL,options)
+% RMHOP Remove hopping terms from HR object
+%
+%   H_HR = RMHOP(H_HR,VECTORL,OPTIONS) removes specified hopping terms
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       vectorL - Vectors to remove (can be indices or symbolic patterns)
+%       options.enforce_list - Keep in list format [default: false]
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - Can remove by vector indices or symbolic pattern
+%       - Optionally maintains list format
+%       - Preserves remaining hopping terms
 arguments
 H_hr HR
 vectorL = [1 1];

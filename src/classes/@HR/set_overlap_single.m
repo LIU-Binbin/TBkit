@@ -1,4 +1,22 @@
 function H_hr = set_overlap_single(H_hr,amp,si,sj,vector,mode)
+% SET_OVERLAP_SINGLE Set single overlap element in HR object
+%
+%   H_HR = SET_OVERLAP_SINGLE(H_HR,AMP,SI,SJ,VECTOR,MODE) sets single overlap
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       amp - Overlap amplitude
+%       si - Initial orbital index
+%       sj - Final orbital index
+%       vector - Lattice vector for overlap
+%       mode - Operation mode ('set', 'add', 'sym', 'symadd')
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - Low-level function for overlap terms
+%       - Similar to set_hop_single but for overlaps
+%       - Provides warnings for potential overwrites
 V = H_hr.vectorL_overlap;
 if strcmp(H_hr.Type,'list')
 vector = [vector,si,sj];

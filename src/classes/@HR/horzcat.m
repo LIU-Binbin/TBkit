@@ -1,4 +1,27 @@
 function H_hr = horzcat(A,B)
+% HORZCAT Horizontal concatenation of HR objects
+%
+%   H_hr = HORZCAT(A,B) combines two HR objects horizontally,
+%   creating a block-diagonal Hamiltonian.
+%
+%   INPUT ARGUMENTS:
+%       A - First HR object or matrix
+%       B - Second HR object or matrix
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Combined HR object
+%
+%   NOTES:
+%       - Handles HR-HR, HR-matrix, and matrix-HR combinations
+%       - Preserves both numerical and symbolic components
+%
+%   SEE ALSO:
+%       HR, blkdiag
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

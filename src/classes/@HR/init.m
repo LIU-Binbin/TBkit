@@ -1,4 +1,34 @@
 function H_hr = init(H_hr,options)
+
+%INIT Initialize HR object with specified parameters
+%   Initializes an HR object with various options including level cutting,
+%   chirality, spin, and hermitization.
+%
+%   Syntax:
+%       H_hr = init(H_hr)
+%       H_hr = init(H_hr,options)
+%
+%   Inputs:
+%       H_hr - HR object to initialize
+%       options - Optional name-value pairs:
+%           level_cut - Integer cutoff level (default: 1)
+%           level_list - Specific levels to include
+%           onsite - Logical flag for onsite terms (default: false)
+%           per_dir - Periodic directions (default: [1,1,1])
+%           chiral - Logical flag for chirality (default: false)
+%           spin - Logical flag for spin (default: false)
+%           method - Initialization method ('nn_sparse' or 'nn_smart')
+%           rough - Logical flag for rough mode (default: false)
+%           hermitize - Logical flag for hermitization (default: true)
+%           vectorL - Predefined vector list
+%           fast - Logical flag for fast mode (default: false)
+%
+%   Outputs:
+%       H_hr - Initialized HR object
+%
+%   Example:
+%       H_hr = init(H_hr, 'level_cut', 2, 'chiral', true);
+
 arguments
 H_hr HR;
 options.level_cut {mustBeInteger} = 1;

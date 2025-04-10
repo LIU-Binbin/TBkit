@@ -1,4 +1,20 @@
 function [H_hr,EQL] = subs(H_hr,varargin)
+% SUBS Symbolic substitution for HR object
+%
+%   [H_HR,EQL] = SUBS(H_HR,VARARGIN) performs symbolic substitution
+%
+%   Inputs:
+%       H_hr - HR object
+%       varargin - Substitution arguments (see MATLAB subs)
+%   Outputs:
+%       H_hr - Modified HR object
+%       EQL - Equality list
+%
+%   Notes:
+%       - Supports 'all' mode for full substitution
+%       - Handles both coefficients and overlaps
+%       - Returns substitution equivalences
+%       - Automatically simplifies results
 if strcmp(varargin{end},'all')
 all_mode = true;
 nargin_check = nargin-1;

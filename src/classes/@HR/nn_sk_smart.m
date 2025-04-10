@@ -1,4 +1,21 @@
 function H_hr = nn_sk_smart(H_hr,search_range,Accuracy,Rlength_cut)
+% NN_SK_SMART Generate smart Slater-Koster neighbor information
+%
+%   H_HR = NN_SK_SMART(H_HR,SEARCH_RANGE,ACCURACY,RLENGTH_CUT) generates
+%   smart Slater-Koster neighbor tables for HR object
+%
+%   Inputs:
+%       H_hr - HR object to populate with NN information
+%       search_range - Search range vector [default: [0 0 0]]
+%       Accuracy - Rounding accuracy [default: 4]
+%       Rlength_cut - Cutoff distance [default: 15]
+%   Output:
+%       H_hr - Updated HR object with neighbor information
+%
+%   Notes:
+%       - Builds both Atom_store_smart and nn_store_smart structures
+%       - Creates Rnn distance list and mapping container
+%       - Includes progress display during generation
 if nargin <4
 Rlength_cut = 15;
 end

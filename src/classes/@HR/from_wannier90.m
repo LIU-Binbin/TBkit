@@ -1,4 +1,31 @@
 function H_hr = from_wannier90(filename,Type,options)
+% FROM_WANNIER90 Create HR object from Wannier90 output
+%
+%   H_hr = FROM_WANNIER90(filename,Type,options) imports Wannier90
+%   _hr.dat file into an HR object.
+%
+%   INPUT ARGUMENTS:
+%       filename - Path to wannier90_hr.dat file
+%       Type - Output type ('mat' or 'list')
+%       options - Structure with parameters:
+%           Accuracy: Numerical threshold for filtering
+%           overlap: Include overlap matrix (logical)
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - HR object constructed from Wannier90 data
+%
+%   NOTES:
+%       - Handles both regular and overlap Hamiltonians
+%       - Can apply degeneracy factors from NRPT_list
+%       - Filters small elements based on Accuracy
+%
+%   SEE ALSO:
+%       HR, hrdat_read
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
 filename  = 'wannier90_hr.dat';
 Type  char = 'mat';

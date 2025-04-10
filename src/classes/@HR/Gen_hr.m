@@ -1,4 +1,29 @@
 function hrdat = Gen_hr(H_hr,filename,mode)
+% GEN_HR Generate Wannier90 _hr.dat file from HR object
+%
+%   hrdat = GEN_hr(H_hr,filename,mode) writes Hamiltonian data to
+%   Wannier90 format file.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object to export
+%       filename - Output file path (default: 'wannier90_hr.dat')
+%       mode - Output mode (currently only 'hr_dat' supported)
+%
+%   OUTPUT ARGUMENTS:
+%       hrdat - File handle of generated file
+%
+%   NOTES:
+%       - Converts to dense matrix format if necessary
+%       - Includes progress reporting
+%       - Follows Wannier90 file format specification
+%
+%   SEE ALSO:
+%       HR, full
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if nargin < 3
 mode = 'hr_dat';
 end

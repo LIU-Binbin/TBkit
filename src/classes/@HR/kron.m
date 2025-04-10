@@ -1,4 +1,20 @@
 function H_hr = kron(A,B)
+%KRON Kronecker tensor product for HR objects
+%   Performs Kronecker product between HR objects or between HR and matrices.
+%
+%   Syntax:
+%       H_hr = kron(A,B)
+%
+%   Inputs:
+%       A - First operand (HR object or matrix)
+%       B - Second operand (HR object or matrix)
+%
+%   Outputs:
+%       H_hr - Resulting HR object from Kronecker product
+%
+%   Example:
+%       H_kron = kron(H1, H2); % Kronecker product of two HR objects
+%       H_kron = kron(H1, eye(2)); % Kronecker product with identity matrix
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

@@ -1,4 +1,29 @@
 function [VarInit,EQL2] =GetInit(H_hr,H_hr2,vectorL)
+% GETINIT Get initialization parameters by comparing two HR objects
+%
+%   [VarInit,EQL2] = GETINIT(H_hr,H_hr2,vectorL) compares two HR objects
+%   to generate initialization equations and variables.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - First HR object (symbolic)
+%       H_hr2 - Second HR object (numerical)
+%       vectorL - Optional vector list for selective comparison
+%
+%   OUTPUT ARGUMENTS:
+%       VarInit - Solved initialization variables
+%       EQL2 - Generated equations used for solving
+%
+%   NOTES:
+%       - Automatically simplifies and rewrites Hamiltonians
+%       - Can work with full Hamiltonians or selected vectors
+%
+%   SEE ALSO:
+%       HR, rewrite, simplify
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 H_hr = H_hr.rewrite();
 H_hr = H_hr.simplify();
 H_hr2 =H_hr2.rewrite();

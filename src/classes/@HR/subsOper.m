@@ -1,4 +1,19 @@
 function H_hr_bk = subsOper(H_hr,SymOper)
+% SUBSOPER Apply symmetry operator substitution
+%
+%   H_HR_BK = SUBSOPER(H_HR,SYMOPER) applies symmetry operation
+%
+%   Inputs:
+%       H_hr - Htrig object
+%       SymOper - Symmetry operator (Oper object)
+%   Output:
+%       H_hr_bk - Transformed HR object
+%
+%   Notes:
+%       - Handles unitary transformations
+%       - Supports conjugation and antisymmetry
+%       - Initializes object if needed
+%       - Returns backup of original
 arguments
 H_hr Htrig;
 SymOper Oper = Oper();

@@ -1,4 +1,27 @@
 function A = list(H_hr,vectorL,options)
+%LIST Display and return HR object contents in readable format
+%   Shows the contents of an HR object in a formatted table.
+%
+%   Syntax:
+%       A = list(H_hr)
+%       A = list(H_hr,vectorL)
+%       A = list(H_hr,vectorL,options)
+%
+%   Inputs:
+%       H_hr - HR object to display
+%       vectorL - Filter for specific vectors (optional)
+%       options - Optional name-value pairs:
+%           vpa - Logical flag for variable precision (default: true)
+%           digits - Number of digits to display (default: 5)
+%           numeric - Logical flag for numeric output (default: false)
+%           disp - Logical flag for display (default: true)
+%
+%   Outputs:
+%       A - Formatted array of HR object contents
+%
+%   Example:
+%       list(H_hr); % Display all contents
+%       data = list(H_hr, [0 0 0], 'digits', 3); % Get specific data
 arguments
 H_hr;
 vectorL = [0,0,0];

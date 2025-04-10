@@ -1,4 +1,21 @@
 function orbital_out = nanowire_orb(H_hr,fin_dir,vacuum_mode,options)
+% NANOWIRE_ORB Generate orbital positions for nanowire structure
+%
+%   ORBITAL_OUT = NANOWIRE_ORB(H_HR,FIN_DIR,VACUUM_MODE,OPTIONS) generates
+%   orbital positions for nanowire construction
+%
+%   Inputs:
+%       H_hr - HR object containing initial orbital information
+%       fin_dir - Fin direction vector [default: [10 10 1]]
+%       vacuum_mode - Boolean flag for vacuum mode [default: false]
+%       options.fast - Boolean flag for fast mode [default: true]
+%   Output:
+%       orbital_out - Generated orbital positions
+%
+%   Notes:
+%       - Handles both vacuum and non-vacuum modes
+%       - Supports supercell generation in non-fast mode
+%       - Processes orbital positions along specified fin directions
 arguments
 H_hr HR;
 fin_dir = [10 10 1];

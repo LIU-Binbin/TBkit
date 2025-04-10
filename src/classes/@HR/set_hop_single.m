@@ -1,4 +1,22 @@
 function H_hr = set_hop_single(H_hr,amp,hi,hj,vector,mode)
+% SET_HOP_SINGLE Set single hopping element in HR object
+%
+%   H_HR = SET_HOP_SINGLE(H_HR,AMP,HI,HJ,VECTOR,MODE) sets single hopping element
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       amp - Hopping amplitude
+%       hi - Initial orbital index
+%       hj - Final orbital index
+%       vector - Lattice vector for hopping
+%       mode - Operation mode ('set', 'add', 'sym', 'symadd')
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - Low-level function called by set_hop_mat
+%       - Handles all storage formats
+%       - Provides warnings for potential overwrites
 V = H_hr.vectorL;
 if strcmp(H_hr.Type,'list')
 vector = [vector,hi,hj];

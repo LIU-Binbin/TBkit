@@ -1,4 +1,29 @@
 function [H_hr_forHckt,maxOnsite] = HRforHckt(H_hr,options)
+
+%HRFORHCKT Prepare HR object for Hckt calculations
+%   This function processes an HR object to prepare it for Hckt calculations
+%   by applying coefficients and adjusting onsite energies.
+%
+%   Syntax:
+%       [H_hr_forHckt,maxOnsite] = HRforHckt(H_hr)
+%       [H_hr_forHckt,maxOnsite] = HRforHckt(H_hr,options)
+%
+%   Inputs:
+%       H_hr - HR object containing the Hamiltonian
+%       options - Optional name-value pairs:
+%           fast - Logical flag for fast mode (default: false)
+%           direct - Logical flag for direct mode (default: false)
+%           Accuracy - Numerical accuracy threshold (default: 1e-6)
+%           C_0 - Base onsite energy (default: 1)
+%           coefficient - Scaling coefficient (default: -1)
+%
+%   Outputs:
+%       H_hr_forHckt - Modified HR object ready for Hckt calculations
+%       maxOnsite - Maximum onsite energy value
+%
+%   Example:
+%       [H_prepared, maxE] = HRforHckt(myHR, 'coefficient', -0.5);
+
 arguments
 H_hr HR;
 options.fast = false

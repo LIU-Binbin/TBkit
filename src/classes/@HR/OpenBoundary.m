@@ -1,4 +1,19 @@
 function H_hr = OpenBoundary(H_hr,OBC_list)
+% OPENBOUNDARY Apply open boundary conditions to HR object
+%
+%   H_HR = OPENBOUNDARY(H_HR,OBC_LIST) applies open boundary conditions
+%   along specified directions
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       OBC_list - List of directions to open [default: zeros]
+%   Output:
+%       H_hr - Modified HR object with open boundaries
+%
+%   Notes:
+%       - Preserves original matrix type
+%       - No effect if OBC_list is all zeros
+%       - Forces to matrix form temporarily during processing
 arguments
 H_hr ;
 OBC_list = zeros(1,H_hr.Dim);

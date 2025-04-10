@@ -1,4 +1,19 @@
 function H_hr = simplify(H_hr,Accuracy)
+% SIMPLIFY Simplify HR object by removing negligible terms
+%
+%   H_HR = SIMPLIFY(H_HR,ACCURACY) simplifies HR object contents
+%
+%   Inputs:
+%       H_hr - HR object to simplify
+%       Accuracy - Threshold for term removal [default: 1e-6]
+%   Output:
+%       H_hr - Simplified HR object
+%
+%   Notes:
+%       - Removes terms below accuracy threshold
+%       - Handles vector hopping terms specially
+%       - Works on both numeric and symbolic coefficients
+%       - Maintains storage format consistency
 if nargin < 2
 Accuracy = 1e-6;
 end

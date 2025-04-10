@@ -1,4 +1,20 @@
 function Coeff = TBSK_Coeff_gen(L_1,L_2,m_1,m_2,l,m,n,options)
+% TBSK_COEFF_GEN Generate Slater-Koster coefficients
+%
+%   COEFF = TBSK_COEFF_GEN(L_1,L_2,M_1,M_2,L,M,N,OPTIONS) calculates SK coefficients
+%
+%   Inputs:
+%       L_1,L_2 - Angular momentum quantum numbers
+%       m_1,m_2 - Magnetic quantum numbers
+%       l,m,n - Direction cosines
+%       options.sym_mode - Symbolic mode [default: false]
+%   Output:
+%       Coeff - Slater-Koster coefficients
+%
+%   Notes:
+%       - Handles s, p, and d orbitals
+%       - Supports both numeric and symbolic output
+%       - Implements standard SK parameterization
 arguments
 L_1 double{mustBeInteger};
 L_2 double{mustBeInteger};

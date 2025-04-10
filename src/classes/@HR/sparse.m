@@ -1,4 +1,18 @@
 function H_hr = sparse(H_hr)
+% SPARSE Convert HR object to sparse storage format
+%
+%   H_HR = SPARSE(H_HR) converts HR object to sparse format
+%
+%   Input:
+%       H_hr - HR object to convert
+%   Output:
+%       H_hr - HR object in sparse format
+%
+%   Notes:
+%       - Only converts numeric terms
+%       - Clears symbolic coefficients
+%       - Maintains all hopping information
+%       - No effect if already in sparse format
 if strcmp(H_hr.Type,'sparse')
 return;
 end

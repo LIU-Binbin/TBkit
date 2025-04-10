@@ -1,4 +1,30 @@
 function varargout = Green_prepare(H_hrz,principle_layer,fin_dir)
+% GREEN_PREPARE Prepare Hamiltonian blocks for Green's function calculation
+%
+%   varargout = GREEN_PREPARE(H_hrz,principle_layer,fin_dir) generates
+%   Hamiltonian blocks needed for Green's function calculations.
+%
+%   INPUT ARGUMENTS:
+%       H_hrz - HR object for z-direction Hamiltonian
+%       principle_layer - Number of principle layers (default: 3)
+%       fin_dir - Termination direction (default: 2)
+%
+%   OUTPUT ARGUMENTS (varargout):
+%       1: H00 - Onsite block
+%       2: H01 - Off-diagonal block
+%       3: H_hrz_green - HR object with prepared blocks
+%
+%   NOTES:
+%       - Handles both matrix and sparse storage formats
+%       - Uses kron product for layer expansion
+%
+%   SEE ALSO:
+%       HR, Poly_priciplayer_mat_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if nargin <3
 fin_dir = 2;
 end
