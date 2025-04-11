@@ -14,12 +14,17 @@ function varargout = dos_plot_set(EIGENCAR_list, WEIGHTCAR_list, Name_list, Ecut
     % 
 
     % Default colormap setup (if not provided in options)
-    if ~isfield(options, 'cmap')
+    arguments
+        EIGENCAR_list
+        WEIGHTCAR_list
+        Name_list
+        Ecut
+        titlestring
         options.cmap = @jet;
     end
 
     % Initialize the figure
-    [~, ax] = create_figure('Position', [0.2, 0.2, 0.2, 0.6]);
+    [~, ax] = Figs('Position', [0.2, 0.2, 0.2, 0.6]);
     
     % Number of datasets
     Nname = size(Name_list, 1);
@@ -30,7 +35,7 @@ function varargout = dos_plot_set(EIGENCAR_list, WEIGHTCAR_list, Name_list, Ecut
     % Plot each dataset with the corresponding color
     for i = 1:Nname
         plot(ax, WEIGHTCAR_list(:, i), EIGENCAR_list(:, i), ...
-            'Color', cmap(i, :), 'LineWidth', 2.0, 'DisplayName', Name_list{i});
+            'Color', cmap(i, :), 'LineWidth', 2.0, 'DisplayName', Name_list(i,:));
     end
 
     % Set plot properties

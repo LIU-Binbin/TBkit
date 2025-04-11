@@ -3,7 +3,8 @@ arguments
     m = 1
     n = 1
     options.FontName = 'Helvetica'
-    options.FigSize {mustBeMember(options.FigSize, ["large", "normal"])} = "large"
+    options.FigSize {mustBeMember(options.FigSize, ["large", "normal"])} = "large";
+    options.Position = [];
 end
 %%
 fig_size = [10.5 9.9]; % 3x2 A4 size
@@ -19,10 +20,20 @@ if options.FigSize == "large"
 elseif options.FigSize == "normal"
 
 end
+
+if isempty(options.Position)
+    Position = [fig_bias fig_size(1)*n fig_size(2)*m];
+    Unit = 'centimeters';
+else
+    Unit = 'normalized';
+    Position = options.Position;
+    % ax_size = [7 7]; 
+    ax_bias = [0 0];
+end
 %%
 fig = figure();
-set(fig,'unit', 'centimeters',...
-    'position', [fig_bias fig_size(1)*n fig_size(2)*m],...
+set(fig,'unit',Unit ,...
+    'position',Position ,...
     'Color', 'w');
 
 p = 0;
@@ -34,10 +45,12 @@ for i = 1:m
         p = p+1;
         axes(i,j) = subplot(m,n,p);
         hold(axes(i,j), "on")
-        set(axes(i,j), 'unit', 'centimeters', 'Position',...
-            [ax_bias(1) + fig_size(1)*(j-1),...
-             ax_bias(2) + fig_size(2)*(m-i),...
-             ax_size]);
+        if strcmp(Unit,'centimeters')
+            set(axes(i,j), 'unit', 'centimeters', 'Position',...
+                [ax_bias(1) + fig_size(1)*(j-1),...
+                ax_bias(2) + fig_size(2)*(m-i),...
+                ax_size]);
+        end
         set(axes(i,j), 'LineWidth',1,'Box','on', 'FontName', options.FontName)
 
         if options.FigSize == "large"

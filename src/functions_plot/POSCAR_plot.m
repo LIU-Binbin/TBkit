@@ -15,7 +15,7 @@ arguments
     options.scale = 1;
     options.atomscale = 0.3;
     options.fast = false;
-    options.view = [30,60];
+    options.view = [40,10];
     options.tight = true;
 end
 % 

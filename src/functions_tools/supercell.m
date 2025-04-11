@@ -63,7 +63,7 @@ function [Rm, sites] = supercell(Ns, Rm, sites, Atom_name, Atom_num, findir, fil
     
     % Check all candidate vectors to see if they are inside the supercell
     for ivec = 1:length(sc_cands)
-        tmp_red = park.to_red_sc(sc_cands(ivec,:), Ns);  % Convert to reduced coordinates
+        tmp_red = to_red_sc(sc_cands(ivec,:), Ns);  % Convert to reduced coordinates
         inside = all(tmp_red >= -eps_shift & tmp_red < 1 - eps_shift);  % Check if inside the unit cell
         
         if inside
@@ -79,23 +79,23 @@ function [Rm, sites] = supercell(Ns, Rm, sites, Atom_name, Atom_num, findir, fil
     
     %% Compute New Atomic Positions for Supercell
     countnum = 0;
+    count = 0;
     for elementseq = 1:length(Atom_num)
         for n = 1:Atom_num(elementseq)
             countnum = countnum + 1;
             Rpc = [sites(countnum).rc1, sites(countnum).rc2, sites(countnum).rc3];  % Original position
-            
             % Loop over each supercell vector
             for icur_sc_vec = 1:num_sc
+                count = count + 1;
                 cur_sc_vec = sc_vec(icur_sc_vec, :);  % Current supercell translation vector
-                Rsc = park.to_red_sc(Rpc + cur_sc_vec, Ns);  % Compute reduced coordinates for new position
+                Rsc = to_red_sc(Rpc + cur_sc_vec, Ns);  % Compute reduced coordinates for new position
                 Rsc = round(Rsc * 10^8) / 10^8;  % Round to avoid floating point errors
-                
                 % Ensure atomic coordinates stay within [0, 1)
                 Rsc = mod(Rsc, 1);
-                sites_s(countnum).rc1 = Rsc(1);
-                sites_s(countnum).rc2 = Rsc(2);
-                sites_s(countnum).rc3 = Rsc(3);
-                sites_s(countnum).name = Atom_name(elementseq);
+                sites_s(count).rc1 = Rsc(1);
+                sites_s(count).rc2 = Rsc(2);
+                sites_s(count).rc3 = Rsc(3);
+                sites_s(count).name = Atom_name(elementseq);
             end
         end
     end

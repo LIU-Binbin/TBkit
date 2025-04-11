@@ -28,6 +28,7 @@ function [klist_cart, klist_l, klist_frac, kpoints_l, kpoints_name] = kpathgen3D
         [kpoints, nodes, kpoints_name] = KPOINTS_read(kpoints);  % Read nodes if kpoints are given
     end
     % bug
+    % dim = length(Rm);
     dim = max(size(Rm));
     clear length
     %

@@ -25,7 +25,7 @@ function [WEIGHTCAR_struct_cell, Name_list, width] = WEIGHTCAR_read_dir(mode)
                 end
             end
             % Remove the initial empty entry in Name_list
-            Name_list(1) = [];
+            % Name_list(1) = [];
             % Output the 3D density data structure
             WEIGHTCAR_struct_cell = Pdensity;
             [~, width] = size(Pdensity(:, :, 1)); % Get the width of the data for later use
