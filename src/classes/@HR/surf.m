@@ -1,4 +1,31 @@
 function [DOSCAR_l,DOSCAR_b,DOSCAR_r,w_list,klist_l,kpoints_l,kpoints_name] = surf(H_hr,w_range,fin_dir,KPOINTS_surf,principle_layer,eta,fermi,mode)
+% SURF Calculate surface spectral properties
+%
+%   [DOSCAR_L,DOSCAR_B,DOSCAR_R,WLIST,KLIST_L,KPOINTS_L,KPOINTS_NAME] = SURF(...)
+%   computes surface density of states and spectral properties
+%
+%   Inputs:
+%       H_hr - Bulk HR object
+%       w_range - Energy range [default: [-1,1,100]]
+%       fin_dir - Fin direction [default: 2]
+%       KPOINTS_surf - K-points file [default: 'KPOINTS_surf']
+%       principle_layer - Principle layers [default: 2]
+%       eta - Broadening [default: 0.01]
+%       fermi - Fermi level [default: 0]
+%       mode - Calculation mode [default: 'Green_iter']
+%   Outputs:
+%       DOSCAR_l - Left surface DOS
+%       DOSCAR_b - Bulk DOS
+%       DOSCAR_r - Right surface DOS
+%       w_list - Energy list
+%       klist_l - K-point list
+%       kpoints_l - K-point coordinates
+%       kpoints_name - K-point names
+%
+%   Notes:
+%       - Uses Green's function methods
+%       - Handles both left and right surfaces
+%       - Returns k-path information
 if nargin < 8
 mode = 'Green_iter';
 end

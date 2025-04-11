@@ -1,4 +1,18 @@
 function H_hr = mtimes(A,B)
+% MTIMES Overloaded matrix multiplication for HR objects
+%
+%   H_HR = MTIMES(A,B) implements matrix multiplication (A*B) for HR objects
+%
+%   Inputs:
+%       A - HR object or numeric matrix
+%       B - HR object or numeric matrix
+%   Output:
+%       H_hr - Resulting HR object after multiplication
+%
+%   Notes:
+%       - Handles three cases: HR*HR, HR*numeric, numeric*HR
+%       - Checks WAN_NUM compatibility for HR*HR case
+%       - Supports both numeric and symbolic operations
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

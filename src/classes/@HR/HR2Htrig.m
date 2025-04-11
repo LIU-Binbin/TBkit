@@ -1,4 +1,33 @@
 function H_htrig = HR2Htrig(H_hr,options)
+
+% HR2HTRIG Convert HR object to Htrig (trigonometric) representation
+%
+%   H_htrig = HR2HTRIG(H_hr,options) converts a real-space Hamiltonian
+%   to trigonometric (Bloch) representation.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object to convert
+%       options - Conversion options:
+%           sym: Use symbolic math (logical, default: true)
+%           num: Force numerical conversion (logical, default: false)
+%           fast: Use fast conversion mode (logical, default: false)
+%           direct: Direct conversion (logical, default: false)
+%           Type: Output type ('exp','sincos','mat','list')
+%
+%   OUTPUT ARGUMENTS:
+%       H_htrig - Resulting Htrig object
+%
+%   NOTES:
+%       - Supports multiple representation formats
+%       - Includes progress reporting for large systems
+%
+%   SEE ALSO:
+%       Htrig, HR2HK
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
 H_hr HR;
 options.sym =true;

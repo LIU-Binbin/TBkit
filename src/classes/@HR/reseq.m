@@ -1,4 +1,21 @@
 function H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)
+% RESEQ Reorder Wannier functions and hopping terms in HR object
+%
+%   H_HR = RESEQ(H_HR,WAN_LIST,NRPT_LIST,NRPT_LIST_S) reorders Wannier functions
+%   and hopping terms in the HR object
+%
+%   Inputs:
+%       H_hr - HR object to reorder
+%       wan_list - List of Wannier indices to keep [default: ':']
+%       nrpt_list - List of hopping terms to keep [default: ':']
+%       nrpt_list_S - List of overlap terms to keep [default: ':']
+%   Output:
+%       H_hr - Reordered HR object
+%
+%   Notes:
+%       - Maintains consistency across all object properties
+%       - Handles 'sparse', 'list', and 'mat' storage types
+%       - Preserves overlap terms when present
 if nargin < 3
 nrpt_list = ':';
 end

@@ -1,4 +1,23 @@
 function H_hr = unfold_hr(H_hr,Ns,options)
+%UNFOLD_HR Unfold supercell Hamiltonian to primitive cell
+%
+%   H_HR = UNFOLD_HR(H_HR, NS, OPTIONS) transforms supercell Hamiltonian
+%   to primitive cell representation
+%
+%   Inputs:
+%       H_hr       - HR object in supercell representation
+%       Ns         - Supercell transformation matrix (3×3)
+%       options.Accuracy    - Numerical tolerance (default = 1e-6)
+%       options.force_list  - Force list storage format (default = false)
+%       options.orb_idL     - Optional orbital ID list
+%
+%   Output:
+%       H_hr - HR object in primitive cell representation
+%
+%   Note:
+%       Requires det(Ns) to be integer and positive
+%
+%   See also HR.FOLD_HR, UNFOLD_ORB
 arguments
 H_hr HR;
 Ns double = eye(3);

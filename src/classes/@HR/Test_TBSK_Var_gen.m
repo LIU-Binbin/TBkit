@@ -1,4 +1,18 @@
 function EQ_list = Test_TBSK_Var_gen(testmode)
+%TEST_TBSK_VAR_GEN Test function for TBSK_Var_gen
+%
+%   EQ_LIST = TEST_TBSK_VAR_GEN(TESTMODE) verifies the correctness of TBSK_Var_gen
+%   by comparing generated symbolic expressions with expected forms.
+%
+%   Input:
+%       testmode - Testing mode selector (default = 1)
+%                  1: Tests with L_2 >= L_1
+%                  Other: Tests all combinations
+%
+%   Output:
+%       EQ_list  - List of logical equations showing equality comparisons
+%
+%   See also TBSK_VAR_GEN, HR.TBSK_Var_gen_single
 arguments
     testmode =1 ;
 end

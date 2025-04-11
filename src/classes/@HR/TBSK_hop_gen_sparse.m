@@ -1,4 +1,22 @@
 function [TBSK_hop,Coff] =  TBSK_hop_gen_sparse(site1,site2,Rij_cart,Rlength,nn_level)
+% TBSK_HOP_GEN_SPARSE Generate sparse Slater-Koster hopping terms
+%
+%   [TBSK_HOP,COFF] = TBSK_HOP_GEN_SPARSE(SITE1,SITE2,RIJ_CART,RLENGTH,NN_LEVEL)
+%   calculates SK hopping terms in sparse format
+%
+%   Inputs:
+%       site1, site2 - Site information structures
+%       Rij_cart - Cartesian vector between sites
+%       Rlength - Distance between sites
+%       nn_level - Neighbor level
+%   Outputs:
+%       TBSK_hop - Symbolic hopping term
+%       Coff - SK coefficients
+%
+%   Notes:
+%       - Handles s and p orbitals
+%       - Returns symbolic expression
+%       - Filters small coefficients
 Rlmn = Rij_cart/Rlength;
 orb1 = site1.orb   ;
 orb2 = site2.orb   ;

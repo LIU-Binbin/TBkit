@@ -1,4 +1,31 @@
 function H_hr = GenfromOrth(H_hr,seed_r,seed_i,Accuracy,options)
+% GENFROMORTH Generate Hamiltonian from orthogonal vector representation
+%
+%   H_hr = GENFROMORTH(H_hr,seed_r,seed_i,Accuracy,options) constructs
+%   Hamiltonian coefficients from orthogonal vector representation.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object with vector hopping data
+%       seed_r - Base name for real symbolic variables
+%       seed_i - Base name for imaginary symbolic variables
+%       Accuracy - Numerical accuracy for rounding
+%       options - Structure with parameters:
+%           fromCvectorL: Use combined vector (logical)
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - Modified HR object with generated coefficients
+%
+%   NOTES:
+%       - Converts vector hopping representation to symbolic coefficients
+%       - Uses vpa for numerical accuracy control
+%
+%   SEE ALSO:
+%       HR, vpa
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
 H_hr HR;
 seed_r = 'gamma__r_';

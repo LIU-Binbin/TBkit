@@ -1,4 +1,20 @@
 function H_hr = set_hop_mat(H_hr,amp,vector,mode)
+% SET_HOP_MAT Set hopping matrix elements in HR object
+%
+%   H_HR = SET_HOP_MAT(H_HR,AMP,VECTOR,MODE) sets hopping matrix elements
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       amp - Hopping amplitude matrix
+%       vector - Lattice vector for hopping
+%       mode - Operation mode ('set', 'add', 'sym', 'symadd')
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - Handles all storage formats ('sparse', 'list', 'mat')
+%       - Supports both numeric and symbolic operations
+%       - Automatically adds new vectors if needed
 V = H_hr.vectorL;
 switch H_hr.Type
 case 'list'

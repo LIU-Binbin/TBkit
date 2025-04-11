@@ -1,4 +1,19 @@
 function H_hr = mpower(A,B)
+% MPOWER Overloaded power operator for HR objects
+%
+%   H_HR = MPOWER(A,B) implements matrix power operation for HR objects
+%
+%   Inputs:
+%       A - HR object or numeric scalar
+%       B - HR object or numeric scalar
+%   Output:
+%       H_hr - Resulting HR object after power operation
+%
+%   Notes:
+%       - Only supports scalar numeric exponents
+%       - Implements both A^B and B^A cases for HR objects
+%       - Throws error for invalid input combinations
+
 if isa(A,'HR') && isa(B,'numeric')
 if length(B) >1
 error('only support a number');

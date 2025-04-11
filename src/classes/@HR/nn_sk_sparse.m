@@ -1,4 +1,21 @@
 function H_hr = nn_sk_sparse(H_hr,search_range,Accuracy,Rlength_cut)
+% NN_SK_SPARSE Generate sparse Slater-Koster neighbor information
+%
+%   H_HR = NN_SK_SPARSE(H_HR,SEARCH_RANGE,ACCURACY,RLENGTH_CUT) generates
+%   sparse Slater-Koster neighbor tables for HR object
+%
+%   Inputs:
+%       H_hr - HR object to populate with NN information
+%       search_range - Search range vector [default: [0 0 0]]
+%       Accuracy - Rounding accuracy [default: 4]
+%       Rlength_cut - Cutoff distance [default: 5]
+%   Output:
+%       H_hr - Updated HR object with neighbor information
+%
+%   Notes:
+%       - Uses sparse matrix storage format
+%       - More memory-efficient for large systems
+%       - Includes progress display during generation
 MAX_NN_LENGTH = 5000*5000*9;
 if nargin <4
 Rlength_cut = 5;

@@ -1,4 +1,19 @@
 function Hout = printout(H_hr,print_list,mode)
+% PRINTOUT Display or return HR object contents
+%
+%   HOUT = PRINTOUT(H_HR,PRINT_LIST,MODE) displays or returns HR contents
+%
+%   Inputs:
+%       H_hr - HR object to display
+%       print_list - Indices of terms to display [default: all]
+%       mode - Display mode [default: 'HcoeL']
+%   Output:
+%       Hout - Requested matrix data
+%
+%   Notes:
+%       - Modes: 'HnumL-sum', 'HnumL', 'HcoeL', 'HcoeL-sum'
+%       - Can display individual terms or summed matrices
+%       - Shows vector information with matrices
 if nargin < 2
 print_list = 1:H_hr.NRPTS;
 end

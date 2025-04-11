@@ -1,4 +1,22 @@
 function H_hr = tbbox_in_gen(H_hr,options)
+% TBBOX_IN_GEN Generate input file for tight-binding calculations
+%
+%   H_HR = TBBOX_IN_GEN(H_HR,OPTIONS) creates tbbox.in input file
+%
+%   Inputs:
+%       H_hr - HR object
+%       options.Accuracy - Rounding accuracy [default: 1e-6]
+%       options.OperL - Operator list [default: []]
+%       options.hr - Generate hr file [default: true]
+%       options.wan - Wannier mode [default: false]
+%       options.lda - LDA mode [default: true]
+%   Output:
+%       H_hr - Processed HR object
+%
+%   Notes:
+%       - Creates tbbox.in and hr.dat files
+%       - Handles SOC and non-SOC cases
+%       - Uses spglib for symmetry detection
 arguments
 H_hr HR;
 options.Accuracy = 1e-6;

@@ -1,4 +1,19 @@
 function H_hr = mrdivide(A,B)
+% MRDIVIDE Overloaded right matrix division for HR objects
+%
+%   H_HR = MRDIVIDE(A,B) implements right matrix division (A/B) for HR objects
+%
+%   Inputs:
+%       A - HR object or numeric matrix
+%       B - HR object or numeric matrix
+%   Output:
+%       H_hr - Resulting HR object after division
+%
+%   Notes:
+%       - Handles three cases: HR/HR, HR/numeric, numeric/HR
+%       - Checks WAN_NUM compatibility for HR/HR case
+%       - Supports both numeric and symbolic operations
+
 if isa(A,'HR') && isa(B,'HR')
 H_hr1 = A;
 H_hr2 = B;

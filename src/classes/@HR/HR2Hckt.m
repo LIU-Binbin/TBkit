@@ -1,4 +1,33 @@
 function HcktObj = HR2Hckt(H_hr,options,options_homecell,options_para)
+% HR2HCKT Convert HR object to Hckt circuit representation
+%
+%   HcktObj = HR2HCKT(H_hr,options,options_homecell,options_para)
+%   converts a tight-binding Hamiltonian to an equivalent circuit model.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object to convert
+%       options - Main conversion options:
+%           title: Circuit title (default: 'HcktFromHR')
+%           dim: Dimension (default: 2)
+%           autominus: Auto-adjust signs (logical, default: false)
+%           magnitude: Component magnitude ('p','n','u','m')
+%           mode: Conversion mode ('real' or 'sigma')
+%       options_homecell - Home cell options
+%       options_para - Parameter options
+%
+%   OUTPUT ARGUMENTS:
+%       HcktObj - Resulting circuit object
+%
+%   NOTES:
+%       - Supports both real and Pauli matrix representations
+%       - Handles different component magnitude scales
+%
+%   SEE ALSO:
+%       Hckt, Subckt
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 arguments
 H_hr
 options.title = 'HcktFromHR';

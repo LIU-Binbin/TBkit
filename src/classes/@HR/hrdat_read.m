@@ -1,4 +1,30 @@
 function [dataArray,NRPT_list,NRPTS,NUM_WAN]=hrdat_read(filename)
+
+% HRDAT_READ Read Wannier90 _hr.dat file
+%
+%   [dataArray,NRPT_list,NRPTS,NUM_WAN] = HRDAT_READ(filename)
+%   parses a Wannier90 Hamiltonian file.
+%
+%   INPUT ARGUMENTS:
+%       filename - Path to _hr.dat file (default: 'wannier90_hr.dat')
+%
+%   OUTPUT ARGUMENTS:
+%       dataArray - Raw data array
+%       NRPT_list - Degeneracy factors
+%       NRPTS - Number of R-points
+%       NUM_WAN - Number of Wannier functions
+%
+%   NOTES:
+%       - Handles file formatting variations
+%       - Reads both header and hopping data
+%
+%   SEE ALSO:
+%       HR, from_wannier90
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 if nargin < 1
 filename = 'wannier90_hr.dat';
 end

@@ -1,4 +1,19 @@
 function Hsym = sym(H_hr,options)
+% SYM Generate symbolic Hamiltonian representation
+%
+%   HSYM = SYM(H_HR,OPTIONS) creates symbolic Hamiltonian
+%
+%   Inputs:
+%       H_hr - HR object
+%       options.cartesian - Use cartesian coordinates [default: true]
+%       options.simple - Skip tij multiplication [default: false]
+%   Output:
+%       Hsym - Symbolic Hamiltonian matrix
+%
+%   Notes:
+%       - Converts to full matrix if sparse
+%       - Handles both cartesian and fractional coordinates
+%       - Includes orbital symmetry factors
 arguments
 H_hr HR;
 options.cartesian = true;

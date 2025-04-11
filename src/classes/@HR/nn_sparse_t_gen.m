@@ -1,4 +1,23 @@
 function [nn_sparse_temp,Rnn_list] = nn_sparse_t_gen(site1,site2,Rm,search_rangex,search_rangey,search_rangez,Accuracy,Rlength_cut)
+% NN_SPARSE_T_GEN Generate sparse neighbor table entry
+%
+%   [NN_SPARSE_TEMP,RNN_LIST] = NN_SPARSE_T_GEN(SITE1,SITE2,RM,...)
+%   generates a single sparse neighbor table entry
+%
+%   Inputs:
+%       site1, site2 - Site information structures
+%       Rm - Lattice vectors
+%       search_rangex/y/z - Search ranges in each dimension
+%       Accuracy - Rounding accuracy
+%       Rlength_cut - Cutoff distance
+%   Outputs:
+%       nn_sparse_temp - Sparse matrix entry data
+%       Rnn_list - List of neighbor distances
+%
+%   Notes:
+%       - Helper function for nn_sk_sparse
+%       - Uses compact numeric storage format
+%       - Filters neighbors by cutoff distance
 Rc1 = [site1.rc1,site1.rc2,site1.rc3];
 Rc2 = [site2.rc1,site2.rc2,site2.rc3];
 R_fractional_diff = -(Rc1 - Rc2);

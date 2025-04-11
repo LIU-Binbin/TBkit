@@ -1,4 +1,23 @@
 function [sc_orb,sc_vec,sc_elementL,sc_quantumL] = supercell_orb(H_hr,Ns,Accuracy)
+% SUPERCELL_ORB Generate supercell orbital positions
+%
+%   [SC_ORB,SC_VEC,SC_ELEMENTL,SC_QUANTUML] = SUPERCELL_ORB(H_HR,NS,ACCURACY)
+%   calculates supercell orbital positions
+%
+%   Inputs:
+%       H_hr - Original HR object
+%       Ns - Supercell transformation matrix [default: eye(Dim)]
+%       Accuracy - Rounding accuracy [default: 1e-6]
+%   Outputs:
+%       sc_orb - Supercell orbital positions
+%       sc_vec - Supercell vectors
+%       sc_elementL - Element list
+%       sc_quantumL - Quantum numbers
+%
+%   Notes:
+%       - Validates supercell matrix
+%       - Handles fractional coordinates
+%       - Maintains periodic boundary conditions
 arguments
 H_hr HR;
 Ns double = eye(H_hr.Dim);

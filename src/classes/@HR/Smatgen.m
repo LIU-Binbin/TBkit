@@ -1,4 +1,21 @@
 function [H_hr,Smat] = Smatgen(H_hr,R,Accuracy)
+% SMATGEN Generate S-matrix for HR object
+%
+%   [H_HR,Smat] = SMATGEN(H_HR,R,ACCURACY) generates S-matrix transformation
+%
+%   Inputs:
+%       H_hr - Htrig object
+%       R - Transformation matrix
+%       Accuracy - Rounding accuracy [default: 6]
+%   Outputs:
+%       H_hr - Modified HR object
+%       Smat - Generated S-matrix
+%
+%   Notes:
+%       - Handles symbolic transformations
+%       - Supports 1D, 2D and 3D systems
+%       - Maintains basis consistency
+%       - Can switch between numeric/symbolic modes
 arguments
 H_hr Htrig;
 R  ;

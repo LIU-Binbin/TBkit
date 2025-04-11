@@ -1,4 +1,40 @@
 classdef HR <TBkit & matlab.mixin.CustomDisplay
+    
+    % HR Tight-binding Hamiltonian class with real-space representation
+%
+%   The HR class represents tight-binding Hamiltonians in real space,
+%   supporting both numerical and symbolic coefficients, multiple storage
+%   formats, and various operations including symmetry applications,
+%   k-space conversions, and nanostructure generation.
+%
+%   PROPERTIES:
+%       vectorL - R-vector list
+%       HnumL - Numerical Hamiltonian
+%       HcoeL - Symbolic Hamiltonian
+%       Type - Storage type ('mat','list','sparse')
+%       overlap - Include overlap matrix (logical)
+%
+%   METHODS:
+%       Construction:
+%           from_POSCAR_SE, from_wannier90, from_Hstruct
+%       Manipulation:
+%           set_hop, add_empty_one, reseq, rewrite
+%       Conversion:
+%           HR2HK, HR2Htrig, HR2Hckt
+%       Symmetry:
+%           symmetrize, dualize, hermitize
+%       Visualization:
+%           show, printout
+%       Nanostructures:
+%           Hnanowire_gen, slab, surf
+%
+%   SEE ALSO:
+%       HK, Htrig, Hckt
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 properties
 vectorL ;
 HnumL   ;

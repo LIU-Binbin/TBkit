@@ -1,4 +1,25 @@
 function H_hr = supercell(H_hr,Ns,filename,Rm,sites,Atom_name,Atom_num,findir)
+% SUPERCELL Generate supercell structure
+%
+%   H_HR = SUPERCELL(H_HR,NS,FILENAME,RM,SITES,ATOM_NAME,ATOM_NUM,FINDIR)
+%   creates supercell structure and POSCAR file
+%
+%   Inputs:
+%       H_hr - Original HR object
+%       Ns - Supercell matrix [default: eye(3)]
+%       filename - Output filename [default: 'POSCAR_super']
+%       Rm - Lattice vectors [default: from H_hr]
+%       sites - Atomic sites [default: from H_hr]
+%       Atom_name - Atom names [default: from H_hr]
+%       Atom_num - Atom counts [default: from H_hr]
+%       findir - Fin direction [default: [0,0,0]]
+%   Output:
+%       H_hr - Updated HR object with supercell
+%
+%   Notes:
+%       - Handles VASP POSCAR format
+%       - Supports finite direction modifications
+%       - Validates supercell volume
 Accuracy=8;
 if nargin < 4
 Rm = H_hr.Rm;

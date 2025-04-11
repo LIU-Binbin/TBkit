@@ -1,4 +1,18 @@
 function H_hr = project(H_hr,BASIS_MAT)
+% PROJECT Project HR object onto new basis
+%
+%   H_HR = PROJECT(H_HR,BASIS_MAT) projects Hamiltonian onto new basis
+%
+%   Inputs:
+%       H_hr - HR object to transform
+%       BASIS_MAT - Transformation matrix
+%   Output:
+%       H_hr - Projected HR object
+%
+%   Notes:
+%       - Changes WAN_NUM to size of BASIS_MAT
+%       - Handles both numeric and symbolic coefficients
+%       - Currently only supports 'mat' type storage
 new_WAN_NUM = size(BASIS_MAT,1);
 BASIS_MAT_prime = BASIS_MAT';
 switch H_hr.Type

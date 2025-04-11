@@ -1,4 +1,32 @@
 function Hnum_list_wire_iz =  Hnum_list_wire_iz_gen(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WAN_NUM,WAN_NUM_x,WAN_NUM_y,Nslab,Type)
+% HNUM_LIST_WIRE_IZ_GEN Generate wire Hamiltonian block for specific z-index
+%
+%   Hnum_list_wire_iz = HNUM_LIST_WIRE_IZ_GEN(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WAN_NUM,WAN_NUM_x,WAN_NUM_y,Nslab,Type)
+%   constructs a single block of the nanowire Hamiltonian for a given z-index.
+%
+%   INPUT ARGUMENTS:
+%       Hnum_list_xy_iz - Hamiltonian blocks for xy plane
+%       vertor_list_xy_iz - Vector list for xy plane
+%       iz - Current z-index
+%       WAN_NUM - Number of Wannier orbitals
+%       WAN_NUM_x - Number of orbitals along x
+%       WAN_NUM_y - Number of orbitals along y
+%       Nslab - Supercell dimensions
+%       Type - Storage type ('sparse' or 'mat')
+%
+%   OUTPUT ARGUMENTS:
+%       Hnum_list_wire_iz - Generated Hamiltonian block
+%
+%   NOTES:
+%       - Handles both sparse and dense matrix formats
+%       - Includes progress reporting for dense matrices
+%
+%   SEE ALSO:
+%       HR, Hnanowire_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 Hnum_list_wire_iz = zeros(WAN_NUM_y,WAN_NUM_y);
 [NRPTS_xy,~] = size(vertor_list_xy_iz);
 [unique_y,unique_label_y]= unique(vertor_list_xy_iz(:,2),'rows');

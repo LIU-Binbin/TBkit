@@ -1,4 +1,22 @@
 function H_hr = set_hop(H_hr,amp,hi,hj,vector_list,mode)
+% SET_HOP Set hopping terms in HR object
+%
+%   H_HR = SET_HOP(H_HR,AMP,HI,HJ,VECTOR_LIST,MODE) sets hopping terms
+%
+%   Inputs:
+%       H_hr - HR object to modify
+%       amp - Hopping amplitude(s)
+%       hi - Initial orbital index(es)
+%       hj - Final orbital index(es)
+%       vector_list - List of lattice vectors
+%       mode - Operation mode ('set', 'add', 'sym', 'symadd')
+%   Output:
+%       H_hr - Modified HR object
+%
+%   Notes:
+%       - High-level interface for setting hoppings
+%       - Handles scalar and matrix inputs
+%       - Dispatches to appropriate lower-level functions
 arguments
 H_hr;
 amp;

@@ -1,4 +1,23 @@
 function [Rnn_list,nn_smart_t] = nn_smart_t_gen(Atom_smart_t,Rm,search_rangex,search_rangey,search_rangez,Accuracy,Rlength_cut)
+% NN_SMART_T_GEN Generate smart neighbor table entry
+%
+%   [RNN_LIST,NN_SMART_T] = NN_SMART_T_GEN(ATOM_SMART_T,RM,SEARCH_RANGEX,...)
+%   generates a single smart neighbor table entry
+%
+%   Inputs:
+%       Atom_smart_t - Atom information structure
+%       Rm - Lattice vectors
+%       search_rangex/y/z - Search ranges in each dimension
+%       Accuracy - Rounding accuracy
+%       Rlength_cut - Cutoff distance
+%   Outputs:
+%       Rnn_list - List of neighbor distances
+%       nn_smart_t - Generated neighbor table entry
+%
+%   Notes:
+%       - Helper function for nn_sk_smart
+%       - Handles Slater-Koster parameter generation
+%       - Filters neighbors by cutoff distance
 nn_smart_t.seq_from = Atom_smart_t.seq_from;
 nn_smart_t.seq_to = Atom_smart_t.seq_to;
 count = 1;

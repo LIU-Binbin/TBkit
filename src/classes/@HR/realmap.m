@@ -1,4 +1,21 @@
 function [H_hr_out,H_hr_pi_plus,H_hr_pi_minus] = realmap(H_hr)
+% REALMAP Transform HR object to real space representation
+%
+%   [H_HR_OUT,H_HR_PI_PLUS,H_HR_PI_MINUS] = REALMAP(H_HR) transforms the
+%   Hamiltonian into real space representation and generates π+ and π- projections
+%
+%   Input:
+%       H_hr - HR object to transform
+%   Outputs:
+%       H_hr_out - Real space transformed HR object
+%       H_hr_pi_plus - π+ projected HR object
+%       H_hr_pi_minus - π- projected HR object
+%
+%   Notes:
+%       - Handles both numeric and symbolic coefficients
+%       - Doubles WAN_NUM to separate real/imaginary parts
+%       - Supports 'sparse', 'list', and 'mat' storage types
+
 switch H_hr.Type
 case 'sparse'
 H_hr = H_hr.full;

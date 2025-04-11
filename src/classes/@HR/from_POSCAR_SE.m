@@ -1,4 +1,40 @@
 function H_hr = from_POSCAR_SE(POSCAR_file,options)
+% FROM_POSCAR_SE Create HR object from POSCAR file
+%
+%   H_hr = FROM_POSCAR_SE(POSCAR_file,options) generates an HR object
+%   from a POSCAR file with various configuration options.
+%
+%   INPUT ARGUMENTS:
+%       POSCAR_file - Path to POSCAR file (default: 'POSCAR')
+%       options - Structure with parameters:
+%           WAN_NUM: Number of Wannier orbitals (-1 for auto)
+%           r_max: Maximum hopping distance
+%           level_cut: Energy level cutoff
+%           per_dir: Periodic directions [1,1,1]
+%           chiral: Include chiral terms (logical)
+%           spin: Include spin terms (logical)
+%           deltarule: Delta rule type (0-2)
+%           alpharule: Alpha rule type (0-2)
+%           onsite: Include onsite terms (logical)
+%           Type: Output type ('mat','list','sparse')
+%           overlap: Include overlap matrix (logical)
+%           symbolic: Use symbolic representation (logical)
+%           E0: Onsite energy shift
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - HR object generated from POSCAR
+%
+%   NOTES:
+%       - Uses TBkit.POSCAR_read for file parsing
+%       - Supports different Hamiltonian generation rules
+%
+%   SEE ALSO:
+%       HR, TBkit.POSCAR_read
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
+
 arguments
 POSCAR_file char= 'POSCAR';
 options.WAN_NUM double{mustBeInteger}= -1;

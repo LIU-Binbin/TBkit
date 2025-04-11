@@ -1,4 +1,26 @@
 function H_hr= hrz_gen(H_hr,kpoints_f,fin_dir,mode)
+%HRZ_GEN Generate horizontal representation of HR object
+%   Transforms an HR object into a horizontal representation based on
+%   specified k-points and direction.
+%
+%   Syntax:
+%       H_hr = hrz_gen(H_hr)
+%       H_hr = hrz_gen(H_hr,kpoints_f)
+%       H_hr = hrz_gen(H_hr,kpoints_f,fin_dir)
+%       H_hr = hrz_gen(H_hr,kpoints_f,fin_dir,mode)
+%
+%   Inputs:
+%       H_hr - Input HR object
+%       kpoints_f - k-points in fractional coordinates (default: [0,0,0])
+%       fin_dir - Direction for horizontalization (default: 3)
+%       mode - Mode of operation ('0D', '1D', or '2D') (default: '1D')
+%
+%   Outputs:
+%       H_hr - Modified HR object in horizontal representation
+%
+%   Example:
+%       H_hr_1D = hrz_gen(H_hr, [0 0 0], 1, '1D');
+
 if nargin < 4
 mode = '1D';
 end

@@ -1,4 +1,23 @@
 function H_hr = pythtb_gen(H_hr,filename,options)
+% PYTHTB_GEN Generate Python TB model file from HR object
+%
+%   H_HR = PYTHTB_GEN(H_HR,FILENAME,OPTIONS) creates Python TB model file
+%
+%   Inputs:
+%       H_hr - HR object to export
+%       filename - Output filename [default: 'HRTB.py']
+%       options.sym - Use symbolic terms [default: true]
+%       options.band - Generate band structure code [default: true]
+%       options.python_env - Python path [default: '/usr/bin/python']
+%       options.KPOINTS - K-points file [default: 'KPOINTS']
+%       options.WilsonLoop - Add Wilson loop code [default: false]
+%   Output:
+%       H_hr - Processed HR object
+%
+%   Notes:
+%       - Creates executable Python script
+%       - Includes options for band structure and topology calculations
+%       - Uses pythtb package format
 arguments
 H_hr HR ;
 filename char='HRTB.py'

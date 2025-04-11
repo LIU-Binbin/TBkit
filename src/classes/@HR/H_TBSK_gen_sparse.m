@@ -1,4 +1,32 @@
 function H_hr = H_TBSK_gen_sparse(H_hr,options)
+% H_TBSK_GEN_SPARSE Generate sparse TB-SK Hamiltonian
+%
+%   H_hr = H_TBSK_GEN_SPARSE(H_hr,options) constructs a sparse
+%   tight-binding Hamiltonian with Slater-Koster parameterization.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object with neighbor information
+%       options - Structure with parameters:
+%           level_cut: Maximum hopping level
+%           deltarule: Delta rule type (0-2)
+%           alpharule: Alpha rule type (0-2)
+%           para: Parameter structure
+%           Rd: Range parameter
+%
+%   OUTPUT ARGUMENTS:
+%       H_hr - HR object with generated Hamiltonian
+%
+%   NOTES:
+%       - Optimized for sparse storage
+%       - Supports various parameterization rules
+%       - Includes progress reporting
+%
+%   SEE ALSO:
+%       HR, TBSK_Var_gen
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 arguments
 H_hr HR;
 options.level_cut {mustBeInteger} = -1;

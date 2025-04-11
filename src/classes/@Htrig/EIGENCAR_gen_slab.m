@@ -1,4 +1,35 @@
 function [EIGENCAR,WAVECAR,WEIGHTCAR] = EIGENCAR_gen_slab(H_htrig,options)
+%EIGENCAR_GEN_SLAB Generate eigenvalue data for slab Hamiltonian systems
+%   [EIGENCAR,WAVECAR,WEIGHTCAR] = EIGENCAR_GEN_SLAB(H_HTRG,OPTIONS) computes
+%   eigenvalues, wavefunctions, and surface weights for slab-type tight-binding
+%   models. Supports both single-point and parameter-sweep calculations.
+%
+%INPUTS:
+%   H_htrig  - Htrig object containing Hamiltonian specification
+%   options  - Optional parameter structure with fields:
+%       * fermi      : Fermi level reference (default = 0)
+%       * norb       : Number of bands to compute (-1=all, >0=specific number)
+%       * klist      : Custom k-point coordinates [Nk×3] (default: auto-generated)
+%       * para       : Parameter matrix for parametric studies [Npara×Nvar]
+%       * paraname   : Symbolic parameter names for substitution [Nvar×1 sym]
+%
+%OUTPUTS:
+%   EIGENCAR   - Eigenvalues [NBANDS×Nk] or cell array {Npara×1} for parametric
+%   WAVECAR    - Wavefunction coefficients [NWAVE×NBANDS×Nk]
+%   WEIGHTCAR  - Surface projection weights [NBANDS×Nk]
+%
+%EXAMPLE:
+%   % Basic calculation with automatic k-path
+%   H = Htrig();
+%   [E,W,~] = EIGENCAR_gen_slab(H,'norb',20);
+%
+%   % Parameter sweep calculation
+%   opts.para = linspace(0,2,10)';
+%   opts.paraname = sym('t');
+%   E_cell = EIGENCAR_gen_slab(H,opts);
+%
+%SEE ALSO:
+%   Htrig, Htrig.kpathgen3D, TBkit.HSVCAR_gen, park.sorteig
 arguments
 H_htrig Htrig;
 options.fermi double = 0;

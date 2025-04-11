@@ -1,4 +1,25 @@
 function [pc_orb,pc_orbL_full,pc_elementL,pc_quantumL,orb_id_L,pc_orb_id_L,pc_orb_selectL] = unfold_orb(H_hr,Ns,Accuracy,orb_id_L)
+%UNFOLD_ORB Unfold supercell orbitals to primitive cell
+%
+%   [PC_ORB, PC_ORBL_FULL, PC_ELEMENTL, PC_QUANTUML, ORB_ID_L] = UNFOLD_ORB(H_HR, NS, ACCURACY)
+%   Transforms supercell orbital positions to primitive cell representation
+%
+%   Inputs:
+%       H_hr       - HR object containing orbital information
+%       Ns         - Supercell transformation matrix
+%       Accuracy   - Numerical tolerance for position matching
+%       orb_id_L   - Optional orbital ID list
+%
+%   Outputs:
+%       pc_orb           - Primitive cell orbital positions
+%       pc_orbL_full     - All unfolded orbital positions
+%       pc_elementL      - Element labels for primitive cell
+%       pc_quantumL      - Quantum numbers for primitive cell
+%       orb_id_L         - Mapping to primitive cell orbitals
+%       pc_orb_id_L      - Primitive cell orbital IDs
+%       pc_orb_selectL   - Selection mask for unique orbitals
+%
+%   See also UNFOLD_HR, TBKIT.TRANSLATION_ORB
 arguments
 H_hr HR;
 Ns double = eye(3);

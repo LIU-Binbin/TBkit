@@ -1,4 +1,30 @@
 function H_hk = HR2HK(H_hr,kpoints_frac,options)
+% HR2HK Convert HR object to HK (k-space Hamiltonian) representation
+%
+%   H_hk = HR2HK(H_hr,kpoints_frac,options) converts a real-space
+%   Hamiltonian to k-space representation at specified points.
+%
+%   INPUT ARGUMENTS:
+%       H_hr - HR object to convert
+%       kpoints_frac - k-points in fractional coordinates
+%       options - Conversion options:
+%           sym: Use symbolic math (logical, default: false)
+%           Order: Taylor expansion order (default: 2)
+%           convention: Fourier convention ('I' or 'II')
+%
+%   OUTPUT ARGUMENTS:
+%       H_hk - Resulting HK object
+%
+%   NOTES:
+%       - Supports different Fourier conventions
+%       - Can perform symbolic or numerical conversion
+%
+%   SEE ALSO:
+%       HK, HR2Htrig
+%
+%   AUTHOR:
+%       [Your Name] ([Your Email])
+%       [Creation Date]
 arguments
 H_hr HR;
 kpoints_frac = [0,0,0];

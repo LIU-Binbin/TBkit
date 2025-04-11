@@ -1,4 +1,28 @@
 function H_hr = input_orb_struct(H_hr,filename,mode,options)
+%INPUT_ORB_STRUCT Import orbital structure into HR object
+%   Reads orbital structure from file and imports it into an HR object.
+%
+%   Syntax:
+%       H_hr = input_orb_struct(H_hr)
+%       H_hr = input_orb_struct(H_hr,filename)
+%       H_hr = input_orb_struct(H_hr,filename,mode)
+%       H_hr = input_orb_struct(H_hr,filename,mode,options)
+%
+%   Inputs:
+%       H_hr - Target HR object
+%       filename - Input filename (default: 'POSCAR')
+%       mode - Input mode ('vasp', 'tbsk', or 'sym') (default: 'vasp')
+%       options - Optional name-value pairs:
+%           symbolic - Logical flag for symbolic mode (default: false)
+%           Operation - Logical flag for operations (default: false)
+%           warning - Logical flag for warnings (default: true)
+%           spin - Spin configuration ('spinless','wannier','block')
+%
+%   Outputs:
+%       H_hr - HR object with imported orbital structure
+%
+%   Example:
+%       H_hr = input_orb_struct(H_hr, 'myPOSCAR', 'vasp', 'spin', 'wannier');
 arguments
 H_hr HR;
 filename string ='POSCAR';

@@ -1,4 +1,23 @@
 function H_hr = supercell_hr(H_hr,Ns,options)
+% SUPERCELL_HR Create supercell from HR object
+%
+%   H_HR = SUPERCELL_HR(H_HR,NS,OPTIONS) generates supercell Hamiltonian
+%
+%   Inputs:
+%       H_hr - Original HR object
+%       Ns - Supercell transformation matrix [default: eye(Dim)]
+%       options.Accuracy - Rounding accuracy [default: 1e-6]
+%       options.force_list - Force list format [default: false]
+%       options.OBC - Open boundary conditions [default: zeros]
+%       options.silence - Suppress progress [default: false]
+%   Output:
+%       H_hr - Supercell HR object
+%
+%   Notes:
+%       - Handles both numeric and symbolic coefficients
+%       - Maintains orbital and quantum information
+%       - Supports open boundary conditions
+
 arguments
 H_hr HR;
 Ns double = eye(H_hr.Dim);
