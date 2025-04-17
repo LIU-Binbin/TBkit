@@ -81,7 +81,7 @@ if ~options.fast
 [Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=HR.POSCAR_read();
 H_hr.supercell(Ns,'POSCAR_super_fin',Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp,fin_dir_list);
 else
-[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=HR.POSCAR_read();
+[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=POSCAR_read();
 end
 Rm_tmp = Ns*Rm_tmp;
 Rmlength1 = norm (Rm_tmp(1,:));

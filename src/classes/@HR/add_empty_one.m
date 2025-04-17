@@ -44,9 +44,9 @@ for i = 1:size(vector,1)
         % Duplicate check logic:
         % - For non-overlap case: check main vector list
         % - For overlap case: check both main and overlap lists
-        if (ismember(vector_single, H_hr.vectorL, 'rows') && ~H_hr.overlap) || ...
-           (ismember(vector_single, H_hr.vectorL, 'rows') && ...
-           ismember(vector_single, H_hr.vectorL_overlap, 'rows') && H_hr.overlap
+        if (ismember(vector_single,H_hr.vectorL,'rows') && ~H_hr.overlap) || ...
+                (ismember(vector_single,H_hr.vectorL,'rows') ...
+                && ismember(vector_single,H_hr.vectorL_overlap,'rows') && H_hr.overlap)
             continue;
         end
     catch
@@ -55,7 +55,7 @@ for i = 1:size(vector,1)
     
     % Update number of hopping terms
     NRPTS_new = H_hr.NRPTS + 1;
-    H_hr.NRPTS = NRPTS_new;
+    %H_hr.NRPTS = NRPTS_new;
     
     % Add new vector to list
     H_hr.vectorL(NRPTS_new,:) = vector_single;
@@ -114,3 +114,4 @@ for i = 1:size(vector,1)
     end
 end
 end
+

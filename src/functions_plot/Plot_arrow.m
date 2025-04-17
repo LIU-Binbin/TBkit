@@ -15,7 +15,7 @@ end
     S = [ 'd',options.LineStyle , char(string(options.LineWidth))];
     W = options.W;
     H = options.H;
-    Arrow = TBkit_tool_outer.arrow3(Start,End,S,W,H);
+    Arrow = arrow3(Start,End,S,W,H);
     %     Arrow =  TBkit_tool_outer.arrow3('update');
     Line = handle(Arrow(1));
     Surf = handle(Arrow(2));

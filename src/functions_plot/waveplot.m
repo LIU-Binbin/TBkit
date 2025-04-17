@@ -47,8 +47,7 @@ function varargout = waveplot(orb_list, WaveFunc, options)
 
     % Set axes handle
     if isempty(options.ax)
-        Fig = Figs(1, 1);  % Create a new figure if no axes handle is provided
-        ax = Fig.axes(1);
+        [~,ax] = Figs(1, 1);  % Create a new figure if no axes handle is provided
     else
         if ishandle(options.ax)
             ax = options.ax;  % Use the provided axes handle if valid

@@ -39,11 +39,11 @@ max_R=max(abs(Ns))*3;
 for d = 1:DIM
 dL{d} = (-max_R(d):max_R(d)).';
 end
-sc_cands = fold(@park.SemiProductVector,dL);
+sc_cands = fold(@SemiProductVector,dL);
 sc_vec=([]);
 eps_shift=sqrt(2.0)*1.0E-8;
 for ivec = 1:length(sc_cands)
-tmp_red = TBkit.to_red_sc(sc_cands(ivec,:),Ns);
+tmp_red = to_red_sc(sc_cands(ivec,:),Ns);
 inside = 1;
 for it = 1:length(tmp_red)
 t = tmp_red(it);

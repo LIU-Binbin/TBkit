@@ -49,11 +49,11 @@ function TBkitobj = timtj_gen(TBkitobj, mode)
     % If symbolic mode is requested, calculate the symbolic exponential terms for the hopping terms
     if strcmp(mode, 'sym')
         % Calculate the exponential of the inner product of k and tij in Cartesian coordinates
-        ExpInnerTerm = TBkit.matrixtimespage(TBkitobj.VarsSeqLcart(1:TBkitobj.Dim), TBkitobj.timtj{1});
+        ExpInnerTerm = matrixtimespage(TBkitobj.VarsSeqLcart(1:TBkitobj.Dim), TBkitobj.timtj{1});
         TBkitobj.timtj{3} = exp(1i * (sum(ExpInnerTerm, 3)));  % Symbolic hopping term (Cartesian)
 
         % Calculate the exponential of the inner product of k and tij in fractional coordinates
-        ExpInnerTermFrac = TBkit.matrixtimespage(TBkitobj.VarsSeqLcart(1:TBkitobj.Dim), TBkitobj.timtj{2});
+        ExpInnerTermFrac = matrixtimespage(TBkitobj.VarsSeqLcart(1:TBkitobj.Dim), TBkitobj.timtj{2});
         TBkitobj.timtj{4} = exp(1i * (sum(ExpInnerTermFrac, 3)));  % Symbolic hopping term (Fractional)
     else
         % For numeric mode, clear symbolic fields

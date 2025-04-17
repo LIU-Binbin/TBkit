@@ -67,7 +67,7 @@ end
 end
 end
 else
-pb = TBkit_tool_outer.CmdLineProgressBar('Gen NRPT x: ');
+pb = CmdLineProgressBar('Gen NRPT x: ');
 for ix = 1:NRPTS_x
 pb.print(ix,NRPTS_x);
 ind_R_x = vertor_list_x_iy_iz(ix,:);

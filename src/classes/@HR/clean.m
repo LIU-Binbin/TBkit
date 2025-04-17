@@ -27,7 +27,7 @@ function H_hr = clean(H_hr, WANNUM)
     end
 
     % Update Wannier orbital count
-    H_hr.WAN_NUM = WANNUM;
+    % H_hr.WAN_NUM = WANNUM;
     
     % Handle different storage formats
     switch H_hr.Type
@@ -40,7 +40,8 @@ function H_hr = clean(H_hr, WANNUM)
             reset_sparse_matrices();
             
         otherwise
-            error('Unsupported matrix type: %s', H_hr.Type);
+            return;
+            warning('Unsupported matrix type: %s\n', H_hr.Type);
     end
 
     % Nested helper functions

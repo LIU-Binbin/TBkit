@@ -111,6 +111,7 @@ switch plotMode
         optionsplot.ax =ax;
         optionsplotcell = namedargs2cell(optionsplot);
         ax = pband_plot_one_bubble(klist,EIGENCAR,WEIGHTCAR,cmap,projNames,optionsplotcell{:});
+        legend(ax);
     case {'bubble_rough','bubble_refined'}
         for Ei=1:Nbands
             plot(ax,klist,EIGENCAR(Ei,:),...
@@ -121,6 +122,7 @@ switch plotMode
         optionsplotcell = namedargs2cell(optionsplot);
         ax = pband_plot_set(klist,EIGENCAR,WEIGHTCAR,projNames,selectedProjs,...
             'cmap',cmap,optionsplotcell{:});% waiting
+        legend(ax);
 end
 
 
@@ -130,7 +132,7 @@ ax = set_reference(kpoints_l,kpoints_name,Xcut,options.Ecut,...
     'ax',ax,...
     'fontname',options.fontname ...
     );
-legend(ax);
+
 %--------  fbug  --------
 if iscell(titlestring )
     titlestring = cell2mat(titlestring);

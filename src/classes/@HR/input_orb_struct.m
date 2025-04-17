@@ -21,8 +21,6 @@ function H_hr = input_orb_struct(H_hr,filename,mode,options)
 %   Outputs:
 %       H_hr - HR object with imported orbital structure
 %
-%   Example:
-%       H_hr = input_orb_struct(H_hr, 'myPOSCAR', 'vasp', 'spin', 'wannier');
 arguments
 H_hr HR;
 filename string ='POSCAR';
@@ -34,6 +32,5 @@ options.spin  char {mustBeMember(options.spin,{'spinless','wannier','block'})}= 
 end
 optionsCell = namedargs2cell(options);
 H_hr.Basis_num = H_hr.WAN_NUM;
-H_hr = input_orb_struct@TBkit(H_hr,filename,mode,...
-optionsCell{:});
+H_hr = input_orb_struct@TBkit(H_hr,filename,mode,optionsCell{:});
 end

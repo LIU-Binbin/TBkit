@@ -100,10 +100,10 @@ function [Rm, sites] = supercell(Ns, Rm, sites, Atom_name, Atom_num, findir, fil
         end
     end
     sites = sites_s;  % Update atomic positions
-    
+    Rm = Ns * Rm;
     %% Apply Directional Shift (if findir is provided)
     if any(findir)
-        Rm_s_fin = applyFindirShift(Rm, Ns, findir);  % Apply shift to lattice vectors
+        Rm_s_fin = applyFindirShift(Rm, findir);  % Apply shift to lattice vectors
         sites = shiftAtomicPositions(sites, Rm_s_fin);  % Apply shift to atomic positions
         Rm = Rm_s_fin;  % Update lattice matrix
     end
@@ -140,7 +140,7 @@ function sc_cands = generateSupercellCandidates(max_R)
 end
 
 % Function to apply directional shift (findir) to supercell
-function Rm_s_fin = applyFindirShift(Rm, Ns, findir)
+function Rm_s_fin = applyFindirShift(Rm, findir)
     % Adjust the lattice vectors based on findir
     Rmlength1 = abs(norm(Rm(1,:)));
     Rmlength2 = abs(norm(Rm(2,:)));

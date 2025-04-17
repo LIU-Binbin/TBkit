@@ -56,7 +56,7 @@ end
 switch H_hr.Type
 case 'list'
 VectorList = double(H_hr.vectorL);
-pb = TBkit_tool_outer.CmdLineProgressBar(...
+pb = CmdLineProgressBar(...
 'Generate process: UNFOLDING:\n');
 sc_hiL = VectorList(:,H_hr.Dim+1);
 sc_hjL = VectorList(:,H_hr.Dim+2);

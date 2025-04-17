@@ -168,7 +168,7 @@ else
     WANNUM = H_hr.WAN_NUM;
 end
 if options.printmode
-    pb = TBkit_tool_outer.CmdLineProgressBar('BAND calculating ');
+    pb = CmdLineProgressBar('BAND calculating ');
 end
 [kn,~] = size(klist_frac_tmp);
 %--------  check  --------

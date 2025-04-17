@@ -1,61 +1,104 @@
-function H_hr = simplify(H_hr,Accuracy)
-% SIMPLIFY Simplify HR object by removing negligible terms
-%
-%   H_HR = SIMPLIFY(H_HR,ACCURACY) simplifies HR object contents
+function H_hr = simplify(H_hr, Accuracy)
+%SIMPLIFY Optimize HR object by removing insignificant terms
+%   This function streamlines the HR object by:
+%   - Removing terms below specified accuracy threshold
+%   - Simplifying symbolic expressions
+%   - Reducing vector basis dimensions through row reduction
+%   - Maintaining data format consistency during cleanup
 %
 %   Inputs:
-%       H_hr - HR object to simplify
-%       Accuracy - Threshold for term removal [default: 1e-6]
-%   Output:
-%       H_hr - Simplified HR object
+%       H_hr     : HR object containing Hamiltonian data
+%       Accuracy : Threshold for term removal (default: 1e-6)
+%                  Terms with absolute value below this threshold are removed
 %
-%   Notes:
-%       - Removes terms below accuracy threshold
-%       - Handles vector hopping terms specially
-%       - Works on both numeric and symbolic coefficients
-%       - Maintains storage format consistency
-if nargin < 2
-Accuracy = 1e-6;
-end
-if H_hr.vectorhopping
-AL = rref(H_hr.AvectorL.').';
-BL = rref(H_hr.BvectorL.').';
-CL = rref(H_hr.CvectorL.').';
-AL = AL(:,1:rank(AL));
-BL = BL(:,1:rank(BL));
-CL = CL(:,1:rank(CL));
-rAL = real(AL);rAL(abs(rAL)<Accuracy) = 0;
-rBL = real(BL);rBL(abs(rBL)<Accuracy) = 0;
-rCL = real(CL);rCL(abs(rCL)<Accuracy) = 0;
-H_hr.AvectorL = rAL;
-H_hr.BvectorL = rBL;
-H_hr.CvectorL = rCL;
-return;
-end
-if H_hr.coe
-H_coeL_tmp = simplify(H_hr.HcoeL);
-H_hr.HcoeL = H_coeL_tmp;
-if strcmp(H_hr.Type,'list')
-NRPTS_list = find(H_coeL_tmp ~=sym(0));
-H_hr = H_hr.reseq(':',NRPTS_list);
-elseif strcmp(H_hr.Type,'mat')
-end
-end
-if H_hr.num
-H_numL_tmp = H_hr.HnumL;
-if strcmp(H_hr.Type,'list')
-NRPTS_list = find(abs(H_numL_tmp) > Accuracy);
-H_hr = H_hr.reseq(':',NRPTS_list);
-elseif strcmp(H_hr.Type,'mat')
-zerosMat = ones(size(H_numL_tmp(:,:,1)))*Accuracy;
-NRPTS_list = true(H_hr.NRPTS,1);
-for i = 1:H_hr.NRPTS
-if sum(abs(H_numL_tmp(:,:,i)) > zerosMat,'all')
-else
-NRPTS_list(i) = false;
-end
-end
-H_hr = H_hr.reseq(':',NRPTS_list);
-end
-end
+%   Output:
+%       H_hr     : Simplified HR object with optimized storage
+%
+%   Features:
+%       - Handles both numeric and symbolic coefficient types
+%       - Supports list/matrix storage formats
+%       - Processes vector hopping terms using row reduction
+%       - Preserves structure while removing negligible elements
+
+    %% Input validation and initialization
+    if nargin < 2
+        Accuracy = 1e-6;  % Set default precision threshold
+    end
+    
+    %% Vector hopping specialization
+    if H_hr.vectorhopping
+        process_vector_basis();
+        return;  % Early return for vector hopping case
+    end
+    
+    %% Main simplification logic
+    if H_hr.coe
+        handle_symbolic_coefficients();
+    end
+    
+    if H_hr.num
+        handle_numeric_coefficients();
+    end
+
+    %% Nested functions for modular processing
+    function process_vector_basis()
+        % Simplify vector basis using row reduction and thresholding
+        [H_hr.AvectorL, H_hr.BvectorL, H_hr.CvectorL] = deal(...
+            process_single_basis(H_hr.AvectorL),...
+            process_single_basis(H_hr.BvectorL),...
+            process_single_basis(H_hr.CvectorL));
+        
+        function cleanedBasis = process_single_basis(basisMatrix)
+            % Row-reduce and threshold individual basis matrix
+            reducedBasis = rref(basisMatrix.').';  % Transpose for column operations
+            rankEstimate = rank(reducedBasis);     % Get numerical rank
+            cleanedBasis = real(reducedBasis(:,1:rankEstimate));  % Keep significant columns
+            cleanedBasis(abs(cleanedBasis) < Accuracy) = 0;       % Threshold small values
+        end
+    end
+
+    function handle_symbolic_coefficients()
+        % Simplify symbolic expressions and remove zeros
+        H_hr.HcoeL = simplify(H_hr.HcoeL);  % Algebraic simplification
+        filter_zero_terms(H_hr.HcoeL);       % Apply thresholding
+        
+        function filter_zero_terms(coefficients)
+            % Remove symbolic terms below threshold
+            % zeroThreshold = sym(Accuracy);
+            if strcmp(H_hr.Type, 'list')
+                significantTerms = coefficients ~= sym(0);
+                H_hr = H_hr.reseq(':', significantTerms);
+            end
+        end
+    end
+
+    function handle_numeric_coefficients()
+        % Clean numerical coefficients based on accuracy
+        switch H_hr.Type
+            case 'list'
+                filter_list_format();
+            case 'mat'
+                filter_matrix_format();
+        end
+        
+        function filter_list_format()
+            % Direct thresholding for list storage
+            significantIndices = abs(H_hr.HnumL) > Accuracy;
+            H_hr = H_hr.reseq(':', significantIndices);
+        end
+        
+        function filter_matrix_format()
+            % Matrix-wise thresholding for 3D storage
+            toleranceMatrix = Accuracy * ones(size(H_hr.HnumL(:,:,1)));
+            significantSlices = false(H_hr.NRPTS, 1);
+            
+            % Vectorized slice processing
+            for sliceIdx = 1:H_hr.NRPTS
+                currentSlice = H_hr.HnumL(:,:,sliceIdx);
+                significantSlices(sliceIdx) = any(abs(currentSlice) > toleranceMatrix, 'all');
+            end
+            
+            H_hr = H_hr.reseq(':', significantSlices);
+        end
+    end
 end

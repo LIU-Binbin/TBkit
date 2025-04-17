@@ -25,9 +25,6 @@ function H_hr = H_TBSK_gen(H_hr,options)
 %   SEE ALSO:
 %       HR, TBSK_Var_gen
 %
-%   AUTHOR:
-%       [Your Name] ([Your Email])
-%       [Creation Date]
 
 arguments
 H_hr HR;
@@ -101,7 +98,7 @@ fprintf('< ok >\n')
 if strcmp(H_hr.Type,'mat')
 H_hr = H_hr.add_empty_one(Rvector_L);
 end
-pb = TBkit_tool_outer.CmdLineProgressBar('Setting NRPT ');
+pb = CmdLineProgressBar('Setting NRPT ');
 for i = 1:NRPTS_
 if ~H_hr.overlap
 H_hr = H_hr.set_hop(...

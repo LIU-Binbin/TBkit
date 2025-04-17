@@ -1,133 +1,172 @@
-function H_hr = from_wannier90(filename,Type,options)
-% FROM_WANNIER90 Create HR object from Wannier90 output
+function H_hr = from_wannier90(filename, Type, options)
+%FROM_WANNIER90 Construct HR object from Wannier90 _hr.dat file(s)
+%   This function imports tight-binding model data from Wannier90 output files,
+%   http://www.wanniertools.com/input.html#dense-format-storage
+%   supporting both regular Hamiltonian and overlap matrix import.
 %
-%   H_hr = FROM_WANNIER90(filename,Type,options) imports Wannier90
-%   _hr.dat file into an HR object.
+%   H_hr = FROM_WANNIER90(filename, Type, options) creates an HR object from:
+%       - Single _hr.dat file (regular Hamiltonian)
+%       - Pair of _hr.dat files (Hamiltonian + overlap matrix)
 %
-%   INPUT ARGUMENTS:
-%       filename - Path to wannier90_hr.dat file
-%       Type - Output type ('mat' or 'list')
-%       options - Structure with parameters:
-%           Accuracy: Numerical threshold for filtering
-%           overlap: Include overlap matrix (logical)
+%   Input Parameters:
+%       filename : Path(s) to wannier90_hr.dat file(s)
+%                   - Single string: Regular Hamiltonian
+%                   - Cell array {H_file, S_file}: Hamiltonian + Overlap
+%       Type     : Data organization type ('mat' matrix form / 'list' sparse form)
+%       options  : Struct with processing parameters:
+%           - Accuracy: Numerical threshold for element filtering (default: 1e-6)
+%           - overlap : Flag for overlap matrix inclusion (default: false)
 %
-%   OUTPUT ARGUMENTS:
-%       H_hr - HR object constructed from Wannier90 data
+%   Output:
+%       H_hr : HR object containing Hamiltonian (and optionally overlap) data
+%               with properties:
+%               - HnumL/SnumL: Numerical Hamiltonian/Overlap coefficients
+%               - vectorL: Lattice vectors
+%               - WAN_NUM: Number of Wannier functions
 %
-%   NOTES:
-%       - Handles both regular and overlap Hamiltonians
-%       - Can apply degeneracy factors from NRPT_list
-%       - Filters small elements based on Accuracy
+%   Processing Features:
+%       - Automatic degeneracy handling using NRPT_list
+%       - Numerical filtering based on specified accuracy
+%       - Support for both matrix and list storage formats
+%       - Symmetry flag initialization (default: false)
 %
-%   SEE ALSO:
-%       HR, hrdat_read
-%
-%   AUTHOR:
-%       [Your Name] ([Your Email])
-%       [Creation Date]
+%   See also HR, hrdat_read, sym
 
 arguments
-filename  = 'wannier90_hr.dat';
-Type  char = 'mat';
-options.Accuracy = 1e-6;
-options.overlap = false
+    filename (1,:) {validateFilename} = 'wannier90_hr.dat'  % File(s) path
+    Type char {mustBeMember(Type,{'mat','list'})} = 'mat'   % Data storage format
+    options.Accuracy double {mustBePositive} = 1e-6         % Numerical threshold
+    options.overlap logical = false                         % Overlap matrix flag
 end
+
+% Main processing branch for overlap matrix case
 if options.overlap
-[dataArray,NRPT_list,NRPTS,NUM_WAN]=HR.hrdat_read(filename{1});
-[dataArray2,NRPT_list_S,~,~]=HR.hrdat_read(filename{2});
-if strcmp(Type ,'mat')
-Vec_Fir = dataArray{:, 1};
-Vec_Sec = dataArray{:, 2};
-Vec_Thi = dataArray{:, 3};
-h_real = dataArray{:, 6};
-h_imag = dataArray{:, 7};
-V_f = reshape(Vec_Fir, NUM_WAN*NUM_WAN, NRPTS);
-V_s = reshape(Vec_Sec, NUM_WAN*NUM_WAN, NRPTS);
-V_t = reshape(Vec_Thi, NUM_WAN*NUM_WAN, NRPTS);
-vectorL=[V_f(1,:)',V_s(1,:)',V_t(1,:)'];
-HnumL_real = reshape(h_real, NUM_WAN,NUM_WAN, NRPTS);
-HnumL_imag = reshape(h_imag, NUM_WAN,NUM_WAN, NRPTS);
-HnumL = HnumL_real+1i*HnumL_imag;
-if strcmp(Type,'n')
-for i = 1 : NRPTS
-HnumL(:,:,i) = HnumL(:,:,i)/NRPT_list(i);
-end
+    % Read Hamiltonian and overlap files
+    [dataArray, NRPT_list, NRPTS, NUM_WAN] = HR.hrdat_read(filename{1});
+    [dataArray2, NRPT_list_S, ~, ~] = HR.hrdat_read(filename{2});
+    
+    % Matrix format data processing
+    if strcmp(Type, 'mat')
+        % Process Hamiltonian data
+        [vectorL, HnumL] = processMatrixData(dataArray, NRPT_list, NUM_WAN, NRPTS);
+        
+        % Process overlap matrix data
+        [vectorL_overlap, SnumL] = processMatrixData(dataArray2, NRPT_list_S, NUM_WAN, NRPTS);
+        
+        % Initialize symbolic coefficients
+        HcoeL = sym([]);
+        ScoeL = sym([]);
+        
+    % List format data processing    
+    elseif strcmp(Type, 'list')
+        % Process Hamiltonian data
+        [vectorL, HnumL] = processListData(dataArray, NRPT_list, options.Accuracy);
+        
+        % Process overlap matrix data
+        [vectorL_overlap, SnumL] = processListData(dataArray2, NRPT_list_S, options.Accuracy);
+        
+        % Initialize symbolic coefficients
+        HcoeL = sym([]);
+        ScoeL = sym([]);
+    end
+    
+    % Create HR object with overlap data
+    H_hr = HR(NUM_WAN, vectorL,...
+        'HnumL', HnumL,...
+        'HcoeL', HcoeL,...
+        'SnumL', SnumL,...
+        'ScoeL', ScoeL,...
+        'Type', Type,...
+        'overlap', true,...
+        'sym', false);
+    
+    % Set additional properties
+    H_hr.num = true;
+    H_hr.coe = false;
+    H_hr.vectorL_overlap = vectorL_overlap;
+    H_hr.Basis_num = H_hr.WAN_NUM;
+
+% Regular Hamiltonian processing (no overlap)    
 else
+    % Read single Hamiltonian file
+    [dataArray, NRPT_list, NRPTS, NUM_WAN] = HR.hrdat_read(filename);
+    
+    % Matrix format processing
+    if strcmp(Type, 'mat')
+        [vectorL, HnumL] = processMatrixData(dataArray, NRPT_list, NUM_WAN, NRPTS);
+        HcoeL = sym([]);
+        
+    % List format processing    
+    elseif strcmp(Type, 'list')
+        [vectorL, HnumL] = processListData(dataArray, NRPT_list, options.Accuracy);
+        HcoeL = sym([]);
+    end
+    
+    % Create basic HR object
+    H_hr = HR(NUM_WAN, vectorL,...
+        'HnumL', HnumL,...
+        'HcoeL', HcoeL,...
+        'Type', Type,...
+        'sym', false);
+    
+    % Set numerical properties
+    H_hr.num = true;
+    H_hr.coe = false;
+    H_hr.Basis_num = H_hr.WAN_NUM;
 end
-Vec_Fir = dataArray2{:, 1};
-Vec_Sec = dataArray2{:, 2};
-Vec_Thi = dataArray2{:, 3};
-h_real = dataArray2{:, 6};
-h_imag = dataArray2{:, 7};
-V_f = reshape(Vec_Fir, NUM_WAN*NUM_WAN, NRPTS);
-V_s = reshape(Vec_Sec, NUM_WAN*NUM_WAN, NRPTS);
-V_t = reshape(Vec_Thi, NUM_WAN*NUM_WAN, NRPTS);
-vectorL_overlap=[V_f(1,:)',V_s(1,:)',V_t(1,:)'];
-SnumL_real = reshape(h_real, NUM_WAN,NUM_WAN, NRPTS);
-SnumL_imag = reshape(h_imag, NUM_WAN,NUM_WAN, NRPTS);
-SnumL = SnumL_real+1i*SnumL_imag;
-if strcmp(Type,'n')
-for i = 1 : NRPTS
-SnumL(:,:,i) = SnumL(:,:,i)/NRPT_list(i);
+
+%% Nested helper functions
+    function [vec, mat] = processMatrixData(data, nrpt, numWan, nrpts)
+        %PROCESSMATRIXDATA Convert raw data to matrix format
+        % Extracts vector components and reshapes Hamiltonian/overlap matrices
+        Vec_Fir = data{:, 1};      % a1 direction
+        Vec_Sec = data{:, 2};      % a2 direction
+        Vec_Thi = data{:, 3};      % a3 direction
+        %Orb_fir = dataArray{:, 4};
+        %Orb_sec = dataArray{:, 5};
+        h_real = data{:, 6};
+        h_imag = data{:, 7};
+        
+        % Reshape vectors
+        V_f = reshape(Vec_Fir, numWan*numWan, nrpts);
+        V_s = reshape(Vec_Sec, numWan*numWan, nrpts);
+        V_t = reshape(Vec_Thi, numWan*numWan, nrpts);
+        vec = [V_f(1,:)', V_s(1,:)', V_t(1,:)'];
+        
+        % Reshape and combine complex numbers
+        mat_real = reshape(h_real, numWan, numWan, nrpts);
+        mat_imag = reshape(h_imag, numWan, numWan, nrpts);
+        mat = mat_real + 1i*mat_imag;
+        
+        % Normalize if requested
+        allone = all(double(nrpt) == 1);% check nrpt all 1
+        if ~allone
+            for i = 1:nrpts
+                mat(:,:,i) = mat(:,:,i)/nrpt(i);
+            end
+        end
+    end
+
+    function [vec, mat] = processListData(data, nrpt, accuracy)
+        %PROCESSLISTDATA Convert raw data to sparse list format
+        % Filters small elements and organizes data in sparse representation
+        dataMatrix = cell2mat(data(1:7));
+        complexData = dataMatrix(:,6) + 1i*dataMatrix(:,7);
+        
+        % Apply accuracy threshold
+        validIdx = abs(complexData) > accuracy;
+        vec = dataMatrix(validIdx, 1:3);
+        [~, ~, origLabel] = unique(vec(:,1:3), 'rows');
+        
+        % Normalize using degeneracy factors
+        mat = complexData(validIdx) ./ nrpt(origLabel);
+    end
 end
-else
-end
-HcoeL = sym([]);
-ScoeL = sym([]);
-elseif strcmp(Type ,'list')
-DATAARRAY = cell2mat(dataArray(1:7));
-HOPARRAY = DATAARRAY(:,6)+1i*DATAARRAY(:,7);
-HnumL_select = abs(HOPARRAY)>options.Accuracy;
-vectorL = DATAARRAY(HnumL_select,1:H_hr.Dim+2);
-[~,~,original_label] = unique(vectorL(:,1:H_hr.Dim),'rows');
-HnumL = HOPARRAY(HnumL_select)./NRPT_list(original_label);
-HcoeL = sym([]);
-DATAARRAY = cell2mat(dataArray2(1:7));
-OVERLAPARRAY = DATAARRAY(:,6)+1i*DATAARRAY(:,7);
-SnumL_select = abs(OVERLAPARRAY)>options.Accuracy;
-vectorL_overlap = DATAARRAY(SnumL_select,1:H_hr.Dim+2);
-[~,~,original_label] = unique(vectorL_overlap(:,1:H_hr.Dim),'rows');
-SnumL = OVERLAPARRAY(SnumL_select)./NRPT_list_S(original_label);
-ScoeL = sym([]);
-end
-H_hr = HR(NUM_WAN,vectorL,'HnumL',HnumL,'HcoeL',HcoeL,'SnumL',SnumL,'ScoeL',ScoeL,'Type',Type,'overlap',true,'sym','false');
-H_hr.num = true;
-H_hr.coe = false;
-H_hr.vectorL_overlap = vectorL_overlap;
-H_hr.overlap = true;
-else
-[dataArray,NRPT_list,NRPTS,NUM_WAN]=HR.hrdat_read(filename);
-if strcmp(Type ,'mat')
-Vec_Fir = dataArray{:, 1};
-Vec_Sec = dataArray{:, 2};
-Vec_Thi = dataArray{:, 3};
-h_real = dataArray{:, 6};
-h_imag = dataArray{:, 7};
-V_f = reshape(Vec_Fir, NUM_WAN*NUM_WAN, NRPTS);
-V_s = reshape(Vec_Sec, NUM_WAN*NUM_WAN, NRPTS);
-V_t = reshape(Vec_Thi, NUM_WAN*NUM_WAN, NRPTS);
-vectorL=[V_f(1,:)',V_s(1,:)',V_t(1,:)'];
-HnumL_real = reshape(h_real, NUM_WAN,NUM_WAN, NRPTS);
-HnumL_imag = reshape(h_imag, NUM_WAN,NUM_WAN, NRPTS);
-HnumL = HnumL_real+1i*HnumL_imag;
-if strcmp(Type,'n')
-for i = 1 : NRPTS
-HnumL(:,:,i) = HnumL(:,:,i)/NRPT_list(i);
-end
-else
-end
-HcoeL = sym([]);
-elseif strcmp(Type ,'list')
-DATAARRAY = cell2mat(dataArray(1:7));
-HOPARRAY = DATAARRAY(:,6)+1i*DATAARRAY(:,7);
-HnumL_select = abs(HOPARRAY)>options.Accuracy;
-vectorL = DATAARRAY(HnumL_select,1:H_hr.Dim+2);
-[~,~,original_label] = unique(vectorL(:,1:3),'rows');
-HnumL = HOPARRAY(HnumL_select)./NRPT_list(original_label);
-HcoeL = sym([]);
-end
-H_hr = HR(NUM_WAN,vectorL,'HnumL',HnumL,'HcoeL',HcoeL,'Type',Type,'sym',false);
-H_hr.num = true;H_hr.coe = false;
-end
-H_hr.Basis_num = H_hr.WAN_NUM;
+
+%% Validation functions
+function validateFilename(fname)
+%VALIDFILENAME Ensure correct filename input type
+    if ~(ischar(fname) || (iscell(fname) && numel(fname)==2))
+        error('Filename must be string or 2-element cell array');
+    end
 end

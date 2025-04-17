@@ -37,7 +37,7 @@ if strcmp(H_hr.Type,'list')
 H_hr  = H_hr.rewind();
 end
 hrdat=fopen(filename ,'w');
-pb = TBkit_tool_outer.CmdLineProgressBar('Writing hr.dat - NRPT:');
+pb = CmdLineProgressBar('Writing hr.dat - NRPT:');
 switch mode
 case 'hr_dat'
 date_=date;

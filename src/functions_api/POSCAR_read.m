@@ -44,7 +44,7 @@ switch mode
         
     case 'tbsk'
         site = struct('seq',[], 'inseq',[], 'rc1',[], 'rc2',[], 'rc3',[],...
-            'name',[], 'nameseq',[], 'orb',[], 'orb_sym',[]);
+            'name',[], 'nameseq',[],'element',[],  'orb',[], 'orb_sym',[]);
         formatSpec = '%s%s%s%s%s%s%[^\n\r]';
         
     case 'tbsym'
@@ -90,6 +90,7 @@ for i = 1:length(Atom_name)
         
         % Handle extended format data
         if strcmp(mode, 'tbsk')
+            sites(sequence).element = string(POSCAR(j,4));
             sites(sequence).orb = string(POSCAR(j,5));
             sites(sequence).orb_sym = sym(POSCAR(j,6));
         elseif strcmp(mode, 'tbsym')

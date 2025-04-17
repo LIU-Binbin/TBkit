@@ -1,11 +1,10 @@
 %% 
-function [fig,ax]  = POSCAR_plot(Rm,sites,Atom_name,Atom_num,options)
+function ax = POSCAR_plot(Rm,sites,Atom_name,Atom_num,options)
 arguments
     Rm =[];
     sites=[];
     Atom_name =[];
     Atom_num =[];
-    options.fig = figure('WindowState','maximized');
     options.ax = [];
     options.boundary = [0,1;0,1;0,1];
     options.box = [-2,-2,-1;3,3,2];
@@ -26,15 +25,16 @@ if nargin <1
 end
 % 
 elements_table=element_table();
-% 创建 figure
-fig = options.fig;
-% 创建 axes
+% Prepare axes for plotting
 if isempty(options.ax)
-    ax = axes(fig);
+    [Fig,ax]= Figs(1, 1); % Create new figure
 else
-    ax = options.ax;
+    if isvalid(options.ax)
+        ax = options.ax; % Use provided axis handle
+    else
+        [Fig,ax]= Figs(1, 1); % Create new figure 
+    end
 end
-
 % 
 hold(ax,'on');
 % axis(ax,'equal');
