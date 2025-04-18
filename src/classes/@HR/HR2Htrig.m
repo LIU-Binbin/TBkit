@@ -88,7 +88,7 @@ end
 H_htrig = H_htrig.tjmti_gen('sym');
 VarsUsing = H_htrig.VarsSeqLcart(1:H_htrig.Dim);
 vectorList = double(H_hr.vectorL);
-pb = TBkit_tool_outer.CmdLineProgressBar('Transforming ');
+pb = CmdLineProgressBar('Transforming ');
 if strcmp(H_hr.Type,'list')
 tji_mat_cart = H_htrig.tjmti{1};
 NRPTS_ = H_hr.NRPTS;

@@ -100,7 +100,7 @@ if isempty(options.para)
     EIGENCAR = zeros(NBANDS, kn);
     sizemesh = [H_htrig.Basis_num, H_htrig.Basis_num];
     if options.printmode
-        pb = TBkit_tool_outer.CmdLineProgressBar('BAND calculating ');
+        pb = CmdLineProgressBar('BAND calculating ');
     end
     try
         HsymL_fun = matlabFunction(H_htrig.HsymL, 'Vars', H_htrig.VarsSeqLcart(1:H_htrig.Dim));

@@ -1,4 +1,4 @@
-function mat = pauli_matrixe(dir)
+function mat = pauli_matrice(dir)
     % pauli_matrixe - Generates Pauli matrices or specific matrix based on input
     % 
     % Usage:
@@ -40,7 +40,7 @@ function mat = pauli_matrixe(dir)
     end
     
     % Check the input and return the corresponding Pauli matrix
-    switch lower(char(dir))
+    switch lower(char(string(dir)))
         case {'0', 'o'}
             mat = eye(2);                           % Identity matrix
         case {'1', 'x'}

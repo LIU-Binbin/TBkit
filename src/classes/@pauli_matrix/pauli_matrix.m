@@ -16,18 +16,27 @@ classdef pauli_matrix
                     PM(i) = pauli_matrix(i - 1);
                 end
             else
+                if isa(label,'pauli_matrix')
+                    PM.mat = label.mat;
+                    return;
+                end
                 % Initialize matrix based on the given label
-                switch label
-                    case {'0', 'I', 0}
-                        PM.mat = [1, 0; 0, 1];  % Identity matrix
-                    case {'x', '1', 'X', 1}
-                        PM.mat = [0, 1; 1, 0];  % Pauli-X matrix
-                    case {'y', '2', 'Y', 2}
-                        PM.mat = [0, -1i; 1i, 0];  % Pauli-Y matrix
-                    case {'z', '3', 'Z', 3}
-                        PM.mat = [1, 0; 0, -1];  % Pauli-Z matrix
-                    otherwise
-                        error('Invalid label for Pauli matrix');
+                if isscalar(label)
+                    switch label
+                        case {'0', 'I', 0}
+                            PM.mat = [1, 0; 0, 1];  % Identity matrix
+                        case {'x', '1', 'X', 1}
+                            PM.mat = [0, 1; 1, 0];  % Pauli-X matrix
+                        case {'y', '2', 'Y', 2}
+                            PM.mat = [0, -1i; 1i, 0];  % Pauli-Y matrix
+                        case {'z', '3', 'Z', 3}
+                            PM.mat = [1, 0; 0, -1];  % Pauli-Z matrix
+                        otherwise
+
+                            error('Invalid label for Pauli matrix');
+                    end
+                else
+                    PM.mat = label;
                 end
             end
         end

@@ -6,7 +6,7 @@ if length(Var_cell)~=length(k_cell) && length(k_cell)~=length(mat_cell)
 error('error!');
 end
 if ~silence
-pb = TBkit_tool_outer.CmdLineProgressBar('Setting ');
+pb = CmdLineProgressBar('Setting ');
 end
 nVar_cell = length(Var_cell);
 for i =1:nVar_cell

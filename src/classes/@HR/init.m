@@ -110,7 +110,7 @@ H_hr.nn_store = [H_hr.nn_store;onsite_nnL];
 end
 end
 if strcmp(options.method,'nn_smart')
-pb = TBkit_tool_outer.CmdLineProgressBar('Setting ');
+pb = CmdLineProgressBar('Setting ');
 for i=1:N_orbit
 %fprintf("setting (%4d/%4d) th orbital ... \n",i,N_orbit);
 for j=1:N_tot
@@ -146,7 +146,7 @@ end
 end
 pb.delete();
 else
-pb = TBkit_tool_outer.CmdLineProgressBar('Setting ');
+pb = CmdLineProgressBar('Setting ');
 if options.chiral
 element1L =  H_hr.elementL(select_nn_store(:,1));
 element2L =  H_hr.elementL(select_nn_store(:,2));

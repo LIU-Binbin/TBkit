@@ -11,12 +11,12 @@ arguments
     options.DisplayName = 'Hopping';
     options.CData = [];
 end
-    import TBkit_tool_outer.*;
+    import *;
     S = [ 'd',options.LineStyle , char(string(options.LineWidth))];
     W = options.W;
     H = options.H;
     Arrow = arrow3(Start,End,S,W,H);
-    %     Arrow =  TBkit_tool_outer.arrow3('update');
+    %     Arrow =  arrow3('update');
     Line = handle(Arrow(1));
     Surf = handle(Arrow(2));
     Line.DisplayName = options.DisplayName;

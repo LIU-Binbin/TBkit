@@ -23,7 +23,7 @@ function TBkitobj = input_orb_struct(TBkitobj,filename,mode,options)
 arguments
     TBkitobj TBkit;
     filename string = 'POSCAR';
-    mode char {mustBeMember(mode,{'vasp','tbsk','sym'})} = 'vasp';
+    mode char {mustBeMember(mode,{'vasp','tbsk','tbsym'})} = 'vasp';
     options.symbolic logical = false;
     options.Operation logical = false;
     options.warning logical = true;
@@ -84,15 +84,23 @@ end
 function validate_site_counts(TBkitobj, tmpsites)
 % VALIDATE_SITE_COUNTS Check consistency of atomic site counts
 if sum(TBkitobj.Atom_num) ~= TBkitobj.Basis_num
-    objType = ifelse(isa(TBkitobj,'HR'), 'WAN_NUM', 'Basis_num');
-    warning(['Sum of POSCAR 7th line differs from %s.\n'...
-        'Using %s enforcedly'], objType, objType);
+    if isa(TBkitobj,'HR')
+        objType = TBkitobj.Basis_num;
+        warning(['Sum of POSCAR 7th line differs from %s.\n'...
+            'Using %s enforcedly'], sum(TBkitobj.Atom_num), objType);
+
+    else
+    end
 end
 
 if length(tmpsites) ~= TBkitobj.Basis_num
-    objType = ifelse(isa(TBkitobj,'HR'), 'WAN_NUM', 'Basis_num');
-    warning(['POSCAR site count differs from %s.\n'...
-        'Using %s enforcedly'], objType, objType);
+    if isa(TBkitobj,'HR')
+        objType = TBkitobj.Basis_num;
+        warning(['Sum of POSCAR 7th line differs from %s.\n'...
+            'Using %s enforcedly'], length(tmpsites), objType);
+
+    else
+    end
 end
 end
 

@@ -73,7 +73,7 @@ function H_hr = applyOper(H_hr, SymOper, options)
             % Direct symmetry application with progress tracking
             H_hr_R = H_hr;
             nSymOper = length(SymOper);
-            pb = TBkit_tool_outer.CmdLineProgressBar('Applying Symmetry ...');
+            pb = CmdLineProgressBar('Applying Symmetry ...');
             for j = 1:nSymOper
                 [H_hr_R(j), H_hr] = applyRU(H_hr, SymOper(j));
                 pb.print(j, nSymOper);
@@ -112,7 +112,7 @@ function H_hr = applyOper(H_hr, SymOper, options)
         if options.generator
             SymOper_tmp = SymOper.generate_group();
             nSymOper_tmp = length(SymOper_tmp);
-            pb = TBkit_tool_outer.CmdLineProgressBar('Applying Symmetry ...');
+            pb = CmdLineProgressBar('Applying Symmetry ...');
             H_hr_R = H_hr;
             for j = 1:nSymOper_tmp
                 pb.print(j, nSymOper_tmp);
@@ -146,7 +146,7 @@ function H_hr = applyOper(H_hr, SymOper, options)
             if options.generator
                 SymOper_tmp = SymOper(i).generate_group();
                 nSymOper_tmp = length(SymOper_tmp);
-                pb = TBkit_tool_outer.CmdLineProgressBar('Applying Symmetry ...');
+                pb = CmdLineProgressBar('Applying Symmetry ...');
                 H_hr_R = H_hr;
                 for j = 1:nSymOper_tmp
                     pb.print(j, nSymOper_tmp);

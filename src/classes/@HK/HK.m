@@ -320,7 +320,7 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
         [sym_coe,sym_single,str_single] = coeff_extract(sym_term,Dim)
     end
 
-    methods (Static,Hidden,Access= protected)
+    methods (Static,Hidden)
         str_out = quadk2K(str_in)
         [vector_list,Coeffs_list] = HstrL_classify(H_strL_tmp,R_struct,mode)
         [vector_list,Coeffs_list] = Hstr_mapping(H_str,R_struct,mode)

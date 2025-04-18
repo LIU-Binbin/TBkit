@@ -52,7 +52,7 @@ if length(SymOper) == 1
     if options.generator
         SymOper_tmp = SymOper(i).generate_group();
         nSymOper_tmp = length(SymOper_tmp);
-        pb = TBkit_tool_outer.CmdLineProgressBar('Applying Symmetry ...');
+        pb = CmdLineProgressBar('Applying Symmetry ...');
         H_hk_R = H_hk;
         for j = 1:nSymOper_tmp
             pb.print(j,nSymOper_tmp);
@@ -77,7 +77,7 @@ else
     if options.oneshot
         SymOper_tmp = SymOper.generate_group();
         nSymOper_tmp = length(SymOper_tmp);
-        pb = TBkit_tool_outer.CmdLineProgressBar('Applying Symmetry ...');
+        pb = CmdLineProgressBar('Applying Symmetry ...');
         H_hk_R = H_hk;
         for j = 1:nSymOper_tmp
             pb.print(j,nSymOper_tmp);
@@ -95,7 +95,7 @@ else
         if options.generator
             SymOper_tmp = SymOper(i).generate_group();
             nSymOper_tmp = length(SymOper_tmp);
-            pb = TBkit_tool_outer.CmdLineProgressBar('Applying Symmetry ...');
+            pb = CmdLineProgressBar('Applying Symmetry ...');
             H_hk_R = H_hk;
             for j = 1:nSymOper_tmp
                 pb.print(j,nSymOper_tmp);

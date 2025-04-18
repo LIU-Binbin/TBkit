@@ -47,7 +47,7 @@ function C = le(A, B)
             case 'char'
                 switch B(1)
                     case {'P', 'p'}
-                        C = A.input_orb_struct(B, 'sym');
+                        C = A.input_orb_struct(B, 'tbsym');
                     case {'w', 'W'}
                         % case for 'w' not implemented
                     case {'k', 'K'}

@@ -9,7 +9,7 @@ arguments
     options.png2jpeg logical = false
     options.tableMaxWidth (1,1) double = 20
 end
-import TBkit_tool_outer.*
+import *
 % Latex filename
 [filepath,name,ext] = fileparts(filename);
 

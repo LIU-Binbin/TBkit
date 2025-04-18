@@ -40,7 +40,7 @@ sym_coe_list = sym([]); % Output array initialization
 % Component filtering loop
 for i = 1:length(str_list_tmp)
     % Check for variable presence using helper function
-    if Htrig.strcontain(str_list_tmp{i}, ['x','y','z'])
+    if strcontain(str_list_tmp{i}, ['x','y','z'])
         % Store variable-containing components
         sym_coe_list(end+1) = sym_coe * str2sym(str_list_tmp{i});
     end

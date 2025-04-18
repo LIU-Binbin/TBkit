@@ -33,6 +33,11 @@ function Htrig_sym = sym(H_htrig, options)
 %       Htrig_sym = sym(H_htrig, struct('simple', true, 'Type', 'sincos'));
 %
 %   See also: Htrig, timtj_gen
+    arguments
+        H_htrig Htrig;
+        options.simple = false;
+        options.Type {mustBeMember(options.Type,{'exp','sincos','sin','cos','cot','tan','sinh','cosh','cosh','tanh',''})}= '';
+    end
 
     Htrig_sym = H_htrig.Htrig_sym;
     

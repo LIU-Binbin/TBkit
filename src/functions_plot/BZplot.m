@@ -14,7 +14,7 @@ arguments
     options.KPOINTS = '';  % Path to the KPOINTS file for k-point labels
     options.title = '';  % Plot title (optional)
 end
-import TBkit_tool_outer.*  % Import external functions from the TBkit toolset
+import *  % Import external functions from the TBkit toolset
 
 % Extract the origin point coordinates
 X0 = options.OriginPoint(1);

@@ -39,7 +39,7 @@ nn_smart_t = struct('seq_from',[],'seq_to',[],'nn',[]);
 H_hr.Atom_store_smart = repmat(Atom_smart_t,[sites_num sites_num]);
 H_hr.nn_store_smart = repmat(nn_smart_t,[sites_num sites_num]);
 Rnn_list = [];
-pb = TBkit_tool_outer.CmdLineProgressBar('Seaching ');
+pb = CmdLineProgressBar('Seaching ');
 for j  = 1:sites_num
 site2 = H_hr.sites(j);
 for i = 1:sites_num
@@ -57,7 +57,7 @@ H_hr.Rnn_map = containers.Map('KeyType','double','ValueType','double');
 for i = 1:length(H_hr.Rnn)
 H_hr.Rnn_map(H_hr.Rnn(i)) = i;
 end
-pb = TBkit_tool_outer.CmdLineProgressBar('Giving ');
+pb = CmdLineProgressBar('Giving ');
 for j  = 1:sites_num
 pb.print(j,sites_num,' th orb nn_level ...');
 for i = 1:sites_num

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # 设置要替换的单词
-OLD_WORD="matrixes"
-NEW_WORD="matrices"
+OLD_WORD="pauli_matric "
+NEW_WORD="pauli_matrix"
 
 # 设置文件夹路径（可以修改为目标文件夹路径）
 FOLDER_PATH="."

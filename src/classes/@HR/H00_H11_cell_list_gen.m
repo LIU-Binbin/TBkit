@@ -32,7 +32,7 @@ end
 k_n=length(H_hr.klist_frac(:,1));
 H00_H11_cell_list_1 = zeros(H_hr.WAN_NUM,H_hr.WAN_NUM,k_n);
 H00_H11_cell_list_2 = zeros(H_hr.WAN_NUM,H_hr.WAN_NUM,k_n);
-pb = TBkit_tool_outer.CmdLineProgressBar('Hamiltionian Generating ');
+pb = CmdLineProgressBar('Hamiltionian Generating ');
 for j = 1:k_n
 pb.print(j,k_n);
 kpoints_f = H_hr.klist_frac(j,:);

@@ -30,7 +30,7 @@ function H_htrig = setup(H_htrig, Var_cell, k_cell, mat_cell, silence)
 %       - Automatically distinguishes symbolic and numeric modes.
 %       - Relies on k_symbol2Kind to manage k-symbol indexing.
 %
-%   See also: k_symbol2Kind, TBkit_tool_outer.CmdLineProgressBar
+%   See also: k_symbol2Kind, CmdLineProgressBar
 
 if nargin < 5
     silence = false;
@@ -43,7 +43,7 @@ if length(Var_cell) ~= length(k_cell) || length(k_cell) ~= length(mat_cell)
 end
 
 if ~silence
-    pb = TBkit_tool_outer.CmdLineProgressBar('Setting ');
+    pb = CmdLineProgressBar('Setting ');
 end
 
 nVar_cell = length(Var_cell);

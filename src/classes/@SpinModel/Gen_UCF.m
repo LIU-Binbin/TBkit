@@ -46,7 +46,7 @@ for i = 1:size(orbL,1)
     fprintf(fileID,"\n");
 end
 %% body
-pb = TBkit_tool_outer.CmdLineProgressBar('Writing UCF - NRPT:');
+pb = CmdLineProgressBar('Writing UCF - NRPT:');
 hr = H_spin.HR_obj;
 
 J2meV = 6.2415e18 * 1e3;

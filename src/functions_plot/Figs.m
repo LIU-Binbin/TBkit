@@ -16,7 +16,7 @@ if options.FigSize == "large"
     fig_size = fig_size*2; % 3x2 A4 size
     fig_bias = fig_bias*2;
     ax_size = ax_size*2;
-    ax_bias = ax_bias*2;
+    % ax_bias = [0.5 0.5];
 elseif options.FigSize == "normal"
 
 end

@@ -58,7 +58,7 @@ nkpts = size(klist_s, 1);  % Total number of k-points
 nodes_tmp = [];            % Temporary array to store nodes
 
 % Search for nodes with energy gap below threshold using optimization
-pb = TBkit_tool_outer.CmdLineProgressBar('FindNode: ');  % Progress bar for visualization
+pb = CmdLineProgressBar('FindNode: ');  % Progress bar for visualization
 count = 0;  % Counter for the number of nodes found
 
 % Loop over all k-points to find nodes

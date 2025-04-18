@@ -61,7 +61,7 @@ onsite_sym_name = "E__"+string(H_hr.elementL(i,1))+"_"...
 H_hr = H_hr.set_hop_single(sym(onsite_sym_name,'real'),i,i,[0 0 0],'sym');
 end
 end
-pb = TBkit_tool_outer.CmdLineProgressBar('Setting ');
+pb = CmdLineProgressBar('Setting ');
 for j=1:N_orbit
 pb.print(j,N_orbit,' th orbital ...');
 spin1 = H_hr.quantumL(j,4);

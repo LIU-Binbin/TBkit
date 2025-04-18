@@ -53,7 +53,7 @@ else
     kpoints_r = kpoints_f * H_hk.Gk;
 end
 
-pb = TBkit_tool_outer.CmdLineProgressBar('Transforming ');
+pb = CmdLineProgressBar('Transforming ');
 for i = 1:H_htrig.Kinds
     pb.print(i, H_htrig.Kinds, ' th HsymL_trig into HK obj ...');
     tmp_HsymL_trig = subs(H_htrig.HsymL_trig(i), [k_x k_y k_z], [k_x - kpoints_r(1), k_y - kpoints_r(2), k_z - kpoints_r(3)]);
