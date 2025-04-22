@@ -52,54 +52,54 @@ for i = 1:length(sites)
                 [tempOrbSites(2:4).orb_sym] = deal("y","z","x");
                 % Other orbital cases handled similarly...
             case 'spz'
-                tmpsites_slib = repmat(sites(i),[1,2]);
-                tmpsites_slib(1).orb_sym = "s";tmpsites_slib(1).orb = "s";
-                tmpsites_slib(2).orb_sym = "z";tmpsites_slib(2).orb = "p";
+                tempOrbSites = repmat(sites(i),[1,2]);
+                tempOrbSites(1).orb_sym = "s";tempOrbSites(1).orb = "s";
+                tempOrbSites(2).orb_sym = "z";tempOrbSites(2).orb = "p";
             case 'pxpy'
-                tmpsites_slib = repmat(sites(i),[1,2]);
-                tmpsites_slib(1).orb_sym = "x";tmpsites_slib(1).orb = "p";
-                tmpsites_slib(2).orb_sym = "y";tmpsites_slib(2).orb = "p";
+                tempOrbSites = repmat(sites(i),[1,2]);
+                tempOrbSites(1).orb_sym = "x";tempOrbSites(1).orb = "p";
+                tempOrbSites(2).orb_sym = "y";tempOrbSites(2).orb = "p";
             case 'p'
-                tmpsites_slib = repmat(sites(i),[1,3]);
-                tmpsites_slib(1).orb_sym = "z";tmpsites_slib(1).orb = "p";
-                tmpsites_slib(2).orb_sym = "x";tmpsites_slib(2).orb = "p";
-                tmpsites_slib(3).orb_sym = "y";tmpsites_slib(3).orb = "p";
+                tempOrbSites = repmat(sites(i),[1,3]);
+                tempOrbSites(1).orb_sym = "z";tempOrbSites(1).orb = "p";
+                tempOrbSites(2).orb_sym = "x";tempOrbSites(2).orb = "p";
+                tempOrbSites(3).orb_sym = "y";tempOrbSites(3).orb = "p";
             case 'sd'
-                tmpsites_slib = repmat(sites(i),[1,6]);
-                tmpsites_slib(1).orb_sym = "s";tmpsites_slib(1).orb = "s";
-                tmpsites_slib(2).orb_sym = "z^2";tmpsites_slib(2).orb = "d";
-                tmpsites_slib(3).orb_sym = "xz";tmpsites_slib(3).orb = "d";
-                tmpsites_slib(4).orb_sym = "yz";tmpsites_slib(4).orb = "d";
-                tmpsites_slib(5).orb_sym = "x^2-y^2";tmpsites_slib(5).orb = "d";
-                tmpsites_slib(6).orb_sym = "xy";tmpsites_slib(6).orb = "d";
+                tempOrbSites = repmat(sites(i),[1,6]);
+                tempOrbSites(1).orb_sym = "s";tempOrbSites(1).orb = "s";
+                tempOrbSites(2).orb_sym = "z^2";tempOrbSites(2).orb = "d";
+                tempOrbSites(3).orb_sym = "xz";tempOrbSites(3).orb = "d";
+                tempOrbSites(4).orb_sym = "yz";tempOrbSites(4).orb = "d";
+                tempOrbSites(5).orb_sym = "x^2-y^2";tempOrbSites(5).orb = "d";
+                tempOrbSites(6).orb_sym = "xy";tempOrbSites(6).orb = "d";
             case 'spd'
-                tmpsites_slib = repmat(sites(i),[1,9]);
-                tmpsites_slib(1).orb_sym = "s";tmpsites_slib(1).orb = "s";
-                tmpsites_slib(2).orb_sym = "z";tmpsites_slib(2).orb = "p";
-                tmpsites_slib(3).orb_sym = "x";tmpsites_slib(3).orb = "p";
-                tmpsites_slib(4).orb_sym = "y";tmpsites_slib(4).orb = "p";
-                tmpsites_slib(5).orb_sym = "z^2";tmpsites_slib(5).orb = "d";
-                tmpsites_slib(6).orb_sym = "xz";tmpsites_slib(6).orb = "d";
-                tmpsites_slib(7).orb_sym = "yz";tmpsites_slib(7).orb = "d";
-                tmpsites_slib(8).orb_sym = "x^2-y^2";tmpsites_slib(8).orb = "d";
-                tmpsites_slib(9).orb_sym = "xy";tmpsites_slib(9).orb = "d";
+                tempOrbSites = repmat(sites(i),[1,9]);
+                tempOrbSites(1).orb_sym = "s";tempOrbSites(1).orb = "s";
+                tempOrbSites(2).orb_sym = "z";tempOrbSites(2).orb = "p";
+                tempOrbSites(3).orb_sym = "x";tempOrbSites(3).orb = "p";
+                tempOrbSites(4).orb_sym = "y";tempOrbSites(4).orb = "p";
+                tempOrbSites(5).orb_sym = "z^2";tempOrbSites(5).orb = "d";
+                tempOrbSites(6).orb_sym = "xz";tempOrbSites(6).orb = "d";
+                tempOrbSites(7).orb_sym = "yz";tempOrbSites(7).orb = "d";
+                tempOrbSites(8).orb_sym = "x^2-y^2";tempOrbSites(8).orb = "d";
+                tempOrbSites(9).orb_sym = "xy";tempOrbSites(9).orb = "d";
             case 'pd'
-                tmpsites_slib = repmat(sites(i),[1,8]);
-                tmpsites_slib(1).orb_sym = "z";tmpsites_slib(1).orb = "p";
-                tmpsites_slib(2).orb_sym = "x";tmpsites_slib(2).orb = "p";
-                tmpsites_slib(3).orb_sym = "y";tmpsites_slib(3).orb = "p";
-                tmpsites_slib(4).orb_sym = "z^2";tmpsites_slib(4).orb = "d";
-                tmpsites_slib(5).orb_sym = "xz";tmpsites_slib(5).orb = "d";
-                tmpsites_slib(6).orb_sym = "yz";tmpsites_slib(6).orb = "d";
-                tmpsites_slib(7).orb_sym = "x^2-y^2";tmpsites_slib(7).orb = "d";
-                tmpsites_slib(8).orb_sym = "xy";tmpsites_slib(8).orb = "d";
+                tempOrbSites = repmat(sites(i),[1,8]);
+                tempOrbSites(1).orb_sym = "z";tempOrbSites(1).orb = "p";
+                tempOrbSites(2).orb_sym = "x";tempOrbSites(2).orb = "p";
+                tempOrbSites(3).orb_sym = "y";tempOrbSites(3).orb = "p";
+                tempOrbSites(4).orb_sym = "z^2";tempOrbSites(4).orb = "d";
+                tempOrbSites(5).orb_sym = "xz";tempOrbSites(5).orb = "d";
+                tempOrbSites(6).orb_sym = "yz";tempOrbSites(6).orb = "d";
+                tempOrbSites(7).orb_sym = "x^2-y^2";tempOrbSites(7).orb = "d";
+                tempOrbSites(8).orb_sym = "xy";tempOrbSites(8).orb = "d";
             case 'd'
-                tmpsites_slib = repmat(sites(i),[1,5]);
-                tmpsites_slib(1).orb_sym = "z^2";tmpsites_slib(1).orb = "d";
-                tmpsites_slib(2).orb_sym = "xz";tmpsites_slib(2).orb = "d";
-                tmpsites_slib(3).orb_sym = "yz";tmpsites_slib(3).orb = "d";
-                tmpsites_slib(4).orb_sym = "x^2-y^2";tmpsites_slib(4).orb = "d";
-                tmpsites_slib(5).orb_sym = "xy";tmpsites_slib(5).orb = "d";
+                tempOrbSites = repmat(sites(i),[1,5]);
+                tempOrbSites(1).orb_sym = "z^2";tempOrbSites(1).orb = "d";
+                tempOrbSites(2).orb_sym = "xz";tempOrbSites(2).orb = "d";
+                tempOrbSites(3).orb_sym = "yz";tempOrbSites(3).orb = "d";
+                tempOrbSites(4).orb_sym = "x^2-y^2";tempOrbSites(4).orb = "d";
+                tempOrbSites(5).orb_sym = "xy";tempOrbSites(5).orb = "d";
             case 'f'
                 %
             

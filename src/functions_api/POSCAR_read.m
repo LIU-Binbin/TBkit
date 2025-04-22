@@ -92,7 +92,7 @@ for i = 1:length(Atom_name)
         if strcmp(mode, 'tbsk')
             sites(sequence).element = string(POSCAR(j,4));
             sites(sequence).orb = string(POSCAR(j,5));
-            sites(sequence).orb_sym = sym(POSCAR(j,6));
+            sites(sequence).orb_sym = string(POSCAR(j,6));
         elseif strcmp(mode, 'tbsym')
             sites(sequence).element = string(POSCAR(j,4));
             sites(sequence).orb = string(POSCAR(j,5));

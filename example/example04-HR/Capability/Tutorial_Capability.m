@@ -292,7 +292,8 @@ Graphene_TB_arm_unfold.bandplot('title','Supercell arm -> unfold');
 Graphene_TB_arm.show('TwoD',1,'ax',Ax(1),'cmap',@hsv);
 title(Ax(1),'Original Supercell ')
 % Compare original vs translated models
-Graphene_TB_arm_translation = Graphene_TB_arm.translation([0.5,0.1,0]);
+translation_vector = [0.5,0.1,0];
+Graphene_TB_arm_translation = Graphene_TB_arm.translation(translation_vector);
 Graphene_TB_arm_translation.show('TwoD',1,'ax',Ax(2),'cmap',@hsv);
 title(Ax(2),['Translated: [', num2str(translation_vector), ']'])
 %% Numerical Filtering
@@ -323,6 +324,7 @@ Graphene_TB_arm_n_proj.bandplot('ax',Ax(2), ...
 % Slab Model Construction (Timing Comparison)
 % Purpose: Compare efficiency of different slab-generation methods
 [~,Ax] = Figs(2,2);
+Graphene_TB_n = Graphene_TB.Subsall();
 Graphene_TB_list_n = Graphene_TB_list.Subsall();
 % Method 1: Matrix-based cut_piece
 tic;

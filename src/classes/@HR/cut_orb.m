@@ -34,7 +34,7 @@ function H_hr = cut_orb(H_hr, rm_list, options)
 
     arguments
         H_hr HR
-        rm_list {mustBeVector} = []
+        rm_list = []
         options.rmfunc function_handle = @(x,y,z) false(size(x))
     end
 
