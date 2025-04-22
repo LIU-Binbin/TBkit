@@ -172,8 +172,14 @@ if iscell(EIGENCAR)
         end
 
         Nbands = size(EIGENCAR{j}, 1); % Number of bands for the current dataset
+        if length(options.LineSpec) == Npara
+            LineSpec = options.LineSpec{j};
+        else
+            LineSpec = options.LineSpec;
+        end
+
         for Ei = 1:Nbands
-            line = plot(ax, klist, EIGENCAR{j}(Ei, :), options.LineSpec,...
+            line = plot(ax, klist, EIGENCAR{j}(Ei, :), LineSpec,...
                 'LineWidth', LineWidth,...
                 'Color', Colormap(j, :),...
                 'DisplayName', num2str(j) + "_" + num2str(Ei));
