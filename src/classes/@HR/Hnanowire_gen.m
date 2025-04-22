@@ -49,6 +49,8 @@ vectorList = double(H_hr.vectorL);
 [vector_list_init,sort_label] = sortrows(vectorList,sort_dir) ;% sort fin_dir
 H_hr = H_hr.reseq(':',sort_label);
 WANNUM =  H_hr.WAN_NUM;
+Ns = diag(Nslab);
+H_hr.Rm = Ns * H_hr.Rm;
 % --------  init  --------
 WAN_NUM_x = WANNUM*Nslab(1);
 WAN_NUM_y = WAN_NUM_x*Nslab(2);

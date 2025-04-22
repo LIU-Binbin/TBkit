@@ -311,9 +311,8 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = sum(H_hr_list)
         [H_hr,Sublist,Unique_term] = unique(H_hr,seed,checklist,Accuracy)
     end
-    % 
+    %% reshape 
     methods
-        H_hr = Hnanowire_gen(H_hr,Nslab,np,vacuum_mode,options);
         H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)
         H_hr = cut_orb(H_hr,rm_list,options)
         H_hr = clean(H_hr,WANNUM)
@@ -324,7 +323,9 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = ForceTolist(H_hr)
         H_hr = ForceToType(H_hr,Type)
         H_hr = OpenBoundary(H_hr,OBC_list)
+        H_hr = translation(H_hr,translation_vector,options)
     end
+
     methods
         H_hr = enlarge(H_hr,dir,amp)
         H_hr = add_soc(H_hr)
@@ -334,11 +335,12 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = deltarule(H_hr,level_cut,mode,options)
         H_hr = alpharule(H_hr,level_cut,mode,options)
     end
+    %% expand
     methods
+        H_hr = Hnanowire_gen(H_hr,Nslab,np,vacuum_mode,options);
         H_hr = cut_piece(H_hr,repeatnum,fin_dir,glue_edges,vacuum_mode)
         H_hr = supercell_hr(H_hr,Ns,options)
         H_hr = unfold_hr(H_hr,Ns,options)
-        H_hr = translation(H_hr,translation_vector,options)
         [sc_orb,sc_vec,sc_elementL,sc_quantumL] = supercell_orb(H_hr,Ns,Accuracy)
         [pc_orb,pc_orbL_full,pc_elementL,pc_quantumL,orb_id_L,pc_orb_id_L,pc_orb_selectL] = unfold_orb(H_hr,Ns,Accuracy,orb_id_L)
         H_hr = descritize(H_hr,Nslab,options)

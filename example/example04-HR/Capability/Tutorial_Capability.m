@@ -260,23 +260,161 @@ bandplot(EIGENCAR, [-3, 3],...
 % - `EIGENCAR_gen` diagonalizes Hamiltonian at each k-point
 % - `bandplot` handles both object-contained and explicit k-path data
 %% reshape 
+% Supercell Construction and Visualization in Graphene
 [~,Ax] = Figs(4,2);
-%
+% Visualize primitive cell 
 Graphene_TB.show('TwoD',1,'ax',Ax(1),'cmap',@hsv);title(Ax(1),'Primitive')
 Graphene_TB.bandplot('ax',Ax(5),'title','Primitive');
-%
+% Regular Supercell Construction  2×2×1 supercell
 Graphene_TB_221 = Graphene_TB.supercell_hr(diag([2,2,1]));
 Graphene_TB_221.show('TwoD',1,'ax',Ax(2),'cmap',@hsv);title(Ax(2),'Supercell 221')
 Graphene_TB_221.bandplot('ax',Ax(6),'title','Supercell 221');
-%
+% Rectangular Supercell Configuration 
+% Define non-diagonal transformation matrix
 Ns = [1 0 0;1 2 0;0 0 1];
 Graphene_TB_rec = Graphene_TB.supercell_hr(Ns); 
 Graphene_TB_rec = Graphene_TB_rec < 'KPOINTS_rec';
 Graphene_TB_rec.show('TwoD',1,'ax',Ax(3),'cmap',@hsv);
 title(Ax(3),'Supercell rec')
 Graphene_TB_rec.bandplot('ax',Ax(7),'title','Supercell rec');
-%
+% Armchair-edge Supercell Construction
 Ns = [1 -1 0;1 2 0;0 0 1];
 Graphene_TB_arm = Graphene_TB.supercell_hr(Ns);
 Graphene_TB_arm.show('TwoD',1,'ax',Ax(4),'cmap',@hsv);title(Ax(4),'Supercell arm')
 Graphene_TB_arm.bandplot('ax',Ax(8),'title','Supercell arm');
+%% unfold
+Graphene_TB_arm_unfold = Graphene_TB_arm.unfold_hr(Ns);
+Graphene_TB_arm_unfold.bandplot('title','Supercell arm -> unfold');
+%%  Translation Operation
+% Purpose: Demonstrate real-space translation effects
+% Create translation transformation
+[~,Ax] = Figs(1,2); % Fractional coordinates
+Graphene_TB_arm.show('TwoD',1,'ax',Ax(1),'cmap',@hsv);
+title(Ax(1),'Original Supercell ')
+% Compare original vs translated models
+Graphene_TB_arm_translation = Graphene_TB_arm.translation([0.5,0.1,0]);
+Graphene_TB_arm_translation.show('TwoD',1,'ax',Ax(2),'cmap',@hsv);
+title(Ax(2),['Translated: [', num2str(translation_vector), ']'])
+%% Numerical Filtering
+% Purpose: Remove insignificant hopping terms
+Graphene_TB_arm_n = Graphene_TB_arm.Subsall();
+% Add small hop
+Graphene_TB_arm_n = Graphene_TB_arm_n.set_hop_single(1e-3,1,4,[1,0,0],'set');
+% Visualize before/after filtering
+[~,Ax] = Figs(1,2);
+Graphene_TB_arm_n.show('TwoD',1,'ax',Ax(1),'cmap',@hsv);
+title(Ax(1),["Graphene Supercell armchair" ;...
+    "with additional small hopping [1e-3]"]);
+Graphene_TB_arm_n = Graphene_TB_arm_n.filter(1e-2);
+Graphene_TB_arm_n.show('TwoD',1,'ax',Ax(2),'cmap',@hsv);
+title(Ax(2),'After filter [1e-2]');
+%% project
+% Purpose: Analyze specific band states
+[~,Ax] = Figs(1,2);
+% Generate eigenvalues/eigenvectors
+[EIGENCAR,WAVECAR] =  Graphene_TB_arm_n.EIGENCAR_gen('LWAVE',1);
+Graphene_TB_arm_n.bandplot(EIGENCAR,'ax',Ax(1),'title',"Graphene Supercell armchair");
+% Project bands 1-3 at k-point 110: K
+Project_mat = WAVECAR(:,1:3,110);
+Graphene_TB_arm_n_proj = Graphene_TB_arm_n.project(Project_mat')
+Graphene_TB_arm_n_proj.bandplot('ax',Ax(2), ...
+    'title',["Graphene Supercell armchair projection";" at K for 1-3 band"]);
+%% expand
+% Slab Model Construction (Timing Comparison)
+% Purpose: Compare efficiency of different slab-generation methods
+[~,Ax] = Figs(2,2);
+Graphene_TB_list_n = Graphene_TB_list.Subsall();
+% Method 1: Matrix-based cut_piece
+tic;
+Graphene_TB_slab_n = Graphene_TB_n.cut_piece(20,2);
+Graphene_TB_slab_n = Graphene_TB_slab_n <'KPOINTS_slab';
+elapsedTime = toc;
+Graphene_TB_slab_n.bandplot('ax',Ax(1),'title', ...
+    ["Graphene slab;OBC(b)"; ...
+    "cut\_piece,mat,cost "+num2str(elapsedTime)+ "s"]);
+% Method 2: List-based cut_piece
+tic
+Graphene_TB_slab_n = Graphene_TB_list_n.cut_piece(20,2);
+Graphene_TB_slab_n = Graphene_TB_slab_n <'KPOINTS_slab';
+elapsedTime = toc;
+Graphene_TB_slab_n.bandplot('ax',Ax(2),'title', ...
+    ["Graphene slab;OBC(b)"; ...
+    "cut\_piece,list,cost "+num2str(elapsedTime)+ "s"]);
+% Method 3: Matrix supercell_hr
+tic;
+Graphene_TB_slab_n = Graphene_TB_n.supercell_hr(diag([1,20,1]),'OBC',[0,1,0]);
+Graphene_TB_slab_n = Graphene_TB_slab_n <'KPOINTS_slab';
+elapsedTime = toc;
+Graphene_TB_slab_n.bandplot('ax',Ax(3),'title', ...
+    ["Graphene slab;OBC(b)"; ...
+    "supercell\_hr,mat,cost "+num2str(elapsedTime)+ "s"]);
+% Method 4: List supercell_hr
+tic
+Graphene_TB_slab_n = Graphene_TB_list_n.supercell_hr(diag([1,20,1]),'OBC',[0,1,0]);
+Graphene_TB_slab_n = Graphene_TB_slab_n <'KPOINTS_slab';
+elapsedTime = toc;
+Graphene_TB_slab_n.bandplot('ax',Ax(4),'title', ...
+    ["Graphene slab;OBC(b)"; ...
+    "supercell\_hr,list,cost "+num2str(elapsedTime)+ "s"]);
+% supercell_hr() more efficient than cut_piece() for slab creation
+%% Tutorial: Nanostructure Generation Methods Comparison
+% This section demonstrates two approaches for creating graphene nanostructures
+% (nanodisk/nanowire) with timing benchmarks. Code emphasizes method comparison
+% and proper visualization techniques.
+
+%-------------------------------------------------------------
+%% Section 1: Nanostructure Generation Methods
+% Purpose: Compare direct nanowire generation vs supercell-based approach
+
+% Initialize figure for side-by-side comparison
+[~, Ax] = Figs(1,2);  % Assume Figs() creates 1x2 subplot array
+
+%-------------------------------------------------------------
+%% Method A: Direct Nanowire Generation
+% Recommended for specialized nanostructure shapes
+
+tic;
+Graphene_TB_disk = Graphene_TB_n.Hnanowire_gen([20, 20, 1]);  % Create nanowire
+executionTime_Hnanowire = toc;
+
+% Visualization
+Graphene_TB_disk.show('TwoD', 1, 'ax', Ax(1));
+title(Ax(1), [
+    "Method: Hnanowire\_gen"; 
+    sprintf("Execution time: %.3f s", executionTime_Hnanowire)
+]);
+
+%-------------------------------------------------------------
+%% Method B: Supercell Construction
+% Recommended for standard geometries with boundary conditions
+
+tic;
+Graphene_TB_disk = Graphene_TB_n.supercell_hr(...
+    diag([20, 20, 1]), ...    % Scaling factors
+    'OBC', [1, 1, 0], ...     % Open boundaries (x,y directions)
+    'silence', 1 ...          % Suppress console output
+);
+executionTime_supercell = toc;
+
+% Visualization
+Graphene_TB_disk.show('TwoD', 1, 'ax', Ax(2));
+title(Ax(2), [
+    "Method: supercell\_hr"; 
+    sprintf("Execution time: %.3f s", executionTime_supercell)
+]);
+
+%-------------------------------------------------------------
+% 1. Hnanowire_gen() provides specialized nanostructure control
+% 2. supercell_hr() offers boundary condition flexibility
+% 3. Timing differences reflect method specialization:
+%    - Direct methods (Hnanowire_gen) often faster for target geometries
+%    - Supercell methods better for complex boundary condition setups
+%
+% - Dimension parameters [20,20,1] define nanostructure size
+% - OBC flags [1,1,0] enforce open boundaries in x-y plane
+% - tic/toc timing includes both computation and visualization
+% - Use 'silence' flag for cleaner output in batch processing
+%% cut disk
+
+
+

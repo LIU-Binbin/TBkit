@@ -12,7 +12,7 @@ elseif nargin ==1 || ( (ischar(varargin{1}) || isstring(varargin{1}))  )
     EIGENCAR = TBkitobj.EIGENCAR_gen();
     Ecut=  [-3,3];
     bandplot(EIGENCAR,Ecut,TBkitobj.klist_l,TBkitobj.kpoints_l,TBkitobj.kpoints_name,varargin{:});
-elseif ismatrix(varargin{1}) && ~isnumeric(varargin{2}) && ~isvector(varargin{2})
+elseif ismatrix(varargin{1}) && ( (ischar(varargin{2}) || isstring(varargin{2}))  )
     EIGENCAR = varargin{1};
     varargin = varargin(2:end);
     Ecut=  [-3,3];
