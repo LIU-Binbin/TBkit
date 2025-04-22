@@ -71,6 +71,14 @@ disp(Ns);
 POSCAR_plot(Rm,sites,Atom_name,Atom_num);
 return;
 %% 与spglib接口
+% spglib install
+mex -setup C++ ;
+% mac 
+% https://ww2.mathworks.cn/support/requirements/previous-releases.html
+%      git clone https://github.com/spglib/spglib.git
+%
+% https://developer.apple.com/download/all/?q=Xcode%2015
+% 
 % spglib简介
 %% 
 % * <https://spglib.github.io/spglib/ https://spglib.github.io/spglib/>

@@ -128,7 +128,6 @@ function plotBox(Rm,options)
     ax = options.ax;
     hold(ax,'on');
     %fig = figure();
-    import *;
     %box on;
     a1 =Rm(1,:);a2 =Rm(2,:);a3 =Rm(3,:);
     vectorList = double(options.vectorL);
@@ -189,7 +188,6 @@ function plotMoreBox(Rm,vectorL,options)
         vectorL ;
         options.ax = gca();
     end
-    import *;
     ax = options.ax;
     hold(ax,'on');
     %fig = figure();
@@ -205,7 +203,6 @@ arguments
     options.H = 2;
     options.box = [-2,-2,-1;3,3,2];
 end
-import *;
 W = options.W;
 H = options.H;
 ax = options.ax;
