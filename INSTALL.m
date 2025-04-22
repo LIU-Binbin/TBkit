@@ -34,9 +34,9 @@ plot_funcs_path = "src/functions_plot";
 %   heatplot              - 
 %   POSCAR_play           - note: POSCAR is Direct mode
 %% Tools functions with the files in VASP formats and etc
-api_funcs_path = "src/functions_tools";
+tools_path = "src/functions_tools";
 %% API functions with the files in VASP formats and etc
-api_funcs_path = "src/functions_api";
+api_path = "src/functions_api";
 %  READ
 %   DOSCAR_read           - DOSCAR_read
 %   KPOINTS_read          - KPOINTS_read
@@ -114,11 +114,18 @@ api_funcs_path = "src/functions_api";
 %   Htrig                 - 
 %% data files
 datas_path = "src/datas";
+%% lib files
+lib_path = "/lib";
+%% export_fig files
+export_fig_path = "/lib/export_fig";
 %%
 main_path = pwd;
 addpath(main_path+"/src");
+addpath(main_path+lib_path)
+addpath(main_path+export_fig_path);
 addpath(main_path+"/"+classes_path);
 addpath(main_path+"/"+plot_funcs_path);
-addpath(main_path+"/"+api_funcs_path);
+addpath(main_path+"/"+tools_path);
+addpath(main_path+"/"+api_path);
 addpath(main_path+"/"+datas_path);
 savepath;
