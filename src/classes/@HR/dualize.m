@@ -20,9 +20,9 @@ vectorList_oppo(:,1:H_hr.Dim) = -vectorList(:,1:H_hr.Dim);
 
 % Handle special 5-column format (3 spatial + 2 extra dimensions)
 if size(vectorList,2) == 5
-% Swap last two columns for opposite vectors
-vectorList_oppo(:,H_hr.Dim+1) = vectorList(:,H_hr.Dim+2);
-vectorList_oppo(:,H_hr.Dim+2) = vectorList(:,H_hr.Dim+1);
+    % Swap last two columns for opposite vectors
+    vectorList_oppo(:,H_hr.Dim+1) = vectorList(:,H_hr.Dim+2);
+    vectorList_oppo(:,H_hr.Dim+2) = vectorList(:,H_hr.Dim+1);
 end
 
 % Initialize duality mapping vector
@@ -30,20 +30,20 @@ H_hr.Duality_vector_dist = zeros(NRPTS_,1);
 
 % Process each lattice vector to find/create its dual
 for i = 1:NRPTS_
-% Get current dual candidate vector
-vector_tmp_oppo = vectorList_oppo(i,:);
+    % Get current dual candidate vector
+    vector_tmp_oppo = vectorList_oppo(i,:);
 
-% Find existing dual vector in original list
-[~,j] = ismember(vector_tmp_oppo, H_hr.vectorL, 'rows');
+    % Find existing dual vector in original list
+    [~,j] = ismember(vector_tmp_oppo, H_hr.vectorL, 'rows');
 
-% Add new empty entry if dual vector not found
-if j == 0
-    H_hr = H_hr.add_empty_one(vector_tmp_oppo);  % Expand vector list
-    j = H_hr.NRPTS;                             % Get new index
-    H_hr.Duality_vector_dist(j) = i;            % Record reverse mapping
-end
+    % Add new empty entry if dual vector not found
+    if j == 0
+        H_hr = H_hr.add_empty_one(vector_tmp_oppo);  % Expand vector list
+        j = H_hr.NRPTS;                             % Get new index
+        H_hr.Duality_vector_dist(j) = i;            % Record reverse mapping
+    end
 
-% Store duality mapping: original -> dual
-H_hr.Duality_vector_dist(i) = j;
+    % Store duality mapping: original -> dual
+    H_hr.Duality_vector_dist(i) = j;
 end
 end

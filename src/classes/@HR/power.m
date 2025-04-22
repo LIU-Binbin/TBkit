@@ -13,8 +13,15 @@ function H_hr = power(H_hr,b)
 %       - Operates on both numeric and symbolic coefficients
 %       - Performs element-wise power (.^) operation
 %       - Processes all hopping terms
-for i = 1:H_hr.NRPTS
-H_hr.HcoeL(:,:,i) = H_hr.HcoeL(:,:,i).^b;
-H_hr.HnumL(:,:,i) = H_hr.HnumL(:,:,i).^b;
+if H_hr.coe
+    for i = 1:H_hr.NRPTS
+        H_hr.HcoeL(:,:,i) = H_hr.HcoeL(:,:,i).^b;
+    end
 end
+if H_hr.num
+    for i = 1:H_hr.NRPTS
+        H_hr.HnumL(:,:,i) = H_hr.HnumL(:,:,i).^b;
+    end
+end
+
 end

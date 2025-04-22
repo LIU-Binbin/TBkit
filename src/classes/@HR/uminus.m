@@ -10,8 +10,8 @@ function H_hr = uminus(H_hr)
 %       H_hr - HR object with negated elements
 %
 %   See also HR, UPLUS, MINUS
-for i = 1:H_hr.NRPTS
-H_hr.HcoeL(:,:,i) = -H_hr.HcoeL(:,:,i);
-H_hr.HnumL(:,:,i) = -H_hr.HnumL(:,:,i);
-end
+% for i = 1:H_hr.NRPTS
+H_hr.HcoeL = -H_hr.HcoeL;
+H_hr.HnumL = -H_hr.HnumL;
+% end
 end

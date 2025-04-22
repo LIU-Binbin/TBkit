@@ -15,26 +15,34 @@ function H_hr = mpower(A,B)
 %       - Throws error for invalid input combinations
 
 if isa(A,'HR') && isa(B,'numeric')
-if length(B) >1
-error('only support a number');
-end
-H_hr = A;
-c = B;
-for i = 1:H_hr.NRPTS
-H_hr.HcoeL(:,:,i) = H_hr.HcoeL(:,:,i)^c;
-H_hr.HnumL(:,:,i) = H_hr.HnumL(:,:,i)^c;
-end
+    if length(B) >1
+        error('only support a number');
+    end
+    H_hr = A;
+    c = B;
+    for i = 1:H_hr.NRPTS
+        if H_hr.coe
+            H_hr.HcoeL(:,:,i) = H_hr.HcoeL(:,:,i)^c;
+        end
+        if H_hr.num
+            H_hr.HnumL(:,:,i) = H_hr.HnumL(:,:,i)^c;
+        end
+    end
 elseif isa(B,'HR') && isa(A,'numeric')
-if length(A) >1
-error('only support a number');
-end
-H_hr = B;
-c = A;
-for i = 1:H_hr.NRPTS
-H_hr.HcoeL(:,:,i) = c^H_hr.HcoeL(:,:,i);
-H_hr.HnumL(:,:,i) = c^H_hr.HnumL(:,:,i);
-end
+    if length(A) >1
+        error('only support a number');
+    end
+    H_hr = B;
+    c = A;
+    for i = 1:H_hr.NRPTS
+        if H_hr.coe
+            H_hr.HcoeL(:,:,i) = c^H_hr.HcoeL(:,:,i);
+        end
+        if H_hr.num
+            H_hr.HnumL(:,:,i) = c^H_hr.HnumL(:,:,i);
+        end
+    end
 else
-error('wrong input');
+    error('wrong input');
 end
 end

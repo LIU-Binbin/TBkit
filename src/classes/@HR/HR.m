@@ -74,6 +74,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
     methods (Access = protected)
         propgrp = getPropertyGroups(~)
     end
+    %% Construction
     methods
         function H_hr = HR(WAN_NUM,vectorL,options,propArgs)
             % HR H_hr = HR(WAN_NUM,vectorL) construct a empty TB obj
@@ -218,6 +219,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
     methods(Static,Hidden,Access= protected)
         [dataArray,NRPT_list,NRPTS,NUM_WAN]=hrdat_read(filename)
     end
+    %% setup
     methods
         H_hr = add_empty_one(H_hr,vector)
         H_hr = expand_empty_one(H_hr,orbOne,QuantumOne,elementOne)
@@ -278,6 +280,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         vectorSeq = Getvector(H_hr,vector)
         H_hr = autohermi(H_hr,mode,options)
     end
+    %% overload
     methods
         H_hr = plus(A,B)
         H_hr = minus(A,B)
@@ -308,6 +311,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = sum(H_hr_list)
         [H_hr,Sublist,Unique_term] = unique(H_hr,seed,checklist,Accuracy)
     end
+    % 
     methods
         H_hr = Hnanowire_gen(H_hr,Nslab,np,vacuum_mode,options);
         H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)

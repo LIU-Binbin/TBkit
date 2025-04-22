@@ -32,7 +32,7 @@ function H_hr = ctranspose(H_hr)
     end
     
     % Check required permutation vector
-    if ~isfield(H_hr, 'Duality_vector_dist') || isempty(H_hr.Duality_vector_dist)
+    if ~isprop(H_hr, 'Duality_vector_dist') || isempty(H_hr.Duality_vector_dist)
         error('Missing Duality_vector_dist property');
     end
 
@@ -105,11 +105,20 @@ function H_hr = ctranspose(H_hr)
 
     function process_matrix_format()
         % Process matrix-format Hamiltonian
+         % NRPTS_ = H_hr.NRPTS; % Get original number of lattice vectors
         if H_hr.coe
-            H_hr.HcoeL = pagectranspose(H_hr.HcoeL(:, :, H_hr.Duality_vector_dist));
+            tmpHcoeL = H_hr.HcoeL;
+            for i = 1:length(H_hr.Duality_vector_dist)
+                tmpHcoeL(:,:,i)= H_hr.HcoeL(:, :, H_hr.Duality_vector_dist(i))';
+            end
+            H_hr.HcoeL = tmpHcoeL;
         end
         if H_hr.num
-            H_hr.HnumL = pagectranspose(H_hr.HnumL(:, :, H_hr.Duality_vector_dist));
+            tmpHnumL = H_hr.HnumL;
+            for i = 1:length(H_hr.Duality_vector_dist)
+                tmpHnumL(:,:,i)= H_hr.HnumL(:, :, H_hr.Duality_vector_dist(i))';
+            end
+            H_hr.HnumL = tmpHnumL;
         end
     end
 end

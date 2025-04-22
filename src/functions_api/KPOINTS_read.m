@@ -105,7 +105,7 @@ function [kpoints,nodes,kpoints_name,kpoints_name_pre] = KPOINTS_read(filename,m
         kpoints_name_t(1)=kpoints_name_pre(1);
         kpoints_name_t(1) = strrep(kpoints_name_t(1),'GAMMA','Γ');
         kpoints_name_t(1) = strrep(kpoints_name_t(1),'Gamma','Γ');
-        kpoints_name_t(1) = strrep(kpoints_name_t(1),'G','G');
+        kpoints_name_t(1) = strrep(kpoints_name_t(1),'G','Γ');
         if N_kpoints >2
             for i=2:N_kpoints/2
                 if strcmp(kpoints_name_pre(2*i-2,:),kpoints_name_pre(2*i-1,:))
