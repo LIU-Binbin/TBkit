@@ -46,7 +46,7 @@ function H_hr = ctranspose(H_hr)
     % Nested processing functions
     function process_vector_hopping()
         % Validate vector hopping components
-        validate_vector_components();
+        % validate_vector_components();
         
         % Process A/B vectors
         H_hr.AvectorL = H_hr.AvectorL(H_hr.Duality_vector_dist, :);

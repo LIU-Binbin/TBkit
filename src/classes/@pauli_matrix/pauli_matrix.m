@@ -91,6 +91,12 @@ classdef pauli_matrix
             if isa(PM1, 'pauli_matrix') && isa(PM2, 'pauli_matrix')
                 PM = PM1;
                 PM.mat = kron(PM1.mat, PM2.mat);  % Kronecker product
+            elseif ~isa(PM1, 'pauli_matrix') && isa(PM2, 'pauli_matrix')
+                PM = PM2;
+                PM.mat = (PM1 * PM2.mat);
+            elseif   isa(PM1, 'pauli_matrix') && ~isa(PM2, 'pauli_matrix')
+                PM = PM1;
+                PM.mat =(PM1.mat * PM2);
             else
                 error('Invalid operands for * operator');
             end

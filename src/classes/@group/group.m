@@ -23,7 +23,7 @@ classdef group
 
     methods
         % Constructor to initialize the group with a unitary matrix.
-        function obj = Group(U)
+        function obj = group(U)
             % If no unitary matrix is provided, initialize as NaN.
             arguments
                 U = nan;
@@ -39,7 +39,7 @@ classdef group
     methods(Static)
         function E = identity()
             % Return the identity element of the group.
-            E = Group();
+            E = group();
             E.isIdentity = true;
         end
     end
@@ -130,10 +130,10 @@ classdef group
                 return;
             else
             end
-            L1 = real(G1.U(:)) < real(G2.U(:));
-            B1 = ~(real(G1.U(:)) == real(G2.U(:)));
-            L2 = imag(G1.U(:)) < imag(G2.U(:));
-            B2 = ~(imag(G1.U(:)) == imag(G2.U(:)));
+            L1 = logical(real(G1.U(:)) < real(G2.U(:)));
+            B1 = logical(~(real(G1.U(:)) == real(G2.U(:))));
+            L2 = logical(imag(G1.U(:)) < imag(G2.U(:)));
+            B2 = logical(~(imag(G1.U(:)) == imag(G2.U(:))));
             for i =1:length(B1)
                 if B1(i)
                     TrueOrFalse = L1(i);
@@ -272,7 +272,7 @@ classdef group
             for i = 1:m
                 for j = 1:n
                     count = count + 1;
-                    newgroup(count) = G1(i) * G2(j);
+                    newgroup(count) = G1(i) .* G2(j);
                 end
             end
 
@@ -334,7 +334,7 @@ classdef group
             % The function returns the sorted list and the indices of the sorted elements.
 
             % Call the insertsort method from the group object to perform sorting
-            [group_list, indSort] = group.insertsort(group_list);
+            [group_list, indSort] = insertsort(group_list);
         end
     end
     %% Group theory
@@ -352,7 +352,7 @@ classdef group
         % Closure check: Determines if the group is closed under the group operation.
         function TrurOrFalse = closure(group)
             TrurOrFalse = true;
-            if all([group.close])
+            if all([group.isClosed])
                 return
             else
                 for i = 1:numel(group)
@@ -494,7 +494,7 @@ classdef group
             else
                 % Use Lagrange's Theorem to find possible subgroups
                 % Lagrange定理 G的每个子群的阶数都是𝐺的阶数的因数.
-                plist = group.SolvingFactor(group.order());
+                plist = SolvingFactor(group.order());
                 plist(1:2) = [];
                 pool = 1:numel(group);
                 for i = plist
@@ -530,7 +530,7 @@ classdef group
             ConjugationClassifyCollection  = conjugationseparation(group);
             nC = length(ConjugationClassifyCollection);
             pool = 1:nC;
-            plist = group.SolvingFactor(group.order());
+            plist = SolvingFactor(group.order());
             plist(1:2) = [];
             for i = 1:nC
                 ChooseL = nchoosek(pool,i);
@@ -603,7 +603,7 @@ classdef group
             end
 
             % Initialize pool with elements of H
-            pool_origin = H.elements;
+            pool_origin = H;
             pool = pool_origin;
 
             % Process each element in the original pool
@@ -619,7 +619,7 @@ classdef group
                 ConjugationClass = conjugation(Hi, G);
 
                 % Check if all conjugates are in H
-                if ~all(ismember(ConjugationClass, H.elements))
+                if ~all(ismember(ConjugationClass, H))
                     TrueOrFalse = false;
                     return;
                 end

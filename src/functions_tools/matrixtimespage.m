@@ -9,7 +9,7 @@
                 end
             else
                 for i = 1:length(mat)
-                    pagenew(:,:,i) = sum(vasplib.matrixtimespage(mat(i,:),page),3);
+                    pagenew(:,:,i) = sum(matrixtimespage(mat(i,:),page),3);
                 end
             end
         end

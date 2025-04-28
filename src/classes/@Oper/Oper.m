@@ -19,6 +19,7 @@ classdef Oper < group
     % Qsymm: algorithmic symmetry finding and symmetric Hamiltonian generation
     % New J. Phys. 20 093026 (2018)
     properties
+        e
         R = []               % Spatial rotation matrix
         t = [0 0 0]          % Translation vector
         conjugate = false    % Complex conjugation flag
@@ -31,7 +32,7 @@ classdef Oper < group
         continuous = false   % Continuous group flag
         strict_eq = false    % Strict equality check flag
     end
-
+    %% Constuction
     methods
         function SymOper = Oper(R, U, t, options)
             %%OPER Constructor for symmetry operator
@@ -87,6 +88,14 @@ classdef Oper < group
             %SymOper.BasisHandle = options.BasisHandle ;
         end
     end
+    %% get
+    methods
+        function e = get.e(OperObj)
+            e = OperObj.isIdentity();
+        end
+
+    end
+    %% 
     methods(Static)
         SymOper = identity(dim, shape,propArgs)
         SymOper = time_reversal(realspace_dim, U, spin,propArgs)

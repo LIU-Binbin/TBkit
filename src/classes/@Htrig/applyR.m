@@ -41,11 +41,11 @@ H_htrig2 = H_htrig; % Preserve pre-transformation state
 
 % Apply transformation to numerical components
 if num_label
-    H_htrig.HnumL = Htrig.matrixtimespage(Smat,H_htrig.HnumL);
+    H_htrig.HnumL = matrixtimespage(Smat,H_htrig.HnumL);
 end
 
 % Apply transformation to symbolic coefficients
 if coe_label
-    H_htrig.HcoeL = Htrig.matrixtimespage(Smat,H_htrig.HcoeL);
+    H_htrig.HcoeL = matrixtimespage(Smat,H_htrig.HcoeL);
 end
 end

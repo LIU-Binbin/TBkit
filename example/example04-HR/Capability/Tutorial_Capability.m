@@ -577,6 +577,8 @@ bandplot3d(EIGENCAR_3D(:,:,2), klist1, klist2, ...
 view(ax, 125, 17);  % Set azimuth and elevation
 axis(ax, 'off');
 light;               % Add lighting effects
+%%
+
 
 
 
