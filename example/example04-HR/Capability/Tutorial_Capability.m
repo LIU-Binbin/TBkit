@@ -365,14 +365,14 @@ Graphene_TB_slab_n.bandplot('ax',Ax(4),'title', ...
 % and proper visualization techniques.
 
 %-------------------------------------------------------------
-%% Section 1: Nanostructure Generation Methods
+% Section 1: Nanostructure Generation Methods
 % Purpose: Compare direct nanowire generation vs supercell-based approach
 
 % Initialize figure for side-by-side comparison
-[~, Ax] = Figs(1,2);  % Assume Figs() creates 1x2 subplot array
+[~, Ax] = Figs(1,2);  % Figs() creates 1x2 subplot array
 
 %-------------------------------------------------------------
-%% Method A: Direct Nanowire Generation
+% Method A: Direct Nanowire Generation
 % Recommended for specialized nanostructure shapes
 
 tic;
@@ -387,7 +387,7 @@ title(Ax(1), [
 ]);
 
 %-------------------------------------------------------------
-%% Method B: Supercell Construction
+% Method B: Supercell Construction
 % Recommended for standard geometries with boundary conditions
 
 tic;
@@ -416,7 +416,167 @@ title(Ax(2), [
 % - OBC flags [1,1,0] enforce open boundaries in x-y plane
 % - tic/toc timing includes both computation and visualization
 % - Use 'silence' flag for cleaner output in batch processing
-%% cut disk
+%% Cutting Graphene Disk into Different Geometries
+% This tutorial demonstrates how to create various geometric shapes (hexagon, triangle, 
+% rectangle, rhombus) from a graphene tight-binding (TB) disk using the `cut_orb` method.
+
+% Generate figure with 2x2 subplots for visualization
+[~, Ax] = Figs(2, 2);
+
+% 1. Hexagon Cutting
+Nsuper = 20;            % Supercell size parameter
+efsmall = 1e-6;         % Epsilon for numerical stability
+
+% Define removal function for hexagonal boundaries
+rmfunc_hex = @(i1, i2, i3) ...
+    i1 > 1 - 1/Nsuper + efsmall | ...        % Right boundary
+    i2 > 1 - 1/Nsuper + efsmall | ...        % Top boundary
+    i2 - i1 > 0.5 - 1/Nsuper + efsmall | ...% Upper diagonal cut
+    i2 - i1 < -0.5 + 1/Nsuper - efsmall;    % Lower diagonal cut
+
+% Create and visualize hexagonal structure
+Graphene_TB_disk_hex = Graphene_TB_disk.cut_orb('rmfunc', rmfunc_hex);
+Graphene_TB_disk_hex.show('NRPTS', 'vectorList', [0,0,0], 'scale', 5, 'ax', Ax(1));
+title(Ax(1), 'Hexagon');
+axis(Ax(1), 'equal');
+
+% 2. Triangle Cutting
+Nsuper = 30;            % Larger supercell for finer resolution
+efsmall = 1e-6;
+
+% Define removal function for triangular boundaries
+rmfunc_tri = @(i1, i2, i3) i2 - i1 > 0.0 - 1/Nsuper + efsmall;
+
+% Create and visualize triangular structure
+Graphene_TB_disk_tri = Graphene_TB_disk.cut_orb('rmfunc', rmfunc_tri);
+Graphene_TB_disk_tri.show('NRPTS', 'vectorList', [0,0,0], 'scale', 5, 'ax', Ax(2));
+title(Ax(2), 'Triangle');
+axis(Ax(2), 'equal');
+
+% 3. Rectangle Cutting
+Nsuper = 20;
+efsmall = 1e-6;
+
+% Define removal function for rectangular boundaries
+rmfunc_rec = @(i1, i2, i3) ...
+    i2 > 1 - 1/Nsuper + efsmall | ...       % Top boundary
+    i2 - 2*i1 > 0 + efsmall | ...           % Right diagonal cut
+    i2 - 2*i1 < -1 + 1/Nsuper - efsmall;    % Left diagonal cut
+
+% Create and visualize rectangular structure
+Graphene_TB_disk_rec = Graphene_TB_disk.cut_orb('rmfunc', rmfunc_rec);
+Graphene_TB_disk_rec.show('NRPTS', 'vectorList', [0,0,0], 'scale', 5, 'ax', Ax(3));
+title(Ax(3), 'Rectangle');
+axis(Ax(3), 'equal');
+
+% 4. Rhombus Cutting
+Nsuper = 20;
+efsmall = 1e-6;
+
+% Define removal function for rhombus boundaries
+rmfunc_rho = @(i1, i2, i3) ...
+    i2 - i1 < 0.0 - 1/Nsuper + efsmall | ...% Lower diagonal cut
+    i2 - i1 > 0.5 - 1/Nsuper + efsmall | ...% Upper diagonal cut
+    i1 > 0.5 + efsmall;                     % Right boundary
+
+% Create and visualize rhombus structure
+Graphene_TB_disk_rho = Graphene_TB_disk.cut_orb('rmfunc', rmfunc_rho);
+Graphene_TB_disk_rho.show('NRPTS', 'vectorList', [0,0,0], 'scale', 5, 'ax', Ax(4));
+title(Ax(4), 'Rhombus');
+view(Ax(4), 0, 90);    % Adjust view for better visualization
+axis(Ax(4), 'equal');
+
+% Advanced Tip: Using uicut
+% For more advanced cutting features, explore the `uicut` function which provides:
+% - Interactive boundary selection
+% - Multi-step cutting operations
+% - Visual feedback during cutting
+%% kp2TB
+% This tutorial demonstrates how to:
+% 1. Construct a 3D Wilson-Sun-Murakami (WSM) model using QWZ model
+% 2. Convert k·p Hamiltonian to tight-binding (TB) model
+% 3. Calculate band structure and visualize 3D energy surfaces
+
+%
+% Define Pauli matrices and symbolic variables
+s_0 = pauli_matrix(0); s_x = pauli_matrix(1); s_y = pauli_matrix(2); s_z = pauli_matrix(3);
+sigma_0 = s_0; sigma_x = s_x; sigma_y = s_y; sigma_z = s_z; % Alias for clarity
+tau_0 = pauli_matrix(0); tau_x = pauli_matrix(1); tau_y = pauli_matrix(2); tau_z = pauli_matrix(3);
+
+syms C0 C1 C2 M0 M1 M2 A0 real;   % Material parameters
+syms k_x k_y k_z real;            % Momentum space variables
+
+% 1. QWZ Hamiltonian Construction
+% Define model components
+M = M0 - M2*(k_x^2 + k_y^2) - M1*k_z^2;
+E0k = C0 + C2*(k_x^2 + k_y^2) + C1*k_z^2;
+k_plus = k_x + 1i*k_y;
+k_minus = k_x - 1i*k_y;
+
+% Build Hamiltonian using Term objects
+QWZ_3D = HK(2,2);
+QWZ_3D = QWZ_3D ...
+    + Term(A0*k_x, tau_x) ...      % Off-diagonal hopping
+    + Term(A0*k_y, tau_y) ...      % Off-diagonal hopping
+    + Term(E0k, tau_0) ...         % Energy offset
+    + Term(M, tau_z);              % Mass term
+
+% Associate with crystal structure
+QWZ_3D = QWZ_3D.Subsall('sym') < 'POSCAR_2';
+
+% 2. k·p to Tight-Binding Conversion
+% Perform kp2TB transformation
+QWZ_3D_TB = QWZ_3D.kp2TB();
+QWZ_3D_TB.list();  % Display tight-binding parameters
+
+% 3. Parameter Substitution
+% Physical parameters (units: eV, Angstrom)
+M0 = 1;        % Mass term coefficient
+A0 = 1;        % Hopping strength
+C0 = 0;        % Energy offset
+C1 = 0.1;      % z-direction dispersion
+C2 = 0;        % xy-plane dispersion
+M1 = 0.5;      % z-direction mass coefficient
+M2 = 0.5;      % xy-plane mass coefficient
+
+% Lattice constants
+a = 1; b = 1; c = 1;  % Unit cell dimensions (Angstrom)
+
+% Numerically substitute parameters
+QWZ_3D_TB_n = QWZ_3D_TB.Subsall() < 'KPOINTS_4';
+
+% 4. Band Structure Calculation
+% Generate and plot band structure
+EIGENCAR = QWZ_3D_TB_n.EIGENCAR_gen();
+bandplot(EIGENCAR, [-2, 2], ...
+    'title', "3D WSM Band Structure", ...
+    'POSCAR', 'POSCAR_4', ...
+    'KPOINTS', 'KPOINTS_4');
+
+% 5. 3D Band Surface Visualization
+% Generate 3D energy surface data
+[EIGENCAR_3D, klist1, klist2] = QWZ_3D_TB_n.EIGENCAR_gen_3D(...
+    [101, 101], ...                % k-mesh resolution
+    [-0.5,-0.0,-0.5; 1,0,0; 0 0 1],... % k-path definition
+    'fin_dir', 2);                 % Fixed direction (k_z=0)
+
+% Create 3D band visualization
+ax = bandplot3d(EIGENCAR_3D(:,:,1), klist1, klist2, ...
+    'WEIGHTCAR', -ones(101), ...   % Lower band coloring
+    'xlabel', 'k_x', 'ylabel', 'k_y', ...
+    'cmap', [0,0,1; 1,0,0], ...    % Blue-to-red colormap
+    'FaceAlpha', 0.5);
+
+bandplot3d(EIGENCAR_3D(:,:,2), klist1, klist2, ...
+    'ax', ax, ...
+    'WEIGHTCAR', ones(101), ...    % Upper band coloring
+    'cmap', [0,0,1; 1,0,0], ...
+    'FaceAlpha', 0.5);
+
+% Adjust view settings
+view(ax, 125, 17);  % Set azimuth and elevation
+axis(ax, 'off');
+light;               % Add lighting effects
 
 
 

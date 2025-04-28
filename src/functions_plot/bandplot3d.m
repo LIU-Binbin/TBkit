@@ -58,12 +58,15 @@ function varargout = bandplot3d(EIGENCAR_3D, klistX, klistY, options)
         titlestring = options.title;
     end
 
-    % Create figure and axis
+    % Prepare axes for plotting
     if isempty(options.ax)
-        figs = create_figure();
-        ax = figs.axes(1);
+        [Fig,ax]= Figs(1, 1); % Create new figure
     else
-        ax = options.ax;
+        if isvalid(options.ax)
+            ax = options.ax; % Use provided axis handle
+        else
+            [Fig,ax]= Figs(1, 1); % Create new figure
+        end
     end
 
     % If WEIGHTCAR is not provided, use absolute value of EIGENCAR_3D

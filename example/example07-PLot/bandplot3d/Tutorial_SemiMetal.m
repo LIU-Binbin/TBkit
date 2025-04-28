@@ -46,17 +46,17 @@ M0     = 1   ;
 %M0     = -0.25   ;
 % unit eV Ang
 A0      =  1      ;
-%B      =  4.1      ;
+%B      =  4.1    ;
 % unit eV Ang^2
 C0     =  0;
-C1     =  0.1     ;
+C1     =  0.1   ;
 C2     =  0     ;
-M1     =  0.5      ;
-M2     =  0.5  ;
+M1     =  0.5   ;
+M2     =  0.5   ;
 % unit    Ang
-a      =  1        ;
+a      =  1       ;
 b      =  1       ;
-c      =  1        ;
+c      =  1       ;
 % NumTB
 
 QWZ_3D_TB_n = QWZ_3D_TB.Subsall();
