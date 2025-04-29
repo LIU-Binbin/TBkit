@@ -1,4 +1,3 @@
-% bandplot.m
 function varargout = bandplot(TBkitobj, varargin)
 %BANDPLOT Plot band structure from TBkit object
 %   BANDPLOT(TBkitobj, ...) generates band structure plots from a TBkit

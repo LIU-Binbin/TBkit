@@ -1,4 +1,20 @@
 function Symble = SymbolicVarible(seeds,superscript,subscript,level)
+%SYMBOLICVARIBLE Create symbolic variable with formatted name
+%   SYMBLE = SYMBOLICVARIBLE(SEEDS, SUPERSCRIPT, SUBSCRIPT, LEVEL) creates
+%   a symbolic variable with formatted name including sub/superscripts.
+%
+%   Inputs:
+%       seeds      - Base name string
+%       superscript - Numeric superscript values
+%       subscript  - Numeric subscript values
+%       level      - (optional) Additional level index
+%
+%   Output:
+%       Symble     - Created symbolic variable
+%
+%   Note:
+%       Formats negative indices with '_bar' suffix
+%       Adds '_ubar' suffix if level is provided
 Superscript = "";
 Subscript = "";
 for i = 1:length(superscript)

@@ -1,4 +1,48 @@
 classdef TBkit < matlab.mixin.CustomDisplay
+        %TBkit Tight-binding toolkit for electronic structure calculations
+    %
+    %   This class provides a comprehensive toolkit for tight-binding model
+    %   calculations, including band structure computation, topological
+    %   invariants, and various visualization tools.
+    %
+    %   Properties:
+    %       Dim          - Dimension of the system (default=3)
+    %       Basis_num    - Number of basis orbitals
+    %       Rm           - Real-space lattice vectors
+    %       Hermitian    - Flag for Hermitian Hamiltonian (default=true)
+    %       VarsSeqLcart - Cartesian k-space symbolic variables
+    %       VarsSeqLfrac - Fractional k-space symbolic variables
+    %       Hsym         - Symbolic Hamiltonian
+    %       Basis        - Basis orbital information
+    %       orbL         - Orbital list
+    %       elementL     - Element list for each orbital
+    %       quantumL     - Quantum numbers for orbitals
+    %       klist_cart   - Cartesian k-points list
+    %       klist_frac   - Fractional k-points list
+    %
+    %   Dependent Properties:
+    %       Gk           - Reciprocal lattice vectors
+    %       symvar_list  - List of symbolic variables in Hamiltonian
+    %       Nbands       - Number of bands
+    %       Hfun         - Function handle for Hamiltonian
+    %
+    %   Methods:
+    %       TBkit            - Constructor
+    %       TBkit_init       - Initialize default properties
+    %       TBkitCopy        - Copy properties from another TBkit object
+    %       timtj_gen        - Generate tij-tj terms
+    %       tjmti_gen        - Generate tj-ti terms
+    %       input_Rm         - Input real-space lattice vectors
+    %       bandplot         - Plot band structure
+    %       Chern            - Calculate Chern number
+    %       WilsonLoop       - Compute Wilson loop spectrum
+    %       WindingNumber    - Calculate winding number
+    %
+    %   Static Methods:
+    %       POSCAR_read      - Read VASP POSCAR file
+    %       kmesh2D          - Generate 2D k-mesh
+    %       BerryConnection  - Calculate Berry connection
+    %       EIGENSOLVE       - Solve eigenvalue problem
     properties
         Dim = 3;
         Basis_num;

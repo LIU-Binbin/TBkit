@@ -1,4 +1,3 @@
-% applyRU.m
 function [H_hk_R, H_hk] = applyRU(H_hk, SymOper)
 %APPLYRU Apply symmetry operation to HK object with R/U transformations
 %   [H_hk_R, H_hk] = APPLYRU(H_hk, SymOper) applies a combined symmetry operation 

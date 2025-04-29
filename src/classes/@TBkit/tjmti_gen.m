@@ -1,4 +1,19 @@
 function TBkitObj = tjmti_gen(TBkitObj,mode)
+%TJMTI_GEN Generate tj-ti terms for tight-binding model
+%
+%   Syntax:
+%       TBkitObj = tjmti_gen(TBkitObj,mode)
+%
+%   Description:
+%       Generates tj-ti terms and their Fourier transforms for the
+%       tight-binding Hamiltonian. Can operate in numeric or symbolic mode.
+%
+%   Inputs:
+%       TBkitObj - TBkit object
+%       mode     - Operation mode ('num' or 'sym', default='num')
+%
+%   Output:
+%       TBkitObj - Modified TBkit object with tjmti terms
 if nargin < 2
     mode = 'num';
 end

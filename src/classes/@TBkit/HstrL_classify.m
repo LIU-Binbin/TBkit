@@ -1,4 +1,19 @@
 function [vector_list,Coeffs_list] = HstrL_classify(H_strL_tmp,R_struct,mode)
+%HSTRL_CLASSIFY Classify Hamiltonian terms for real-space mapping
+%   [v, c] = HstrL_classify(H_strL_tmp, R_struct, mode) prepares symbolic
+%   Hamiltonian terms for real-space vector mapping.
+%
+%   Inputs:
+%       H_strL_tmp - String or symbolic expression
+%       R_struct   - Lattice parameter structure
+%       mode       - Lattice type ('T','H','H2')
+%
+%   Outputs:
+%       vector_list  - Hopping vectors
+%       Coeffs_list  - Corresponding coefficients
+%
+%   Example:
+%       [v, c] = HstrL_classify('x+y', struct('a',1), 'H');
 if nargin <3
 mode = 'T';
 end

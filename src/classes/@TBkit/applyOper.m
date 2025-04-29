@@ -1,33 +1,22 @@
-%==========================================================================
-% applyOper - Apply symmetry operations to Hamiltonian in k-space
-%==========================================================================
-% This function applies a set of symmetry operations to a given Hamiltonian
-% in k-space (H_hk) and returns the symmetrized Hamiltonian. It supports
-% both generator-based and full group symmetry applications with progress
-% tracking and numerical simplification options.
-%
-% Syntax:
-%   [H_hk] = applyOper(H_hk, SymOper, options)
-%
-% Input Arguments:
-%   H_hk    - HK object representing the Hamiltonian in k-space
-%   SymOper - Oper object or array defining symmetry operations (default: Oper())
-%   options - Name-value pairs:
-%       generator  - Logical flag to use generator-based symmetry (default: true)
-%       Accuracy   - Numerical tolerance for coefficient simplification (default: 1e-3)
-%       oneshot    - Logical flag for single-step group application (default: false)
-%       center    - Center coordinates for basis transformation (default: [0,0,0])
-%
-% Output Arguments:
-%   H_hk    - Modified HK object after symmetry application
-%
-% Methods Called:
-%   HK.init, HK.hermitize, HK.simplify, Oper.Ugen, Oper.generate_group
-%
-% Example:
-%   H_sym = applyOper(H_initial, sym_ops, 'Accuracy', 1e-4);
-%==========================================================================
 function [H_hk] = applyOper(H_hk,SymOper,options)
+%APPLYOPER Apply symmetry operations to Hamiltonian in k-space
+%   [H_hk] = applyOper(H_hk, SymOper, options) applies symmetry operations to
+%   a k-space Hamiltonian object.
+%
+%   Inputs:
+%       H_hk    - HK object representing the Hamiltonian
+%       SymOper - Symmetry operation (Oper object or array)
+%       options - Optional parameters:
+%           .generator  : Use group generators (default: true)
+%           .Accuracy   : Simplification tolerance (default: 1e-3)
+%           .oneshot    : Apply all symmetries at once (default: false)
+%           .center     : Center for symmetry operations (default: [0,0,0])
+%
+%   Output:
+%       H_hk - Symmetry-adapted Hamiltonian
+%
+%   Example:
+%       H_sym = applyOper(H, [sym1,sym2], 'Accuracy', 1e-5);
     arguments
         H_hk HK;
         SymOper Oper = Oper();

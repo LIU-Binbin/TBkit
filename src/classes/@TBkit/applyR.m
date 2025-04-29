@@ -1,4 +1,3 @@
-% applyR.m
 function H_hk = applyR(H_hk, R)
 %APPLYR Apply transformation matrix R to HK object coefficients
 %   H_hk = APPLYR(H_hk, R) applies the transformation matrix R to both

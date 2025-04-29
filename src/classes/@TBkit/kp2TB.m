@@ -1,4 +1,24 @@
 function varargout= kp2TB(H_hk,kpoints_f,groups,options)
+%KP2TB Convert k.p Hamiltonian to tight-binding model
+%   [H_hr, H_htrig] = KP2TB(H_hk, kpoints_f, groups, options) converts a k.p
+%   Hamiltonian to a tight-binding model using symmetry operations.
+%
+%   Inputs:
+%       H_hk       - HK object representing the k.p Hamiltonian
+%       kpoints_f  - Fractional k-points (default: [0,0,0])
+%       groups     - Symmetry group operations (default: [])
+%       options    - Structure with optional parameters:
+%           Accuracy      - Numerical accuracy (default: 1e-4)
+%           search_range  - Search range for neighbors (default: [1 1 1])
+%           R_max         - Maximum cutoff distance (default: -1 for auto)
+%           level_cut     - Level cutoff (default: 1)
+%           mini          - Minimize Hamiltonian flag (default: false)
+%
+%   Outputs:
+%       H_hr       - HR object representing tight-binding Hamiltonian
+%       H_htrig    - (optional) Htrig object if second output requested
+%
+%   See also HK, HR, Htrig
 arguments
 H_hk HK;
 kpoints_f double= [0,0,0];

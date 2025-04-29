@@ -1,4 +1,18 @@
 function TBkitObj = SliceGen(TBkitObj)
+%SLICEGEN Generate slicing information for TBkit object
+%   TBKITOBJ = SLICEGEN(TBKITOBJ) processes a TBkit object to generate
+%   slicing information for sparse matrix operations.
+%
+%   Input:
+%       TBkitObj - Input TBkit object (Htrig or HR type)
+%
+%   Output:
+%       TBkitObj - Modified object with slicing information
+%
+%   Note:
+%       Handles both Htrig and HR object types differently
+
+
 % $H_{i j}^{\mathbf{k}}=\left\langle\chi_{i}^{\mathbf{k}}|H| \chi_{j}^{\mathbf{k}}\right\rangle=\sum_{\mathbf{R}} e^{i \mathbf{k} \cdot\left(\mathbf{R}+\mathbf{t}_{j}-\mathbf{t}_{i}\right)} H_{i j}(\mathbf{R})$
 DIM = TBkitObj.Dim;
 if strcmp(TBkitObj.Type,'list')

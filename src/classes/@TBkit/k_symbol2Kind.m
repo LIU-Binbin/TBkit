@@ -1,4 +1,15 @@
 function Kind = k_symbol2Kind(H_hk,k_symbol)
+%K_SYMBOL2KIND Map k-space symbol to Hamiltonian kind index
+%   idx = k_symbol2Kind(H_hk, sym) finds the kind index for a k-space term
+%
+%   Inputs:
+%       H_hk     - HK object
+%       k_symbol - String/symbol representing k-space term
+%
+%   Output:
+%       Kind - Index of matching term in H_hk.HsymL
+%
+%   Handles various common k-space variable naming conventions
 k_symbol = string(k_symbol);
 symvar_list = symvar(str2sym(k_symbol));
 for i = 1:length(symvar_list)

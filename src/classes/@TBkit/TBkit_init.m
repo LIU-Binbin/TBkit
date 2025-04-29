@@ -1,4 +1,18 @@
 function TBkitobj = TBkit_init(TBkitobj)
+%TBKIT_INIT Initialize default properties of TBkit object
+    %
+    %   Syntax:
+    %       TBkitobj = TBkit_init(TBkitobj)
+    %
+    %   Description:
+    %       Initializes default values for Rm, VarsSeqLcart, and VarsSeqLfrac
+    %       properties if they are empty.
+    %
+    %   Input:
+    %       TBkitobj - TBkit object to initialize
+    %
+    %   Output:
+    %       TBkitobj - Initialized TBkit object
     if isempty(TBkitobj.Rm)
         TBkitobj.Rm = eye(TBkitobj.Dim);
     end

@@ -1,4 +1,19 @@
 function [vector_list,Coeffs_list] = Hstr_mapping(H_str,R_struct,mode)
+%HSTR_MAPPING Map symbolic Hamiltonian terms to real-space vectors
+%   [v, c] = Hstr_mapping(H_str, R_struct, mode) converts symbolic k-space
+%   terms to real-space hopping vectors and coefficients.
+%
+%   Inputs:
+%       H_str    - String representation of Hamiltonian term
+%       R_struct - Structure with lattice parameters (a,b,c)
+%       mode     - Lattice type ('T' for tetragonal, 'H' for hexagonal)
+%
+%   Outputs:
+%       vector_list  - Hopping vectors
+%       Coeffs_list  - Corresponding coefficients
+%
+%   Example:
+%       [v, c] = Hstr_mapping('x^2', struct('a',1), 'T');
 if nargin <3
 mode = 'T';
 end

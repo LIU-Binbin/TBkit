@@ -1,4 +1,3 @@
-% applyU.m
 function H_hk = applyU(H_hk, U, conjugate, antisymmetry)
 %APPLYU Apply unitary transformation to HK object
 %   H_hk = APPLYU(H_hk, U, conjugate, antisymmetry) applies a unitary
