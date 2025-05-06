@@ -68,7 +68,7 @@ elseif isa(A,'Htrig') && ~isa(B,'Htrig')
         case 'char'
             switch B(1)
                 case {'P','p'}
-                    C = A.input_orb_struct(B,'tbsym');
+                    C = A.input_orb_struct(B,'tbsk');
                     C.Rm = sym(C.Rm );
                     C.orbL = sym(C.orbL );
                 case {'w','W'}

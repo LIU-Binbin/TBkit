@@ -199,6 +199,4 @@ axis(Ax(3),'off');
 %%
 export_fig(gcf,'temp.png','-png','-r600');
 %% 
-% 
-% 
 %

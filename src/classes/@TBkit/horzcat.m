@@ -10,7 +10,7 @@ function C = horzcat(A,B)
 %
 %   Example:
 %       H_combined = [H1, H2]; % Uses horzcat internally
-if isa(A,'HK') && isa(B,'HK')
+if isa(A,'TBkit') && isa(B,'TBkit')
     H_hk1 = A;
     H_hk2 = B;
     H_hk = A;

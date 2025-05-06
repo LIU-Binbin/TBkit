@@ -50,9 +50,9 @@ function U = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, optionsRm, 
 
     arguments
         A BasisFunc;
-        Rc {Spin.mustBeSize(Rc, [3 3])} = diag([1 1 1]);
-        Rf {Spin.mustBeSize(Rf, [3 3])} = diag([1 1 1]);
-        tf {Spin.mustBeSize(tf, [3 1;1 3])} = ([0 0 0]);
+        Rc {mustBeSize(Rc, [3 3])} = diag([1 1 1]);
+        Rf {mustBeSize(Rf, [3 3])} = diag([1 1 1]);
+        tf {mustBeSize(tf, [3 1;1 3])} = ([0 0 0]);
         optionsConvection.rightorleft {mustBeMember(optionsConvection.rightorleft, {'right','left'})} = 'right';
         optionsOper.Oper = [];
         optionsRm.Rm = POSCAR_read;

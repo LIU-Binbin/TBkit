@@ -23,7 +23,7 @@ function TBkitobj = input_orb_struct(TBkitobj,filename,mode,options)
 arguments
     TBkitobj TBkit;
     filename string = 'POSCAR';
-    mode char {mustBeMember(mode,{'vasp','tbsk','tbsym'})} = 'vasp';
+    mode char {mustBeMember(mode,{'vasp','tbsk','sym','s,sz'})} = 'vasp';
     options.symbolic logical = false;
     options.Operation logical = false;
     options.warning logical = true;
@@ -70,7 +70,7 @@ end
 switch mode
     case 'tbsk'
         TBkitobj = process_tbsk_mode(TBkitobj, tmpsites, elements);
-    case 'sym'
+    case {'sym','s,sz'}
         TBkitobj = process_sym_mode(TBkitobj, tmpsites, elements);
 end
 
@@ -156,7 +156,10 @@ for i = 1:TBkitobj.Basis_num
     
     % Store additional J quantum number for symmetry mode
     TBkitobj.quantumL(i,1:4) = quantum_numbers;
-    TBkitobj.quantumL(i,5) = tmpsites(i).J;
+    try
+        TBkitobj.quantumL(i,5) = tmpsites(i).Jz;
+    catch
+    end
     
     TBkitobj.orb_symL(i,:) = TBkit.Ymlsym(...
         quantum_numbers(2), quantum_numbers(3), tmp_orb_symL(i,:));

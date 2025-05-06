@@ -140,7 +140,7 @@ classdef Qnum < HollowKnight
             end
             Qnums = Qnum(ANL(1),nL(1),lL(1),mL(1),sL(1),szL(1),qL(1),coeL(1));
             Qnums = repmat(Qnums,[nQnums  nQnums_col]);
-            [ANL,nL,lL,mL,sL,szL,qL,coeL] = Qnum.StanderdInput(ANL,nL,lL,mL,sL,szL,qL,coeL,'nrow',nQnums,'ncol',nQnums_col);
+            [ANL,nL,lL,mL,sL,szL,qL,coeL] = Qnum.StandardInput(ANL,nL,lL,mL,sL,szL,qL,coeL,'nrow',nQnums,'ncol',nQnums_col);
             for i = 1:numel(Qnums)
                 Qnums(i).AN = ANL(i);
                 Qnums(i).n  = nL(i);
@@ -153,7 +153,7 @@ classdef Qnum < HollowKnight
             end
         end
 
-        %function [ANL,nL,lL,mL,sL,szL,qL,] = StanderdInput(ANL,nL,lL,mL,sL,szL,qL,nQnums,nQnums_col)
+        %function [ANL,nL,lL,mL,sL,szL,qL,] = StandardInput(ANL,nL,lL,mL,sL,szL,qL,nQnums,nQnums_col)
     end
     methods % reload
 

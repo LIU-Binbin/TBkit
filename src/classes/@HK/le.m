@@ -39,7 +39,7 @@ elseif isa(A,'HK') && ~isa(B,'HK')
         case 'char'
             switch B(1)
                 case {'P','p'}
-                    C = A.input_orb_struct(B,'sym');
+                    C = A.input_orb_struct(B,'s,sz');
                 case {'w','W'}
                 case {'k','K'}
                     C = A.kpathgen3D(B);

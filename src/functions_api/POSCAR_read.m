@@ -6,7 +6,7 @@ function [Rm, sites, Atom_name, Atom_num, elements, a_crystal_constance] = POSCA
 %
 %   Inputs:
 %       filename  - Path to input file (default: 'POSCAR')
-%       mode      - File format mode: 'vasp', 'tbsk', 'tbsym', 'list' (default: 'vasp')
+%       mode      - File format mode: 'vasp', 'tbsk', 'sym','s,sz','list' (default: 'vasp')
 %       options   - Struct with processing options:
 %                   digits: Precision for coordinate values (default: 6)
 %
@@ -47,11 +47,14 @@ switch mode
             'name',[], 'nameseq',[],'element',[],  'orb',[], 'orb_sym',[]);
         formatSpec = '%s%s%s%s%s%s%[^\n\r]';
         
-    case 'tbsym'
+    case 'sym'
         site = struct('seq',[], 'inseq',[], 'rc1',[], 'rc2',[], 'rc3',[],...
             'name',[], 'nameseq',[], 'element',[], 'orb',[], 'orb_sym',[], 'spin',[]);
         formatSpec = '%s%s%s%s%s%s%s%[^\n\r]';
-        
+    case 's,sz'
+        site = struct('seq',[], 'inseq',[], 'rc1',[], 'rc2',[], 'rc3',[],...
+            'name',[], 'nameseq',[], 'element',[], 'orb',[], 'orb_sym',[], 'spin',[],'Jz',[]);
+        formatSpec = '%s%s%s%s%s%s%s%s%[^\n\r]';
     case 'list'
         site = struct('seq',[], 'rc1',[], 'rc2',[], 'rc3',[],...
             'Hue',[], 'surf_level',[], 'hing_level',[]);
@@ -93,11 +96,17 @@ for i = 1:length(Atom_name)
             sites(sequence).element = string(POSCAR(j,4));
             sites(sequence).orb = string(POSCAR(j,5));
             sites(sequence).orb_sym = string(POSCAR(j,6));
-        elseif strcmp(mode, 'tbsym')
+        elseif strcmp(mode, 'sym')
             sites(sequence).element = string(POSCAR(j,4));
             sites(sequence).orb = string(POSCAR(j,5));
             sites(sequence).orb_sym = string(POSCAR(j,6));
             sites(sequence).spin = str2double(POSCAR(j,7));
+        elseif strcmp(mode, 's,sz')
+            sites(sequence).element = string(POSCAR(j,4));
+            sites(sequence).orb = string(POSCAR(j,5));
+            sites(sequence).orb_sym = string(POSCAR(j,6));
+            sites(sequence).spin = str2double(POSCAR(j,7));
+            sites(sequence).Jz = str2double(POSCAR(j,8));
         end
         
         sequence = sequence + 1;
