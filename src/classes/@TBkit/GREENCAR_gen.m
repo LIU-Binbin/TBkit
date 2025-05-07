@@ -22,9 +22,15 @@ function GREENCAR = GREENCAR_gen(w_list,eta,H00_H01_cell_list_1,H00_H01_cell_lis
 %       GREENCAR - Structure containing bulk and surface Green's functions
 %
 %   See also: GW_iter, Tmatrix_gen
-if nargin < 4
+arguments
+    w_list 
+    eta 
+    H00_H01_cell_list_1 
+    H00_H01_cell_list_2 
     mode = 'Green_iter';
+    mu_max =  100;
 end
+
 switch mode
     case 'Green_iter'
         %H00_H01_cell_list = H00_H01_cell_list;
@@ -39,7 +45,7 @@ switch mode
         GREENCAR2{Nsize1,Nsize2} = zeros(WAN_NUM) ;
         GREENCAR3{Nsize1,Nsize2} = zeros(WAN_NUM) ;
         count = 0;
-        pb = TBkit_tool_outer.CmdLineProgressBar('Green Solving ');
+        pb = CmdLineProgressBar('Green Solving ');
         Nsize = Nsize1*Nsize2;
         for i = 1:Nsize1
             for j= 1:Nsize2
