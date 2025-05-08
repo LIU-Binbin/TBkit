@@ -54,6 +54,7 @@ H_hr.Rm = Ns * H_hr.Rm;
 % --------  init  --------
 WAN_NUM_x = WANNUM*Nslab(1);
 WAN_NUM_y = WAN_NUM_x*Nslab(2);
+WAN_NUM_z = WAN_NUM_y*Nslab(3);
 % --------  3D begining  --------
 [unique_z,unique_label_z]= unique(vector_list_init(:,3),'rows');
 cutlist_z = HR.unique_label2cutlist(unique_label_z,H_hr.NRPTS);
@@ -62,7 +63,7 @@ vector_list_wire = (zeros(NRPTS_z,3));
 vector_list_wire(:,3) = (unique_z);
 % init
 vertor_list_xy{NRPTS_z} = vector_list_init(cutlist_z(NRPTS_z,1):cutlist_z(NRPTS_z,2),:);
-Hnum_list_wire{NRPTS_z} = sparse(WAN_NUM_y,WAN_NUM_y);
+Hnum_list_wire{NRPTS_z} = sparse(WAN_NUM_z,WAN_NUM_z);
 if strcmp(H_hr.Type,'sparse')
     Hnum_list_xy{NRPTS_z} = H_hr.HnumL(cutlist_z(NRPTS_z,1):cutlist_z(NRPTS_z,2));
 else
@@ -74,14 +75,14 @@ if  strcmp(H_hr.Type,'sparse')
         %                     vector_list_wire(iz,3) = unique_z(iz);
         vertor_list_xy{iz} = vector_list_init(cutlist_z(iz,1):cutlist_z(iz,2),:);
         Hnum_list_xy{iz} = H_hr.HnumL(cutlist_z(iz,1):cutlist_z(iz,2));
-        Hnum_list_wire{iz} = sparse(WAN_NUM_y,WAN_NUM_y);
+        Hnum_list_wire{iz} = sparse(WAN_NUM_z,WAN_NUM_z);
     end
 else
     for iz = 1:NRPTS_z-1
         %                     vector_list_wire(iz,3) = unique_z(iz);
         vertor_list_xy{iz} = vector_list_init(cutlist_z(iz,1):cutlist_z(iz,2),:);
         Hnum_list_xy{iz}   = H_hr.HnumL(:,:,cutlist_z(iz,1):cutlist_z(iz,2));
-        Hnum_list_wire{iz} = sparse(WAN_NUM_y,WAN_NUM_y);
+        Hnum_list_wire{iz} = sparse(WAN_NUM_z,WAN_NUM_z);
     end
 end
 
@@ -93,7 +94,7 @@ if np >1
         fprintf('Gen (%d/%d) NRPT z \n',iz,NRPTS_z);
         Hnum_list_xy_iz = Hnum_list_xy{iz};
         vertor_list_xy_iz = vertor_list_xy{iz};
-        Hnum_list_wire{iz} = HR.Hnum_list_wire_iz_gen(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WANNUM,WAN_NUM_x,WAN_NUM_y,Nslab,TYPE);
+        Hnum_list_wire{iz} = HR.Hnum_list_wire_iz_gen(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WANNUM,WAN_NUM_x,WAN_NUM_z,Nslab,TYPE);
     end
     delete(np_handle);
 else
@@ -101,13 +102,13 @@ else
         fprintf('Gen (%d/%d) NRPT z \n',iz,NRPTS_z);
         Hnum_list_xy_iz = Hnum_list_xy{iz};
         vertor_list_xy_iz = vertor_list_xy{iz};
-        Hnum_list_wire{iz} = HR.Hnum_list_wire_iz_gen(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WANNUM,WAN_NUM_x,WAN_NUM_y,Nslab, TYPE);
+        Hnum_list_wire{iz} = HR.Hnum_list_wire_iz_gen(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WANNUM,WAN_NUM_x,WAN_NUM_z,Nslab, TYPE);
     end
 end
 if strcmp(H_hr.Type,'sparse')
     H_hr.HnumL = Hnum_list_wire;
 else
-    HnumL_temp = zeros(WAN_NUM_y,WAN_NUM_y,NRPTS_z);
+    HnumL_temp = zeros(WAN_NUM_z,WAN_NUM_z,NRPTS_z);
     for iz = 1:NRPTS_z
         HnumL_temp(:,:,iz) = full(Hnum_list_wire{iz});
     end
