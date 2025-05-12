@@ -4,7 +4,7 @@ parkman@buaa.edu.cn
 
 yzpeng@buaa.edu.cn
 
-by2319142@buaa.edu.cn
+You_YiQun@buaa.edu.cn
 
 所有push过的同学都写下自己的邮箱
 
