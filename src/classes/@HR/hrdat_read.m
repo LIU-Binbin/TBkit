@@ -28,7 +28,7 @@ function [dataArray, NRPT_list, NRPTS, NUM_WAN] = hrdat_read(filename)
                          'MultipleDelimsAsOne', true);
     
     NUM_WAN = headerData{1}(1);
-    NRPTS = headerData{1}(2);
+    NRPTS = double(headerData{1}(2));
     fclose(fileID);
 
     %% Read NRPT_LIST (k-point weights)

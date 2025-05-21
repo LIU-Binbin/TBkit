@@ -2,7 +2,11 @@
 
 parkman@buaa.edu.cn
 
+fanyang_tcmp@buaa.edu.cn
+
 yzpeng@buaa.edu.cn
+
+You_YiQun@buaa.edu.cn
 
 所有push过的同学都写下自己的邮箱
 
