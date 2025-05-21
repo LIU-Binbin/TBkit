@@ -39,13 +39,16 @@ function varargout = WccPlot(WccCAR, klist_l, options)
         WccCAR(WccCAR(:,:) < 0) = 1 + WccCAR(WccCAR(:,:) < 0);  % Adjust negative values for periodicity.
     end
     
-    % Create new figure and axes if none are provided in options.
-    if isempty(options.ax)
-        Fig = create_figure('Position', [0.2, 0.2, 0.6, 0.6]);  % Create a figure with specific position.
-        ax = Fig.axes(1);  % Get the axes from the figure.
+    % Create new figure and axes if none are provided in options.% Prepare axes for plotting
+if isempty(options.ax)
+    [Fig,ax]= Figs(1, 1); % Create new figure
+else
+    if isvalid(options.ax)
+        ax = options.ax; % Use provided axis handle
     else
-        ax = options.ax;  % Use the provided axes handle if available.
+        [Fig,ax]= Figs(1, 1); % Create new figure 
     end
+end
     
     % Ensure klist_l has two values. If only one is provided, duplicate data for plotting.
     if length(klist_l) == 1
@@ -67,8 +70,8 @@ function varargout = WccPlot(WccCAR, klist_l, options)
             'xticklabel', ["-2\pi", "-3\pi/2", "-\pi", "-\pi/2", ...
                           "0", "\pi/2", "\pi", "3\pi/2", "2\pi"]);
     set(ax, 'ytick', -1:0.25:1, ...
-            'yticklabel', ["-1", "-0.75", "-0.5", "-0.25", ...
-                          "0", "0.25", "0.5", "0.75", "1"]);
+            'yticklabel', ["-2\pi", "-3\pi/2", "-\pi", "-\pi/2", ...
+                          "0", "\pi/2", "\pi", "3\pi/2", "2\pi"]);  %原来是-1到1，改标签为pi
     
     % Return output depending on the number of requested outputs.
     if nargout == 2

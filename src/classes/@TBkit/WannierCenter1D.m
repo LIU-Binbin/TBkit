@@ -58,5 +58,5 @@ end
 [WCCvec,WCCU] = eig(HWan);
 %Ei = mod((angle(diag(WCCU))/(2*pi)),1);
 Ei = mod(real(log(diag(WCCU))/(2*pi*1i)),1);
-[WCCvec,WCC] = park.sorteig(Ei,WCCvec);
+[WCCvec,WCC] = sorteig(Ei,WCCvec);
 end

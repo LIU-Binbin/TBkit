@@ -277,10 +277,10 @@ if strcmp(options.convention,'II')
         elseif norb_enforce >0
             if H_hr.overlap
                 [A, U]=eigs(Hout,Sout,NBANDS,fermi);
-                [A, U]= park.sorteig(U,A);
+                [A, U]= sorteig(U,A);
             else
                 [A, U]=eigs(Hout,NBANDS,fermi);
-                [A, U]= park.sorteig(U,A);
+                [A, U]= sorteig(U,A);
             end
         else
         end
