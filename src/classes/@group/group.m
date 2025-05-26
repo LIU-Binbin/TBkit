@@ -443,18 +443,18 @@ classdef group
             end
         end
         % Rank of the group: Find the minimal number of generators required
-        function Rank = rank(group)
+        function [Rank,jgroup] = rank(group)
             if ~group.closure
                 group = group.generate_group();
             end
             pool = 1:numel(group);
-            for i = plist
+            for i = pool
                 ChooseL = nchoosek(pool,i);
                 for j = 1:size(ChooseL,1)
                     jgroup = group(ChooseL(j,:));
                     if isequal(jgroup.generate_group,group)
                         Rank = i;
-                        break;
+                        return;
                     end
                 end
             end
