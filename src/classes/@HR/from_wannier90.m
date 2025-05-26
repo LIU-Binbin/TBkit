@@ -142,7 +142,7 @@ end
         allone = all(double(nrpt) == 1);% check nrpt all 1
         if ~allone
             for i = 1:nrpts
-                mat(:,:,i) = mat(:,:,i)/1; nrpt(i); % bug?
+                mat(:,:,i) = mat(:,:,i)/nrpt(i); % bug?
             end
         end
     end
