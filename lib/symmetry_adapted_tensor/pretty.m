@@ -1,7 +1,8 @@
-function [Out,SymMat] = pretty(Tensor,mode)
+function [Out,SymMat] = pretty(Tensor,mode,options)
 arguments
     Tensor
     mode  {mustBeMember(mode,{'EQ','latex','Table'})} =  'EQ';
+    options.silent = false;
 end
 n_ele = Tensor.n_ele;
 tensor_rank = Tensor.tensor_rank;
@@ -13,8 +14,9 @@ tensor_names_vector = reshape(tensor_names, n_ele, 1);
 n_indp = length(independent_ele);
 switch mode
     case 'EQ'
-        fprintf('Independent Elements: %d\n',n_indp);
-
+        if ~options.silent
+            fprintf('Independent Elements: %d\n',n_indp);
+        end
         for i = 1:n_ele
             if ~all(tensor_symmed_reduce(1:n_indp,i)==0)
                 eq = sum(tensor_symmed_reduce(1:n_indp,i) .* tensor_names_vector(independent_ele));
@@ -31,8 +33,9 @@ switch mode
          Out = table2latex(Table);
          
     case 'Table'
-        fprintf('Independent Elements: %d\n',n_indp);
-
+        if ~options.silent
+            fprintf('Independent Elements: %d\n',n_indp);
+        end
         tensor_names_vector_reduce = tensor_names_vector;
          for i = 1:n_ele
             if ~all(tensor_symmed_reduce(1:n_indp,i)==0)

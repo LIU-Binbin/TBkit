@@ -135,6 +135,14 @@ classdef Y_l__m < HollowKnight
     end
     methods
         B = contractrow(A,options)
+        B = LplusOper(A)
+        B = LminusOper(A)
+        B = LzOper(A)
+    end
+    methods
+        Mat = Lplus(A)
+        Mat = Lz(A)
+        Mat = Lminus(A)
     end
     methods
         Ak = rotateinner(A,abc,RightorLeft,immproper,conjugate,antisymmetry)

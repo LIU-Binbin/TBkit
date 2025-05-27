@@ -364,7 +364,14 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
         function A = HollowMe(A)
             % Marks the object as a "hollow" object by setting the coefficient to NaN.
             % This method makes the object hollow by setting its coefficient to NaN.
-            A.coe = nan;
+            try
+                A.coe = nan;
+            catch
+                for i = numel(A)
+                    A(i).coe = nan;
+                end
+            end
+            
         end
     end
 

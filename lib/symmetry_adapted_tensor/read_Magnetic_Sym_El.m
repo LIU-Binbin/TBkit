@@ -20,7 +20,7 @@ line_1 = fgetl(fid);
 oper_num = str2double(line_1);
 
 hex2cart = [[1, -1/2, 0]; [0, sym(sqrt(3))/2, 0]; [0, 0, 1]];
-
+g
 gen_list = repmat(Oper(), 1, oper_num);
 for i = 1:oper_num
     line_i = fgetl(fid);

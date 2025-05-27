@@ -116,6 +116,38 @@ classdef Y_lm < Y_l__m
                 end
             end
         end
+        function SingleSum = InnerProduct_row(A_row, B_row, options)
+            % Calculate the inner product for a pair of rows from HollowKnight objects A and B.
+            % Options can specify symmetry, strictness, union, and squareness.
+            arguments
+                A_row
+                B_row
+                options.sym = true;        % Whether to use symbolic computation
+                options.strict = false;    % Whether to enforce strict matching
+                options.union = false;     % Whether to perform union operation
+                options.square = true;     % Whether to enforce square matrix
+            end
+            % Initialize the sum with appropriate data type
+            if options.sym
+                SingleSum = sym(0);
+            else
+                SingleSum = 0;
+            end
+            if isrow(A_row) && isrow(B_row)
+                Tesseral_A = A_row.Tesseral;
+                Tesseral_B = B_row.Tesseral;
+                for i = 1:length(Tesseral_A{2})
+                    iA_row = Tesseral_A{1}(i,:);
+                    for j = 1:length(Tesseral_B{2})
+                        jB_row = Tesseral_B{1}(j,:);
+                        if all(iA_row == jB_row)
+                            % Accumulate the product of coefficients for matching elements
+                            SingleSum = SingleSum + Tesseral_A{2}(i) * Tesseral_B{2}(j);
+                        end
+                    end
+                end
+            end
+        end
     end
     methods % disp
         function disp(YlmObj,options)
@@ -142,7 +174,14 @@ classdef Y_lm < Y_l__m
     methods %get
     end
     methods %math
-        
+        function Y_lmObj = SplusOper(Y_lmobj)
+            Y_lmObj = Y_lmobj;
+            for i = 1:numel(Y_lmobj)
+                Y_lmObj(i).coe = Y_lmObj(i).coe * sqrt(Y_lmobj(i).s2_bar - Y_lmobj(i).Jz * (Y_lmobj(i).Jz + 1));
+                Y_lmObj(i).Jz = Y_lmobj(i).Jz + 1;
+            end
+            Y_lmObj = Y_lmObj.contract();
+        end
     end
 end
 
