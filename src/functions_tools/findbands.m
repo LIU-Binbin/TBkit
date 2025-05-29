@@ -15,7 +15,10 @@ function [allk_min, anyk_max] = findbands(EIGENCAR, Erange)
     %              bands in the range, and its associated band indices.
     %   anyk_max - A struct containing the k-point with the maximum number of
     %              bands in the range, and its associated band indices.
-    
+    arguments
+        EIGENCAR 
+        Erange 
+    end
     % Get the number of bands (Nbands) and k-points (Ktotals)
     [Nbands, Ktotals] = size(EIGENCAR);
     fprintf("%d bands in %d Kpoints ; (Efermi set to zero)\n\n ", Nbands, Ktotals);
