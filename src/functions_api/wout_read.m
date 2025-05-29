@@ -49,7 +49,10 @@ function [orbL, quantumL,elementL] = wout_read(filename, POSCAR_name,options)
         orbL = orbL_Atom(idx,:);
     end
     quantumL = [];              % Placeholder for quantum numbers
-
+    TestL = [orbL,quantumL];
+    if has_duplicate_rows_tol(TestL)
+        SpinfulFlag = 1;
+    end
     if SpinfulFlag
         spin = 1/2;
         for i = 1:Nbands
@@ -84,6 +87,16 @@ function [orbL, quantumL,elementL] = wout_read(filename, POSCAR_name,options)
     %
     
 
+end
+
+function hasDuplicate = has_duplicate_rows_tol(matrix, tol)
+if nargin < 2
+    tol = 1e-10; % 默认容差
+end
+
+sorted_matrix = sortrows(matrix);
+row_diffs = diff(sorted_matrix, 1, 1);
+hasDuplicate = any(all(abs(row_diffs) < tol, 2));
 end
 
 function m = lmr2m(l,mr)

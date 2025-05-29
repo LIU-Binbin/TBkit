@@ -2,13 +2,13 @@
 
 EIG_DFT_soc = EIGENVAL_read();
 Ef_DFT_soc = 9.9497;
-EIG_DFT_soc = EIG_DFT_soc(13:12+40,:) - Ef_DFT_soc;
+EIG_DFT_soc = EIG_DFT_soc - Ef_DFT_soc;
 
 hr_nsoc = HR.from_wannier90();
 EIG_hr = hr_nsoc.EIGENCAR_gen();
 Ef_DFT_nsoc = 9.9930;
 EIG_hr = EIG_hr(1:40,:) - Ef_DFT_nsoc;
-%% 高能带拟合不太好，截取下面的能带
+
 
 bandplot( {EIG_DFT_soc,EIG_hr}, 'Color', [1 0 0; 0 0 1]);
 legend(["DFT soc", "hr nsoc"])
@@ -22,47 +22,55 @@ element_projs = {2, [0,1,2]};
     'element_names', element_names, ...
     'element_atom_nums',element_atom_nums, ...
     'element_projs',element_projs);
-%[orbL, quantumL,elementL] = wout_read
+[orbL, quantumL, elementL] = wout_read
 % from wannier90.wout & Rm;
 
-elementL = [ones(2*2*5,1)*25;ones(2*2*(1+3+5),1)*78];
-qnumL(:,1) = [ones(2*2*5,1)*4;ones(2*2*(1+3+5),1)*6];
-qnumL(:,4) = kron(ones(1*(2*5 + 2*(1+3+5)),1),[1/2;-1/2]);
-qnumL(:,2) = [
-    ones(1*(2*2*5),1)*2;
-    ones(1*(2*1),1)*0;
-    ones(1*(2*3),1)*1;
-    ones(1*(2*5),1)*2;
-    ones(1*(2*1),1)*0;
-    ones(1*(2*3),1)*1;
-    ones(1*(2*5),1)*2;
-    ];
-qnumL(:,3) = [
-    0;0;1;1;-1;-1;2;2;-2;-2;
-    0;0;1;1;-1;-1;2;2;-2;-2;
-    0;0;
-    0;0;1;1;-1;-1;
-    0;0;1;1;-1;-1;2;2;-2;-2;
-    0;0;
-    0;0;1;1;-1;-1;
-    0;0;1;1;-1;-1;2;2;-2;-2;
-    ];
-[H_soc_full2, lambda_syms2] = soc_term_udud_add(elementL,qnumL,'mode','basis');
+% elementL = [ones(2*2*5,1)*25;ones(2*2*(1+3+5),1)*78];
+% qnumL(:,1) = [ones(2*2*5,1)*4;ones(2*2*(1+3+5),1)*6];
+% qnumL(:,4) = kron(ones(1*(2*5 + 2*(1+3+5)),1),[1/2;-1/2]);
+% qnumL(:,2) = [
+%     ones(1*(2*2*5),1)*2;
+%     ones(1*(2*1),1)*0;
+%     ones(1*(2*3),1)*1;
+%     ones(1*(2*5),1)*2;
+%     ones(1*(2*1),1)*0;
+%     ones(1*(2*3),1)*1;
+%     ones(1*(2*5),1)*2;
+%     ];
+% qnumL(:,3) = [
+%     0;0;1;1;-1;-1;2;2;-2;-2;
+%     0;0;1;1;-1;-1;2;2;-2;-2;
+%     0;0;
+%     0;0;1;1;-1;-1;
+%     0;0;1;1;-1;-1;2;2;-2;-2;
+%     0;0;
+%     0;0;1;1;-1;-1;
+%     0;0;1;1;-1;-1;2;2;-2;-2;
+%     ];
+[H_soc_full2, lambda_syms2] = soc_term_udud_add(elementL, quantumL, 'mode','direct');
 %%
-H_soc_full
 H_soc_full2
 hr_soc = hr_nsoc;
 
-hr_soc.HcoeL = sym(hr_soc.HnumL);
-hr_soc.HcoeL(:,:,HcoeL.Line_000) = HcoeL.HcoeL(:,:,HcoeL.Line_000) + H_soc_full;
+% hr_soc.HcoeL = sym(hr_soc.HnumL);
+tic
+%H_soc_full2 = subs(H_soc_full2,lambda_syms2(3),0);
 %初值给定
-hr_soc_fit = subs(hr_soc,Graphene.symvar_list(2),0);
+toc
+
+%
+tic
+[FITobj,SubsIndexL] = fitprepare(hr_nsoc,H_soc_full2);
+
+toc
 %% search
 %拟合参数设置
 %设定拟合范围：
-options_extra.NBAND_range_DFT = [1:40];
+options_extra.NBAND_range_DFT = [13 : (13+40-1)];
 options_extra.NBAND_range = [1:40];
 options_extra.klist_range = ':';
+% options_extra.E_range = [-2,1.5] - Ef_DFT_nsoc;
+options_extra.E_range = [];
 %默认大小和斜率等权
 options_extra.weight_list = [1,1];
 %键值对：
@@ -70,27 +78,32 @@ options_extra.weight_list = [1,1];
 % FITobj 为你的拟合对象变量名
 %  ‘extra’ 为你的设定的能量范围
 %  'algorithm' 为你选择的比较方法 默认为同时比较大小和斜率
+ 
 
-
-Loss_func_TB = @(para) vasplib.loss_func(para, ...
-    'FITobj','hr_soc_fit',...
+Loss_func_TB = @(para) TBkit.loss_func(para, ...
+    'FITobj','FITobj',...
     'DFTBAND','EIG_DFT_soc',...
     'extra','options_extra',...
-    'algorithm','pure_comparison' ...
+    'algorithm','pure_comparison',...
+    'SubsIndexL',SubsIndexL ...
 )          
 
-hr_soc_fit.symvar_list
-x0 = [0.2 0.2];
+FITobj.symvar_list
+x0 = [0.1 0.4,0.01];
 %进行拟合
 options = optimset('PlotFcns',@optimplotfval,'Display','iter');
 x = fminsearch(Loss_func_TB,x0,options);
+% x = fmincon(Loss_func_TB,x0,...
+%     [0 0 1],0.1,[],[],[],[],[],...
+%    options);
+[FITobj_n,EQ] = FITobj.subs(x,'SubsIndex',SubsIndexL)
+% FITobj_n.HnumL(SubsIndexL) = double(subs(FITobj.HcoeL,FITobj.symvar_list,x));
+% EQL =(FITobj.symvar_list == x)
 
-[hr_soc_fit_n,EQL] = hr_soc_fit.subs(x);
-
-EIGENCAR = hr_soc_fit_n.EIGENCAR_gen()-Ef_DFT_nsoc;
+EIG_hr = FITobj_n.EIGENCAR_gen()-Ef_DFT_nsoc;
 % 画出能带
-bandcompare(EIG_DFT_soc,EIGENCAR ,[-20,20],[-3,3]);
-
+bandplot( {EIG_DFT_soc,EIG_hr},[-1,1], 'Color', [1 0 0; 0 0 1]);
+legend(["DFT soc", "hr nsoc"])
 return;
 soc_fitting_handle = @(lambda_nums) soc_fitting(lambda_nums, lambda_syms, EIG_DFT_soc, hr_nsoc, H_soc_full);
 lambda_guess = [0.2 0.2];

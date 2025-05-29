@@ -1,8 +1,8 @@
 function [H_soc_sym, lambda_syms] = soc_term_udud_add(elementL,qnumL,options)
 arguments
-    elementL =[];
+    elementL = [];
     qnumL = [];
-    options.mode = 'direct';
+    options.mode {mustBeMember(options.mode, ["direct", "basis"])} = "direct";
     options.element_names = ["Mn", "Pt"];
     options.element_atom_nums = [2 2];
     options.element_projs = {2, [0,1,2]};
