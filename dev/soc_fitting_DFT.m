@@ -1,4 +1,5 @@
 %% initial check
+
 EIG_DFT_soc = EIGENVAL_read();
 Ef_DFT_soc = 9.9497;
 EIG_DFT_soc = EIG_DFT_soc(13:12+40,:) - Ef_DFT_soc;
@@ -8,19 +9,94 @@ EIG_hr = hr_nsoc.EIGENCAR_gen();
 Ef_DFT_nsoc = 9.9930;
 EIG_hr = EIG_hr(1:40,:) - Ef_DFT_nsoc;
 %% 高能带拟合不太好，截取下面的能带
+
 bandplot( {EIG_DFT_soc,EIG_hr}, 'Color', [1 0 0; 0 0 1]);
 legend(["DFT soc", "hr nsoc"])
 %% wannier info
+
 element_names = ["Mn", "Pt"];
 element_atom_nums = [2 2];
 element_projs = {2, [0,1,2]};
 
-[H_soc_full, lambda_syms] = soc_term_udud_add(element_names, element_atom_nums, element_projs);
+[H_soc_full, lambda_syms] = soc_term_udud_add( ...
+    'element_names', element_names, ...
+    'element_atom_nums',element_atom_nums, ...
+    'element_projs',element_projs);
+%[orbL, quantumL,elementL] = wout_read
+% from wannier90.wout & Rm;
+
+elementL = [ones(2*2*5,1)*25;ones(2*2*(1+3+5),1)*78];
+qnumL(:,1) = [ones(2*2*5,1)*4;ones(2*2*(1+3+5),1)*6];
+qnumL(:,4) = kron(ones(1*(2*5 + 2*(1+3+5)),1),[1/2;-1/2]);
+qnumL(:,2) = [
+    ones(1*(2*2*5),1)*2;
+    ones(1*(2*1),1)*0;
+    ones(1*(2*3),1)*1;
+    ones(1*(2*5),1)*2;
+    ones(1*(2*1),1)*0;
+    ones(1*(2*3),1)*1;
+    ones(1*(2*5),1)*2;
+    ];
+qnumL(:,3) = [
+    0;0;1;1;-1;-1;2;2;-2;-2;
+    0;0;1;1;-1;-1;2;2;-2;-2;
+    0;0;
+    0;0;1;1;-1;-1;
+    0;0;1;1;-1;-1;2;2;-2;-2;
+    0;0;
+    0;0;1;1;-1;-1;
+    0;0;1;1;-1;-1;2;2;-2;-2;
+    ];
+[H_soc_full2, lambda_syms2] = soc_term_udud_add(elementL,qnumL,'mode','basis');
+%%
+H_soc_full
+H_soc_full2
+hr_soc = hr_nsoc;
+
+hr_soc.HcoeL = sym(hr_soc.HnumL);
+hr_soc.HcoeL(:,:,HcoeL.Line_000) = HcoeL.HcoeL(:,:,HcoeL.Line_000) + H_soc_full;
+%初值给定
+hr_soc_fit = subs(hr_soc,Graphene.symvar_list(2),0);
 %% search
+%拟合参数设置
+%设定拟合范围：
+options_extra.NBAND_range_DFT = [1:40];
+options_extra.NBAND_range = [1:40];
+options_extra.klist_range = ':';
+%默认大小和斜率等权
+options_extra.weight_list = [1,1];
+%键值对：
+%  ‘EIGENCAR_DFT’ 为你的DFT 能带变量名
+% FITobj 为你的拟合对象变量名
+%  ‘extra’ 为你的设定的能量范围
+%  'algorithm' 为你选择的比较方法 默认为同时比较大小和斜率
+
+
+Loss_func_TB = @(para) vasplib.loss_func(para, ...
+    'FITobj','hr_soc_fit',...
+    'DFTBAND','EIG_DFT_soc',...
+    'extra','options_extra',...
+    'algorithm','pure_comparison' ...
+)          
+
+hr_soc_fit.symvar_list
+x0 = [0.2 0.2];
+%进行拟合
+options = optimset('PlotFcns',@optimplotfval,'Display','iter');
+x = fminsearch(Loss_func_TB,x0,options);
+
+[hr_soc_fit_n,EQL] = hr_soc_fit.subs(x);
+
+EIGENCAR = hr_soc_fit_n.EIGENCAR_gen()-Ef_DFT_nsoc;
+% 画出能带
+bandcompare(EIG_DFT_soc,EIGENCAR ,[-20,20],[-3,3]);
+
+return;
 soc_fitting_handle = @(lambda_nums) soc_fitting(lambda_nums, lambda_syms, EIG_DFT_soc, hr_nsoc, H_soc_full);
 lambda_guess = [0.2 0.2];
 [lambda_out, loss_out]= fminsearch(soc_fitting_handle, lambda_guess);
 %% check
+
 for i = 1:length(lambda_out)
     disp(string(lambda_syms(i))+" = "+lambda_out(i)+" eV")
 end
@@ -32,6 +108,7 @@ Ef_DFT_nsoc = 9.9930;
 EIG_hr = EIG_hr(1:40,:) - Ef_DFT_nsoc;
 bandplot( {EIG_DFT_soc,EIG_hr}, 'Color', [1 0 0; 0 0 1]);
 %% udud to uudd and write to file
+
 WAN_NUM = hr_nsoc.WAN_NUM;
 udud2uudd = [1:2:(WAN_NUM-1),2:2:(WAN_NUM)];
 H_soc_num_uudd = H_soc_num(udud2uudd,udud2uudd);

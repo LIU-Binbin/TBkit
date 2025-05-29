@@ -14,12 +14,13 @@ classdef Y_lm < Y_l__m
 
     properties(Access = private)
         m_real; % Stores the real magnetic quantum number (m)
+        An = 0;
     end
     properties(Dependent)
         
     end
     methods
-        function Y_lmObj = Y_lm(l,m,coe,n,options)
+        function Y_lmObj = Y_lm(l,m,coe,n,options,options2)
             % Y_lm Constructor to initialize the spherical harmonic object.
             % Arguments:
             % l      - Azimuthal quantum number
@@ -33,7 +34,7 @@ classdef Y_lm < Y_l__m
                 coe = 1; % Default coefficient
                 n   = 0; % Default radius
                 options.common = true; % Default 
-
+                options2.An = 0;
             end
             %
             PropertyCell = namedargs2cell(options);
@@ -66,7 +67,9 @@ classdef Y_lm < Y_l__m
             Y_lmObj = Y_lmObj@Y_l__m(l,mL,coeL,n,PropertyCell{:});
             for i = 1:length(Y_lmObj)
                 Y_lmObj(i).m_real = m;
+                Y_lmObj(i).An = options2.An;
             end
+            
         end
     end
     methods % reload
@@ -134,15 +137,17 @@ classdef Y_lm < Y_l__m
                 SingleSum = 0;
             end
             if isrow(A_row) && isrow(B_row)
-                Tesseral_A = A_row.Tesseral;
-                Tesseral_B = B_row.Tesseral;
-                for i = 1:length(Tesseral_A{2})
-                    iA_row = Tesseral_A{1}(i,:);
-                    for j = 1:length(Tesseral_B{2})
-                        jB_row = Tesseral_B{1}(j,:);
-                        if all(iA_row == jB_row)
-                            % Accumulate the product of coefficients for matching elements
-                            SingleSum = SingleSum + Tesseral_A{2}(i) * Tesseral_B{2}(j);
+                if A_row(1).An == B_row(1).An
+                    Tesseral_A = A_row.Tesseral;
+                    Tesseral_B = B_row.Tesseral;
+                    for i = 1:length(Tesseral_A{2})
+                        iA_row = Tesseral_A{1}(i,:);
+                        for j = 1:length(Tesseral_B{2})
+                            jB_row = Tesseral_B{1}(j,:);
+                            if all(iA_row == jB_row)
+                                % Accumulate the product of coefficients for matching elements
+                                SingleSum = SingleSum + Tesseral_A{2}(i) * Tesseral_B{2}(j);
+                            end
                         end
                     end
                 end
