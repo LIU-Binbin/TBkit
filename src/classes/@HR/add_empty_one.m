@@ -21,7 +21,8 @@ function H_hr = add_empty_one(H_hr, vector)
 if H_hr.vectorhopping
     % Append new vectors to hopping list
     H_hr.vectorL = [H_hr.vectorL; vector];
-    
+    vector_str = cellfun(@mat2str, vector, 'UniformOutput', false);
+    H_hr.vectorL_map =  [H_hr.vectorL_map ;vector_str];
     % Get number of new vectors
     nvector = size(vector,1);
     
@@ -35,16 +36,24 @@ if H_hr.vectorhopping
     return;
 end
 
+% Create Map
+if isempty(H_hr.vectorL_map)
+    % 将矩阵按行分割成元胞数组
+    rows = num2cell(H_hr.vectorL, 2);
+    % 对每一行应用 mat2str 函数
+    H_hr.vectorL_map  = cellfun(@mat2str, rows, 'UniformOutput', false);
+end
+
 % Regular mode: process vectors individually
 for i = 1:size(vector,1)
     vector_single = vector(i,:);
-    
+    vector_single_str =  mat2str(vector_single);
     % Check for existing vectors (skip duplicates)
     try
         % Duplicate check logic:
         % - For non-overlap case: check main vector list
         % - For overlap case: check both main and overlap lists
-        if (ismember(vector_single,H_hr.vectorL,'rows') && ~H_hr.overlap) || ...
+        if (find(strcmp(H_hr.vectorL_map,vector_single_str)) && ~H_hr.overlap) || ...
                 (ismember(vector_single,H_hr.vectorL,'rows') ...
                 && ismember(vector_single,H_hr.vectorL_overlap,'rows') && H_hr.overlap)
             continue;
@@ -56,7 +65,7 @@ for i = 1:size(vector,1)
     % Update number of hopping terms
     NRPTS_new = H_hr.NRPTS + 1;
     %H_hr.NRPTS = NRPTS_new;
-    
+    H_hr.vectorL_map{NRPTS_new,:} = vector_single_str ;
     % Add new vector to list
     H_hr.vectorL(NRPTS_new,:) = vector_single;
     

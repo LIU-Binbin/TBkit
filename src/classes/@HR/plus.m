@@ -34,13 +34,19 @@ if isa(A,'HR') && isa(B,'HR')
             end
         end
     elseif strcmp(H_hr1.Type,'list') && strcmp(H_hr2.Type,'list')
-        [vectorList,~,~] = unique([H_hr1.vectorL;H_hr2.vectorL],'rows');
-        C = setdiff(vectorList,H_hr1.vectorL,'rows');
-        D = setdiff(vectorList,H_hr2.vectorL,'rows');
-        H_hr1 = H_hr1.add_empty_one(C);
-        H_hr2 = H_hr2.add_empty_one(D);
-        [~,seqA] = ismember(vectorList,H_hr1.vectorL,'rows');
-        [~,seqB] = ismember(vectorList,H_hr2.vectorL,'rows');
+        vectorList = unique([H_hr1.vectorL; H_hr2.vectorL], 'rows', 'stable');
+
+        % 扩展H_hr1和H_hr2的矢量空间（添加缺失的空矢量）
+        if ~isempty(setdiff(vectorList, H_hr1.vectorL, 'rows'))
+            H_hr1 = H_hr1.add_empty_one(vectorList);
+        end
+        if ~isempty(setdiff(vectorList, H_hr2.vectorL, 'rows'))
+            H_hr2 = H_hr2.add_empty_one(vectorList);
+        end
+
+        % 获取重排序索引
+        [~, seqA] = ismember(vectorList, H_hr1.vectorL, 'rows');
+        [~, seqB] = ismember(vectorList, H_hr2.vectorL, 'rows');
         H_hr = H_hr1.reseq(':',seqA);
         if H_hr.vectorhopping && B.vectorhopping
             H_hr.AvectorL = H_hr.AvectorL + H_hr2.AvectorL(seqB,:);

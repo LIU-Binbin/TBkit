@@ -48,6 +48,26 @@ function H_hr = applyOper(H_hr, SymOper, options)
         end
     end
     
+    % Standard initialization sequence
+    if ~H_hr.coe && ~H_hr.num
+        H_hr = H_hr.init();
+        H_hr = H_hr.hermitize();
+    end
+    
+    % Format conversion if needed
+    if ~strcmp(H_hr.Type, 'list')
+        H_hr = H_hr.rewrite();
+    end
+    
+
+    % Create Map
+    if isempty(H_hr.vectorL_map)
+        % 将矩阵按行分割成元胞数组
+        rows = num2cell(H_hr.vectorL, 2);
+        % 对每一行应用 mat2str 函数
+        H_hr.vectorL_map  = cellfun(@mat2str, rows, 'UniformOutput', false);
+    end
+
     % Fast processing mode for large systems
     if options.fast
         % Initialize Hamiltonian data structures if empty
@@ -75,8 +95,11 @@ function H_hr = applyOper(H_hr, SymOper, options)
             nSymOper = length(SymOper);
             pb = CmdLineProgressBar('Applying Symmetry ...');
             for j = 1:nSymOper
+                
                 [H_hr_R(j), H_hr] = applyRU(H_hr, SymOper(j));
+            
                 pb.print(j, nSymOper);
+                %fprintf('%d\n',length(H_hr_R(j).vectorL_map));
             end
             pb.delete();
             H_hr = sum(H_hr_R);
@@ -86,19 +109,9 @@ function H_hr = applyOper(H_hr, SymOper, options)
         return;
     end
     
-    % Standard initialization sequence
-    if ~H_hr.coe && ~H_hr.num
-        H_hr = H_hr.init();
-        H_hr = H_hr.hermitize();
-    end
-    
-    % Format conversion if needed
-    if ~strcmp(H_hr.Type, 'list')
-        H_hr = H_hr.rewrite();
-    end
-    
+
     % Single symmetry operation handler
-    if length(SymOper) == 1
+    if isscalar(SymOper)
         % Skip identity operations
         if ~SymOper.conjugate && ~SymOper.antisymmetry && isequal(SymOper.R, eye(3))
             return;
@@ -111,6 +124,9 @@ function H_hr = applyOper(H_hr, SymOper, options)
         % Symbolic coefficient handling
         if options.generator
             SymOper_tmp = SymOper.generate_group();
+            for j = 1:numel(SymOper_tmp)
+                fprintf('Oper %d,det: %d\n',j,det(SymOper_tmp(j).U));
+            end
             nSymOper_tmp = length(SymOper_tmp);
             pb = CmdLineProgressBar('Applying Symmetry ...');
             H_hr_R = H_hr;
@@ -146,6 +162,9 @@ function H_hr = applyOper(H_hr, SymOper, options)
             if options.generator
                 SymOper_tmp = SymOper(i).generate_group();
                 nSymOper_tmp = length(SymOper_tmp);
+                for j = 1:nSymOper_tmp
+                    fprintf('Oper %d ,det: %d\n',j,det(SymOper_tmp(j).U));
+                end
                 pb = CmdLineProgressBar('Applying Symmetry ...');
                 H_hr_R = H_hr;
                 for j = 1:nSymOper_tmp

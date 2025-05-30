@@ -1,4 +1,4 @@
-function [orbL, quantumL,elementL] = wout_read(filename, POSCAR_name,options)
+function [orbL, elementL,quantumL] = wout_read(filename, POSCAR_name,options)
 %WOUT_READ Parse wannier90.wout files to extract orbital and quantum number data
 %   [ORBL, QNUML] = WOUT_READ(FILENAME, POSCAR_NAME) extracts orbital information
 %   and quantum numbers from Wannier90 output files. 

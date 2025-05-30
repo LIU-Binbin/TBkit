@@ -70,6 +70,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         ScoeL            ;
         SnumL            ;
         vectorL_overlap  ;
+        vectorL_map      ;
     end
     methods (Access = protected)
         propgrp = getPropertyGroups(~)
