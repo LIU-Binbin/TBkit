@@ -1,4 +1,4 @@
-function H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)
+function H_hr = reseq(H_hr,wan_list,nrpt_list,options)
 % RESEQ Reorder Wannier functions and hopping terms in HR object
 %
 %   H_HR = RESEQ(H_HR,WAN_LIST,NRPT_LIST,NRPT_LIST_S) reorders Wannier functions
@@ -16,12 +16,21 @@ function H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)
 %       - Maintains consistency across all object properties
 %       - Handles 'sparse', 'list', and 'mat' storage types
 %       - Preserves overlap terms when present
-if nargin < 3
+arguments
+    H_hr  HR;
+    wan_list  = ':';
     nrpt_list = ':';
+    options.OverlapTest = true;
 end
-if nargin < 4
-    nrpt_list_S = ':';
+    
+if H_hr(1).overlap && options.OverlapTest
+    H_hr(1) = add_empty_one(H_hr(1),wan_list,nrpt_list,'OverlapTest',false);
+    H_hr(2) = add_empty_one(H_hr(2),wan_list,nrpt_list,'OverlapTest',false);
+    return
 end
+
+
+
 if ~isequal(wan_list,':')
     if strcmp(H_hr.Type,'sparse')
         for i = 1:H_hr.NRPTS
@@ -39,17 +48,9 @@ if ~isequal(wan_list,':')
         if ~isempty(H_hr.vectorL_map)
             H_hr.vectorL_map=H_hr.vectorL_map(wan_list,:);
         end
-        if H_hr.overlap
-            H_hr.SnumL=H_hr.SnumL(wan_list,:);
-            H_hr.ScoeL=H_hr.ScoeL(wan_list,:);
-            H_hr.vectorL_overlap=H_hr.vectorL_overlap(wan_list,:);
-        end
     elseif strcmp(H_hr.Type,'mat')
         if H_hr.num
             H_hr.HnumL=H_hr.HnumL(wan_list,wan_list,:);
-            if H_hr.overlap
-                H_hr.SnumL=H_hr.SnumL(wan_list,wan_list,:);
-            end
         else
             H_hr.HnumL = [];
             if H_hr.overlap
@@ -58,14 +59,8 @@ if ~isequal(wan_list,':')
         end
         if H_hr.coe
             H_hr.HcoeL=H_hr.HcoeL(wan_list,wan_list,:);
-            if H_hr.overlap
-                H_hr.ScoeL=H_hr.ScoeL(wan_list,wan_list,:);
-            end
         else
             H_hr.HcoeL = sym([]);
-            if H_hr.overlap
-                H_hr.ScoeL=sym([]);
-            end
         end
     end
     if ~isempty(H_hr.sites)
@@ -87,10 +82,13 @@ end
 if ~isequal(nrpt_list,':')
     H_hr.vectorL=H_hr.vectorL(nrpt_list,:);
     if ~isempty(H_hr.vectorL_map)
-        H_hr.vectorL_map=H_hr.vectorL_map(nrpt_list,:);
-    end
-    if H_hr.overlap
-        H_hr.vectorL_overlap=H_hr.vectorL_overlap(nrpt_list_S,:);
+        try
+            rows = num2cell(H_hr.vectorL, 2);
+            % 对每一行应用 mat2str 函数
+            H_hr.vectorL_map  = cellfun(@mat2str, rows, 'UniformOutput', false);
+            H_hr.vectorL_map=H_hr.vectorL_map(nrpt_list,:);
+        catch
+        end
     end
     if strcmp(H_hr.Type,'sparse')
         H_hr.HnumL=H_hr.HnumL(nrpt_list);
@@ -109,26 +107,12 @@ if ~isequal(nrpt_list,':')
         if H_hr.coe
             H_hr.HcoeL=H_hr.HcoeL(nrpt_list);
         end
-        if H_hr.overlap
-            if H_hr.num
-                H_hr.SnumL=H_hr.SnumL(nrpt_list_S,:);
-            end
-            if H_hr.coe
-                H_hr.ScoeL=H_hr.ScoeL(nrpt_list_S,:);
-            end
-        end
     elseif strcmp(H_hr.Type,'mat')
         if H_hr.num
             H_hr.HnumL=H_hr.HnumL(:,:,nrpt_list);
-            if H_hr.overlap
-                H_hr.SnumL=H_hr.SnumL(:,:,nrpt_list);
-            end
         end
         if H_hr.coe
             H_hr.HcoeL=H_hr.HcoeL(:,:,nrpt_list);
-            if H_hr.overlap
-                H_hr.ScoeL=H_hr.ScoeL(:,:,nrpt_list);
-            end
         end
     end
 end

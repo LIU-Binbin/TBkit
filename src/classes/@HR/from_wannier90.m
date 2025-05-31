@@ -37,54 +37,17 @@ arguments
     Type char {mustBeMember(Type,{'mat','list'})} = 'mat'   % Data storage format
     options.Accuracy double {mustBePositive} = 1e-6         % Numerical threshold
     options.overlap logical = false                         % Overlap matrix flag
+    options.OverlapTest logical= true;
 end
-
 % Main processing branch for overlap matrix case
 if options.overlap
+    options.OverlapTest = false;
+    options.overlap = false;
+    optionscell = namedargs2cell(options);
+
     % Read Hamiltonian and overlap files
-    [dataArray, NRPT_list, NRPTS, NUM_WAN] = HR.hrdat_read(filename{1});
-    [dataArray2, NRPT_list_S, ~, ~] = HR.hrdat_read(filename{2});
-    
-    % Matrix format data processing
-    if strcmp(Type, 'mat')
-        % Process Hamiltonian data
-        [vectorL, HnumL] = processMatrixData(dataArray, NRPT_list, NUM_WAN, NRPTS);
-        
-        % Process overlap matrix data
-        [vectorL_overlap, SnumL] = processMatrixData(dataArray2, NRPT_list_S, NUM_WAN, NRPTS);
-        
-        % Initialize symbolic coefficients
-        HcoeL = sym([]);
-        ScoeL = sym([]);
-        
-    % List format data processing    
-    elseif strcmp(Type, 'list')
-        % Process Hamiltonian data
-        [vectorL, HnumL] = processListData(dataArray, NRPT_list, options.Accuracy);
-        
-        % Process overlap matrix data
-        [vectorL_overlap, SnumL] = processListData(dataArray2, NRPT_list_S, options.Accuracy);
-        
-        % Initialize symbolic coefficients
-        HcoeL = sym([]);
-        ScoeL = sym([]);
-    end
-    
-    % Create HR object with overlap data
-    H_hr = HR(NUM_WAN, vectorL,...
-        'HnumL', HnumL,...
-        'HcoeL', HcoeL,...
-        'SnumL', SnumL,...
-        'ScoeL', ScoeL,...
-        'Type', Type,...
-        'overlap', true,...
-        'sym', false);
-    
-    % Set additional properties
-    H_hr.num = true;
-    H_hr.coe = false;
-    H_hr.vectorL_overlap = vectorL_overlap;
-    H_hr.Basis_num = H_hr.WAN_NUM;
+    H_hr(1) = HR.hrdat_read(filename{1},Type,optionscell{:});
+    H_hr(2) = HR.hrdat_read(filename{2},Type,optionscell{:});
 
 % Regular Hamiltonian processing (no overlap)    
 else
