@@ -315,6 +315,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
     %% reshape 
     methods
         H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)
+        H_hr = reseq_spin_basis(H_hr,old2new)        
         H_hr = cut_orb(H_hr,rm_list,options)
         H_hr = clean(H_hr,WANNUM)
         H_hr = project(H_hr,BASIS_MAT)
@@ -335,6 +336,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = addsoc(H_hr,quantumL)
         H_hr = deltarule(H_hr,level_cut,mode,options)
         H_hr = alpharule(H_hr,level_cut,mode,options)
+        H_hr = shift_Fermi_energy(H_hr, Efermi)        
     end
     %% expand
     methods
