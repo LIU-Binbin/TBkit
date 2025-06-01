@@ -115,6 +115,14 @@ else
     H_hr.Basis_num = H_hr.WAN_NUM;
 end
 
+%% try to read orbital infomation from wout file
+if exist("wannier90.wout","file")
+    [orbL, elementL, quantumL] = wout_read("wannier90.wout", "POSCAR");
+    H_hr.orbL = orbL;
+    H_hr.elementL = elementL;
+    H_hr.quantumL = quantumL;
+end
+
 %% Nested helper functions
     function [vec, mat] = processMatrixData(data, nrpt, numWan, nrpts)
         %PROCESSMATRIXDATA Convert raw data to matrix format

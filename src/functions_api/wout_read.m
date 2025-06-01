@@ -1,7 +1,5 @@
-function [orbL, elementL,quantumL] = wout_read(filename, POSCAR_name,options)
+function [orbL, elementL, quantumL] = wout_read(filename, POSCAR_name,options)
 %WOUT_READ Parse wannier90.wout files to extract orbital and quantum number data
-%   [ORBL, QNUML] = WOUT_READ(FILENAME, POSCAR_NAME) extracts orbital information
-%   and quantum numbers from Wannier90 output files. 
 %
 %   Inputs:
 %       FILENAME      - Path to wannier90.wout file (default: 'wannier90.wout')
@@ -9,83 +7,73 @@ function [orbL, elementL,quantumL] = wout_read(filename, POSCAR_name,options)
 %
 %   Outputs:
 %       orbL          - Cell array containing orbital projection data
-%       quantumL         - Quantum number information (currently placeholder)
-%
-%   Processing workflow:
-%       1. Reads crystal structure from POSCAR
-%       2. Extracts metadata from wannier90.wout (spin flag, band count)
-%       3. Locates and reads projection data
-%       4. Returns parsed orbital/quantum information
-%
-%   Example:
-%       [orbData, qnums] = wout_read('w90_output.wout', 'my_structure.POSCAR');
+%       elementL      - elements of the wannier functions
+%       quantumL      - Quantum number information (currently placeholder)
+arguments
+    filename = 'wannier90.wout';
+    POSCAR_name = 'POSCAR';
+    options.UsePOSCAR_Cordinates = 1;
+end
 
-    arguments
-        filename = 'wannier90.wout';
-        POSCAR_name = 'POSCAR';
-        options.UsePOSCAR_Cordinates = 1;
-    end
-    
-    % Read crystal structure from POSCAR
-    [Rm, sites, Atom_name, Atom_num, elements, a_crystal_constance] = ...
-        POSCAR_read(POSCAR_name);
-    if ~isempty(elements)
-        elements.Properties.RowNames = elements.atom_symbol;
-    end
-    % Extract metadata from wannier90 output
-    [SpinfulFlag, Nbands, projLine] = read_metadata(filename);
-    
-    % Read projection data block
-    projectionLines = read_projection_data(filename, projLine, Nbands);
-    
-    % Return extracted data (parse_projections implementation required)
-    projectionData = parse_projection_cell(projectionLines);
-    %
-    orbL = projectionData(:,1:3);  % Orbital projections to be parsed
-    orbL_Atom = [[sites.rc1];[sites.rc2];[sites.rc3]]';
-    idx = find_closest_rows(orbL, orbL_Atom);
-    %
-    if options.UsePOSCAR_Cordinates
-        orbL = orbL_Atom(idx,:);
-    end
-    quantumL = [];              % Placeholder for quantum numbers
-    TestL = [orbL,quantumL];
-    if has_duplicate_rows_tol(TestL)
-        SpinfulFlag = 1;
-    end
-    if SpinfulFlag
-        spin = 1/2;
-        for i = 1:Nbands
-            idxIon =  idx(i);
-            elementname = remove_atom_numbers(sites(idxIon).name);
-            element_data = table2array(elements(...
-                char(elementname), {'atom_number','n'}));
-            l = projectionData(i,4);
-            mr = projectionData(i,5);
-            elementL(i,:) = element_data(1) ;
-            tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr),spin];
-            if spin == 1/2
-                spin = -1/2;
-            else
-                spin = 1/2;
-            end
-            quantumL = [quantumL;tmpquantumL];
+% Read crystal structure from POSCAR
+[~, sites, ~, ~, elements, ~] =  POSCAR_read(POSCAR_name);
+if ~isempty(elements)
+    elements.Properties.RowNames = elements.atom_symbol;
+end
+% Extract metadata from wannier90 output
+[SpinfulFlag, Nbands, projLine] = read_metadata(filename);
+
+% Read projection data block
+projectionLines = read_projection_data(filename, projLine, Nbands);
+
+% Return extracted data (parse_projections implementation required)
+projectionData = parse_projection_cell(projectionLines);
+%
+orbL = projectionData(:,1:3);  % Orbital projections to be parsed
+orbL_Atom = [[sites.rc1];[sites.rc2];[sites.rc3]]';
+idx = find_closest_rows(orbL, orbL_Atom);
+%
+if options.UsePOSCAR_Cordinates
+    orbL = orbL_Atom(idx,:);
+end
+quantumL = [];              % Placeholder for quantum numbers
+TestL = [orbL,quantumL];
+if has_duplicate_rows_tol(TestL)
+    SpinfulFlag = 1;
+end
+if SpinfulFlag
+    spin = 1/2;
+    for i = 1:Nbands
+        idxIon =  idx(i);
+        elementname = remove_atom_numbers(sites(idxIon).name);
+        element_data = table2array(elements(...
+            char(elementname), {'atom_number','n'}));
+        l = projectionData(i,4);
+        mr = projectionData(i,5);
+        elementL(i,:) = element_data(1) ;
+        tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr),spin];
+        if spin == 1/2
+            spin = -1/2;
+        else
+            spin = 1/2;
         end
-    else
-        for i = 1:Nbands
-            idxIon =  idx(i);
-            elementname = remove_atom_numbers(sites(idxIon).name);
-            element_data = table2array(elements(...
-                char(elementname), {'atom_number','n'}));
-            elementL(i,:) = element_data(1) ;
-            l = projectionData(i,4);
-            mr = projectionData(i,5);
-            tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr),nan];
-            quantumL = [quantumL;tmpquantumL];
-        end
+        quantumL = [quantumL;tmpquantumL];
     end
-    %
-    
+else
+    for i = 1:Nbands
+        idxIon =  idx(i);
+        elementname = remove_atom_numbers(sites(idxIon).name);
+        element_data = table2array(elements(...
+            char(elementname), {'atom_number','n'}));
+        elementL(i,:) = element_data(1) ;
+        l = projectionData(i,4);
+        mr = projectionData(i,5);
+        tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr),nan];
+        quantumL = [quantumL;tmpquantumL];
+    end
+end
+%
+
 
 end
 
@@ -100,58 +88,58 @@ hasDuplicate = any(all(abs(row_diffs) < tol, 2));
 end
 
 function m = lmr2m(l,mr)
-    switch l
-        case 0
-            m = 0;
-        case 1
-            switch mr
-                case 1
-                    m = 0;
-                case 2
-                    m = 1;
-                case 3
-                    m = -1;
-            end
-        case 2
-            switch mr
-                case 1
-                    m = 0;
-                case 2
-                    m = 1;
-                case 3
-                    m = -1;
-                case 4
-                    m = 2;
-                case 5
-                    m = -2;
-            end
-        case 3
-            switch mr
-                case 1
-                    m = 0;
-                case 2
-                    m = 1;
-                case 3
-                    m = -1;
-                case 4
-                    m = 2;
-                case 5
-                    m = -2;
-                case 6
-                    m = 3;
-                case 7
-                    m = -3;
-            end
-        case -1
-        case -2
-        case -3
-        case -4
-        case -5
-    end
+switch l
+    case 0
+        m = 0;
+    case 1
+        switch mr
+            case 1
+                m = 0;
+            case 2
+                m = 1;
+            case 3
+                m = -1;
+        end
+    case 2
+        switch mr
+            case 1
+                m = 0;
+            case 2
+                m = 1;
+            case 3
+                m = -1;
+            case 4
+                m = 2;
+            case 5
+                m = -2;
+        end
+    case 3
+        switch mr
+            case 1
+                m = 0;
+            case 2
+                m = 1;
+            case 3
+                m = -1;
+            case 4
+                m = 2;
+            case 5
+                m = -2;
+            case 6
+                m = 3;
+            case 7
+                m = -3;
+        end
+    case -1
+    case -2
+    case -3
+    case -4
+    case -5
+end
 end
 function idx = find_closest_rows(orbL, orbL_atom)
 %FIND_CLOSEST_ROWS Find closest row indices between two matrices
-%   IDX = FIND_CLOSEST_ROWS(ORBL, ORBL_ATOM) returns the row indices in 
+%   IDX = FIND_CLOSEST_ROWS(ORBL, ORBL_ATOM) returns the row indices in
 %   ORBL_ATOM that are closest to each row in ORBL based on Euclidean distance
 %
 %   Inputs:
@@ -189,68 +177,68 @@ function [SpinfulFlag, Nbands, projLine] = read_metadata(filename)
 %
 %   Early termination when all metadata is found (typically within first 100 lines)
 
-    % Initialize with placeholder values
-    SpinfulFlag = [];
-    Nbands = [];
-    projLine = [];
-    
-    fid = fopen(filename, 'r');
-    if fid == -1
-        error('File open failed: %s', filename);
-    end
-    
-    try
-        lineNum = 0;
-        while ~feof(fid)
-            line = fgetl(fid);
-            lineNum = lineNum + 1;
-            
-            % Detect spinor phase inclusion
-            if isempty(SpinfulFlag) && contains(line, "Include phase for spinor WFs")
-                tokens = split_line(line);
-                if any(strcmp(tokens, 'T'))
-                    SpinfulFlag = true;
-                else
-                    SpinfulFlag = false;
+% Initialize with placeholder values
+SpinfulFlag = [];
+Nbands = [];
+projLine = [];
+
+fid = fopen(filename, 'r');
+if fid == -1
+    error('File open failed: %s', filename);
+end
+
+try
+    lineNum = 0;
+    while ~feof(fid)
+        line = fgetl(fid);
+        lineNum = lineNum + 1;
+
+        % Detect spinor phase inclusion
+        if isempty(SpinfulFlag) && contains(line, "Include phase for spinor WFs")
+            tokens = split_line(line);
+            if any(strcmp(tokens, 'T'))
+                SpinfulFlag = true;
+            else
+                SpinfulFlag = false;
+            end
+
+        end
+
+        % Extract number of Wannier functions
+        if isempty(Nbands) && contains(line, 'Number of Wannier Functions')
+            tokens = split_line(line);
+            for i = 1:numel(tokens)
+                num = str2double(tokens{i});
+                if ~isnan(num)
+                    Nbands = num;
+                    break;
                 end
-                
-            end
-            
-            % Extract number of Wannier functions
-            if isempty(Nbands) && contains(line, 'Number of Wannier Functions')
-                tokens = split_line(line);
-                for i = 1:numel(tokens)
-                    num = str2double(tokens{i});
-                    if ~isnan(num)
-                        Nbands = num;
-                        break;
-                    end
-                end
-            end
-            
-            % Locate PROJECTIONS section start
-            if isempty(projLine) && contains(line, 'PROJECTIONS')
-                projLine = lineNum;
-            end
-            
-            % Early exit when all metadata collected
-            if ~isempty(SpinfulFlag) && ~isempty(Nbands) && ~isempty(projLine)
-                break;
             end
         end
-    catch ME
-        fclose(fid);
-        rethrow(ME);
+
+        % Locate PROJECTIONS section start
+        if isempty(projLine) && contains(line, 'PROJECTIONS')
+            projLine = lineNum;
+        end
+
+        % Early exit when all metadata collected
+        if ~isempty(SpinfulFlag) && ~isempty(Nbands) && ~isempty(projLine)
+            break;
+        end
     end
+catch ME
     fclose(fid);
-    
-    % Validate critical metadata
-    if isempty(Nbands)
-        error('Band count not found in %s', filename);
-    end
-    if isempty(projLine)
-        error('PROJECTIONS section not found in %s', filename);
-    end
+    rethrow(ME);
+end
+fclose(fid);
+
+% Validate critical metadata
+if isempty(Nbands)
+    error('Band count not found in %s', filename);
+end
+if isempty(projLine)
+    error('PROJECTIONS section not found in %s', filename);
+end
 end
 
 function projectionLines = read_projection_data(filename, projLine, Nbands)
@@ -260,48 +248,48 @@ function projectionLines = read_projection_data(filename, projLine, Nbands)
 %
 %   Implements efficient line-by-line reading without loading entire file
 
-    % Calculate target line range [startLine, endLine]
-    startLine = projLine + 6;
-    endLine = startLine + Nbands - 1;
-    
-    fid = fopen(filename, 'r');
-    if fid == -1
-        error('File open failed: %s', filename);
-    end
-    
-    try
-        % Preallocate cell array for efficiency
-        projectionLines = cell(1, Nbands);
-        lineNum = 0;
-        linesRead = 0;
-        
-        while ~feof(fid) && linesRead < Nbands
-            line = fgetl(fid);
-            lineNum = lineNum + 1;
-            
-            % Skip lines before target range
-            if lineNum < startLine
-                continue;
-            end
-            
-            % Capture lines within target range
-            if lineNum <= endLine
-                linesRead = linesRead + 1;
-                projectionLines{linesRead} = line;
-            else
-                break;
-            end
+% Calculate target line range [startLine, endLine]
+startLine = projLine + 6;
+endLine = startLine + Nbands - 1;
+
+fid = fopen(filename, 'r');
+if fid == -1
+    error('File open failed: %s', filename);
+end
+
+try
+    % Preallocate cell array for efficiency
+    projectionLines = cell(1, Nbands);
+    lineNum = 0;
+    linesRead = 0;
+
+    while ~feof(fid) && linesRead < Nbands
+        line = fgetl(fid);
+        lineNum = lineNum + 1;
+
+        % Skip lines before target range
+        if lineNum < startLine
+            continue;
         end
-        
-        % Validate line count matches expected bands
-        if linesRead ~= Nbands
-            error('Read %d projection lines, expected %d', linesRead, Nbands);
+
+        % Capture lines within target range
+        if lineNum <= endLine
+            linesRead = linesRead + 1;
+            projectionLines{linesRead} = line;
+        else
+            break;
         end
-    catch ME
-        fclose(fid);
-        rethrow(ME);
     end
+
+    % Validate line count matches expected bands
+    if linesRead ~= Nbands
+        error('Read %d projection lines, expected %d', linesRead, Nbands);
+    end
+catch ME
     fclose(fid);
+    rethrow(ME);
+end
+fclose(fid);
 
 end
 
@@ -312,12 +300,12 @@ function tokens = split_line(line, ~)
 %
 %   Optimized for parsing wannier90 output formatting
 
-    % Define standard delimiters for wannier90 files
-    delimiters = {' ', '|', ':'};
-    
-    % Perform split and filter empty elements
-    tokens = strsplit(line, delimiters);
-    tokens = tokens(~cellfun('isempty', tokens));
+% Define standard delimiters for wannier90 files
+delimiters = {' ', '|', ':'};
+
+% Perform split and filter empty elements
+tokens = strsplit(line, delimiters);
+tokens = tokens(~cellfun('isempty', tokens));
 end
 
 function matrix = parse_projection_cell(cell_array)
@@ -350,8 +338,8 @@ results = cell(num_rows, 1);
 for i = 1:num_rows
     % Extract numbers ignoring non-numeric characters
     nums = textscan(cell_array{i}, '%f', 'Delimiter', ' |', ...
-                    'MultipleDelimsAsOne', true);
-    
+        'MultipleDelimsAsOne', true);
+
     % Convert to row vector
     results{i} = nums{1}';
 end
@@ -368,8 +356,8 @@ end
 
 function cleaned = remove_atom_numbers(atom_labels)
 %REMOVE_ATOM_NUMBERS Remove numeric suffixes from chemical element labels
-%   CLEANED = REMOVE_ATOM_NUMBERS(ATOM_LABELS) processes a cell array of 
-%   chemical element labels (e.g., {'Te1', 'O2', 'Si'}) and removes any 
+%   CLEANED = REMOVE_ATOM_NUMBERS(ATOM_LABELS) processes a cell array of
+%   chemical element labels (e.g., {'Te1', 'O2', 'Si'}) and removes any
 %   trailing numeric characters, returning only the elemental symbol.
 %
 %   Input:
