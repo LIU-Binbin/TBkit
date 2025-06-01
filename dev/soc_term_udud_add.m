@@ -1,7 +1,8 @@
-function [H_soc_sym, lambda_syms] = soc_term_udud_add(elementL,qnumL,options)
+function [H_soc_sym, lambda_syms] = soc_term_udud_add(elementL,qnumL,orbL,options)
 arguments
     elementL = [];
     qnumL = [];
+    orbL = [];
     options.mode {mustBeMember(options.mode, ["direct", "basis"])} = "direct";
     options.element_names = ["Mn", "Pt"];
     options.element_atom_nums = [2 2];
@@ -60,6 +61,12 @@ if strcmp(options.mode,'direct')
         end
     end
 elseif strcmp(options.mode,'basis')
+    ZeroMat = zeros(size(orbL,1));
+    for i = 1:size(orbL,1)
+        for j = 1:size(orbL,1)
+            ZeroMat(i,j) = any(orbL(i,:),orbL(j,:));
+        end
+    end
     elements = readtable('elements.txt');
     EqnumL = [elementL,qnumL];
     [EqnumLsort,sort_label] = sortrows(EqnumL,[5],"descend");
@@ -79,6 +86,7 @@ elseif strcmp(options.mode,'basis')
         kron(s.Splus , L.Lminus) + ...
         kron(s.Sminus ,L.Lplus)));
     H_soc_sym = M'*Hsoc/M';
+    H_soc_sym(find(ZeroMat)) = 0;
 end
 
 lambda_syms = symvar(H_soc_sym);

@@ -47,7 +47,7 @@ element_projs = {2, [0,1,2]};
 %     0;0;1;1;-1;-1;
 %     0;0;1;1;-1;-1;2;2;-2;-2;
 %     ];
-[H_soc_full2, lambda_syms2] = soc_term_udud_add(elementL, quantumL, 'mode','direct');
+[H_soc_full2, lambda_syms2] = soc_term_udud_add(elementL, quantumL,orbL, 'mode','direct');
 %%
 H_soc_full2
 hr_soc = hr_nsoc;
