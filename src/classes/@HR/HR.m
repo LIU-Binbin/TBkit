@@ -45,7 +45,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         overlap logical= false;
         num logical= false;
         coe logical= true;
-        soc logical= false;
+        % soc logical= false;
         AvectorL;
         BvectorL;
         CvectorL;
@@ -299,13 +299,12 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
 
     methods
         H_hr = enlarge(H_hr,dir,amp)
-        H_hr = add_soc(H_hr)
         H_hr = addorb(H_hr,orblist,options)
         H_hr = add_orb(H_hr,hop_struct,orbOne,QuantumOne,elementOne)
-        H_hr = addsoc(H_hr,quantumL)
         H_hr = deltarule(H_hr,level_cut,mode,options)
         H_hr = alpharule(H_hr,level_cut,mode,options)
-        H_hr = shift_Fermi_energy(H_hr, Efermi)        
+        H_hr = shift_Fermi_energy(H_hr, Efermi)
+        [H_soc_sym, lambda_syms] = SOC_on_site_gen(H_hr)
     end
     %% expand
     methods

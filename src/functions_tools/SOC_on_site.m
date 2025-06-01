@@ -1,9 +1,12 @@
-function [H_soc_sym, lambda_syms] = soc_term_udud_add(elementL,qnumL,orbL,options)
+function [H_soc_sym, lambda_syms] = SOC_on_site(orbL, elementL, quantumL, options)
+%   Generate an atomic on-site spin-orbit coupling (SOC) term with symbolic
+%   SOC constants for each element and orbit
 arguments
-    elementL = [];
-    qnumL = [];
-    orbL = [];
-    options.mode {mustBeMember(options.mode, ["direct", "basis"])} = "direct";
+    orbL
+    elementL
+    quantumL
+    
+    options.mode {mustBeMember(options.mode, ["direct", "basis"])} = "basis";
     options.element_names = ["Mn", "Pt"];
     options.element_atom_nums = [2 2];
     options.element_projs = {2, [0,1,2]};
@@ -61,15 +64,17 @@ if strcmp(options.mode,'direct')
         end
     end
 elseif strcmp(options.mode,'basis')
+    % only on-site SOC is allowed
     ZeroMat = zeros(size(orbL,1));
     for i = 1:size(orbL,1)
         for j = 1:size(orbL,1)
-            ZeroMat(i,j) = any(orbL(i,:),orbL(j,:));
+            ZeroMat(i,j) = ~all(orbL(i,:)==orbL(j,:));
         end
     end
+
     elements = readtable('elements.txt');
-    EqnumL = [elementL,qnumL];
-    [EqnumLsort,sort_label] = sortrows(EqnumL,[5],"descend");
+    EqnumL = [elementL,quantumL];
+    [EqnumLsort,sort_label] = sortrows(EqnumL,5,"descend");
     M  = TBkit.P2M(sort_label); 
     EQup = EqnumLsort(EqnumLsort(:,end) > 0,:);
     % L = [];
@@ -86,7 +91,7 @@ elseif strcmp(options.mode,'basis')
         kron(s.Splus , L.Lminus) + ...
         kron(s.Sminus ,L.Lplus)));
     H_soc_sym = M'*Hsoc/M';
-    H_soc_sym(find(ZeroMat)) = 0;
+    H_soc_sym(logical(ZeroMat)) = 0;
 end
 
 lambda_syms = symvar(H_soc_sym);
