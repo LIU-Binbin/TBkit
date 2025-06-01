@@ -18,7 +18,7 @@ function [H_hr,EQL] = subs(H_hr,varargin)
 if strcmp(varargin{end},'all')
     all_mode = true;
     nargin_check = nargin-1;
-elseif strcmp(varargin{end-1},'SubsIndex')
+elseif strcmp(varargin{end-1},'SubsIndexL')
     switch nargin-2
         case 2
             SubsIndexL = varargin{end};
@@ -28,9 +28,10 @@ elseif strcmp(varargin{end-1},'SubsIndex')
             EQL = vpa(symvar_list == x);
         case 3
             SubsIndexL = varargin{end};
-            x = varargin{1};
-            symvar_list = varargin{2};
-            H_hr.HnumL(SubsIndexL) = double(subs(H_hr.HcoeL,symvar_list,x));
+            x = varargin{2};
+            symvar_list = varargin{1};
+            %SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
+            H_hr.HnumL(SubsIndexL) = H_hr.HnumL(SubsIndexL) + double(subs(H_hr.HcoeL,symvar_list,x));
             EQL = vpa(symvar_list == x);
     end
     return;

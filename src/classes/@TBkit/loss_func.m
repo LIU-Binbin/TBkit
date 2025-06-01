@@ -79,7 +79,7 @@ switch fitmethod
                 SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
             end
             FITobj_n = FITobj;
-            FITobj_n.HnumL(SubsIndexL) = SubsHnumL;
+            FITobj_n.HnumL(SubsIndexL) = FITobj_n.HnumL(SubsIndexL) + SubsHnumL;
         end
         EIGENCAR_TBkit = FITobj_n.EIGENCAR_gen('printmode',false);
     case 'Bayes'

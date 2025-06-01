@@ -23,6 +23,7 @@ if isempty(dH)
             % num_seqL(i) = 0;
         catch
             SubsIndexL(i) = 0;
+            %FITobj.HnumL(i) = 0;
         end
 
     end
@@ -36,7 +37,7 @@ else
     [rowL,colL,page] = ind2sub(size_dH,SelectM);
     pageL = SelectVectorL(page);
     SubsIndexL = sub2ind(size(FITobj.HnumL),rowL,colL,pageL);
-    FITobj.HcoeL =dH(SelectM);
+    FITobj.HcoeL = dH(SelectM);
     
 end
 end
