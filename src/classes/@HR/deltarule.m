@@ -57,11 +57,11 @@ for ibase = base_string
             count = count + 1;
             base_symvar(count) = sym(term, 'real');
             base_num(count) = i;
+            base_symvar_str(count) = string(ibase);
             break;
         end
     end
 end
-
 % Handle overlap matrix if present
 if H_hr(1).overlap
     base_string_S = ["SssS", "SspS", "SsdS", "SppS", "SpdS", "SppP", "SpdP", "SddS", "SddP", "SddD"];
@@ -78,6 +78,7 @@ if H_hr(1).overlap
                 count_S = count_S + 1;
                 base_symvar_S(count_S) = sym(term, 'real');
                 base_num_S(count_S) = i;
+                base_symvar_str_S(count) = string(ibase_S);
                 break;
             end
         end
@@ -108,10 +109,11 @@ switch mode
         % Substitute Hamiltonian terms
         for j = 2:level_cut
             for i = 1:count
-                V_n = string(base_symvar(i)) + "_" + num2str(j);
+                V_n = string(base_symvar_str(i)) + "_" + num2str(j);
                 if any(contains(strvar_list, V_n))
                     coeff = (Rnn(j) - RdL(base_num(i)));
                     subs_expr = base_symvar(i) * exp(-coeff / delta);
+                    fprintf('%s\n',string(sym(V_n) == subs_expr));
                     H_hr(1).HcoeL = subs(H_hr(1).HcoeL, sym(V_n), subs_expr);
                 end
             end
@@ -122,10 +124,11 @@ switch mode
             delta_S = sym('delta__2', 'real');
             for j = 2:level_cut
                 for i = 1:count_S
-                    S_n = string(base_symvar_S(i)) + "_" + num2str(j);
+                    S_n = string(base_symvar_str_S(i)) + "_" + num2str(j);
                     if any(contains(symvar_list_S, S_n))
                         coeff = (Rnn(j) - RdL(base_num_S(i)));
                         subs_expr = base_symvar_S(i) * exp(-coeff / delta_S);
+                        fprintf('%s\n',string(sym(S_n) == subs_expr));
                         H_hr(2).HcoeL = subs(H_hr(2).HcoeL, sym(S_n), subs_expr);
                     end
                 end
@@ -136,11 +139,12 @@ switch mode
         % Unique delta parameters for each interaction type
         for j = 2:level_cut
             for i = 1:count
-                V_n = string(base_symvar(i)) + "_" + num2str(j);
+                V_n = string(base_symvar_str(i)) + "_" + num2str(j);
                 if any(contains(strvar_list, V_n))
                     delta = sym(['delta_', num2str(i)], 'real');
                     coeff = (Rnn(j) - RdL(base_num(i)));
                     subs_expr = base_symvar(i) * exp(-coeff / delta);
+                    fprintf('%s\n',string(sym(V_n) == subs_expr));
                     H_hr(1).HcoeL = subs(H_hr(1).HcoeL, sym(V_n), subs_expr);
                 end
             end
@@ -150,11 +154,12 @@ switch mode
         if H_hr(1).overlap
             for j = 2:level_cut
                 for i = 1:count_S
-                    S_n = string(base_symvar_S(i)) + "_" + num2str(j);
+                    S_n = string(base_symvar_str_S(i)) + "_" + num2str(j);
                     if any(contains(symvar_list_S, S_n))
                         delta = sym(['delta__2_', num2str(i)], 'real');
                         coeff = (Rnn(j) - RdL(base_num_S(i)));
                         subs_expr = base_symvar_S(i) * exp(-coeff / delta);
+                        fprintf('%s\n',string(sym(S_n) == subs_expr));
                         H_hr(2).HcoeL = subs(H_hr(2).HcoeL, sym(S_n), subs_expr);
                     end
                 end

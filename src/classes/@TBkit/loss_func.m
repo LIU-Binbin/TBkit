@@ -39,6 +39,8 @@ end
 EIGENCAR_DFT = evalin(options.namespace,options.DFTBAND);
 FITobj = evalin(options.namespace,options.FITobj);
 if isempty(options.SubsIndexL)
+    % normal
+    FITobj.HnumL = zeros(size(FITobj.HcoeL));
     SubsIndexL = 1:numel(FITobj.HnumL);
 else
     SubsIndexL = options.SubsIndexL;
@@ -74,9 +76,11 @@ switch fitmethod
         else
             try
                 SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
+                SubsHnumL = [SubsHnumL(SubsIndexL)];
             catch
                 Varlist = FITobj.symvar_list;
                 SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
+                SubsHnumL = [SubsHnumL(SubsIndexL)];
             end
             FITobj_n = FITobj;
             FITobj_n.HnumL(SubsIndexL) = FITobj_n.HnumL(SubsIndexL) + SubsHnumL;
@@ -95,15 +99,15 @@ switch fitmethod
             % Generate Field Names from Variables  dynamic fieldnames, or sometimes dynamic field names.
             %FITobj = FITobj.subs(Varlist(i),parameters.(string(Varlist(i))));
             try
-                SubsHnumL = (subs(SubsHnumL,Varlist,parameters.(string(Varlist(i))) ));
+                SubsHnumL = (subs(SubsHnumL,Varlist(i),parameters.(string(Varlist(i))) ));
             catch
                 Varlist = FITobj.symvar_list;
-                SubsHnumL = (subs(SubsHnumL,Varlist,parameters.(string(Varlist(i))) ));
+                SubsHnumL = (subs(SubsHnumL,Varlist(i),parameters.(string(Varlist(i))) ));
             end
         end
-
+        SubsHnumL = [SubsHnumL(SubsIndexL)];
         FITobj_n = FITobj;
-        FITobj_n.HnumL(SubsIndexL) = SubsHnumL;
+        FITobj_n.HnumL(SubsIndexL) = FITobj_n.HnumL(SubsIndexL) + SubsHnumL;
         EIGENCAR_TBkit = FITobj_n.EIGENCAR_gen('printmode',false);
     otherwise
         error('not be implemented');

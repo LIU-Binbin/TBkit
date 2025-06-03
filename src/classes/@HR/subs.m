@@ -18,6 +18,9 @@ function [H_hr,EQL] = subs(H_hr,varargin)
 if strcmp(varargin{end},'all')
     all_mode = true;
     nargin_check = nargin-1;
+elseif nargin-1 == 1
+    all_mode = false;
+    nargin_check = nargin;
 elseif strcmp(varargin{end-1},'SubsIndexL')
     switch nargin-2
         case 2

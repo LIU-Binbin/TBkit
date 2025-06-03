@@ -219,9 +219,9 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
             else
                 %WAN_NUM = max(size(H_hr.HnumL,1),size(H_hr.HcoeL,1));
                 if H_hr.num && ~H_hr.coe
-                    WAN_NUM = size(H_hr.HnumL,2);
+                    WAN_NUM = size(H_hr.HnumL,1);
                 elseif ~H_hr.num && H_hr.coe
-                    WAN_NUM = size(H_hr.HcoeL,2);
+                    WAN_NUM = size(H_hr.HcoeL,1);
                 elseif H_hr.num && H_hr.coe
                     WAN_NUM = max(size(H_hr.HnumL,1),size(H_hr.HcoeL,1));
                 else

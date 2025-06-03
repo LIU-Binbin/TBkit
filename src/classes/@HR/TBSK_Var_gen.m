@@ -19,15 +19,29 @@ function varargout = TBSK_Var_gen(L_1_L,L_2_L,m_1_L,m_2_L,nn_level_L,l_L,m_L,n_L
 %       Coeff    - Slater-Koster coefficients matrix
 %       V_str    - Variable names for hopping terms
 %   See also HR.TBSK_Var_gen_single, HR.TBSK_Coeff_gen
+% <https://en.wikipedia.org/wiki/Tight_binding>
+% L_1,L_2 : orbital angular momentum: s 0 p 1 d 2 f 3
+% m_1,m_2 : magnetic quantum number:
+%           - s 0
+%           - p y:-1 z:0 x:1 % because py = i/sart(2)*(Y-1
+%           +Y1), we label this i as a minus number
+%           - d xy:-2 yz:-1 z2:0 xz:1 x2-y2:2
+%           - f
+%           y(3x2-y2):-3 xyz:-2  yz2:-1
+%           z3:0
+%           x(x2-3y2):3  z(x2-y2):2  xz2:1
+
+% Coeff = zeros(nhopping,3);
+% when generating a batch of Hoppings, we must code vectorized
 arguments
     L_1_L double{mustBeInteger};
     L_2_L double{mustBeInteger};
     m_1_L double{mustBeInteger};
     m_2_L double{mustBeInteger};
     nn_level_L double{mustBeInteger} = -1;
-    l_L  = 0;
-    m_L  = 0;
-    n_L  = 0;
+    l_L double{mustBeFloat} = 0;
+    m_L double{mustBeFloat} = 0;
+    n_L double{mustBeFloat} = 0;
     options.overlap logical = false;
 end
 nhopping = length(L_1_L);
@@ -46,6 +60,9 @@ exchange_list = L_1_L > L_2_L;
 L_3_L = L_2_L(exchange_list);
 L_2_L(exchange_list) = L_1_L(exchange_list);
 L_1_L(exchange_list) = L_3_L;
+m_3_L = m_1_L(exchange_list);
+m_2_L(exchange_list) = m_1_L(exchange_list);
+m_1_L(exchange_list) = m_3_L;
 l_L(exchange_list) = - l_L(exchange_list);
 m_L(exchange_list) = - m_L(exchange_list) ;
 n_L(exchange_list) = - n_L(exchange_list);

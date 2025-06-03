@@ -13,7 +13,7 @@ if SelectVectorL == -1
 end
 if isempty(dH)
     FITobj.HnumL = zeros(size(FITobj.HcoeL));
-    num_seqL = ones(1,numel(FITobj.HnumL ));
+    num_seqL = zeros(1,numel(FITobj.HnumL ));
     SubsIndexL = num_seqL;
     ntotal = numel(FITobj.HnumL);
     for i = 1:numel(FITobj.HnumL)
@@ -21,8 +21,9 @@ if isempty(dH)
         try
             FITobj.HnumL(i) = double(FITobj.HcoeL(i));
             % num_seqL(i) = 0;
+            % SubsIndexL(i) = 0;
         catch
-            SubsIndexL(i) = 0;
+            SubsIndexL(i) = 1;
             %FITobj.HnumL(i) = 0;
         end
 
@@ -30,6 +31,8 @@ if isempty(dH)
     SubsIndexL = find(SubsIndexL);
     % FITobj.HnumL(num_seqL) = FITobj.HcoeL(num_seqL);
     FITobj.HcoeL  = FITobj.HcoeL(SubsIndexL);
+    FITobj.num  = true;
+    FITobj.coe  = true;
 else
     SelectM = find(logical(dH ~= sym(0)));
     size_dH = size(dH);

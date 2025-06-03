@@ -60,8 +60,8 @@ end
 norb_enforce  = options.norb;
 Hermite = options.Hermite;
 if H_hr(1).overlap
+    H_hr_overlap = H_hr(2);
     H_hr = H_hr(1);
-    H_hr_overlap = H_hr;
 end
 NRPTS_tmp = H_hr.NRPTS;
 % -------------- plot ------------------
