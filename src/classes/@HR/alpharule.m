@@ -59,8 +59,12 @@ base_overlap = ["SssS","SspS","SsdS","SppS","SpdS","SppP","SpdP","SddS","SddP","
 [V_subs, S_subs] = generate_substitution_rules(mode, level_cut, base_symvar, base_idx,base_symvar_S, base_idx_S, Rnn, options);
 
 % Apply substitutions to Hamiltonian
+EQ = [V_subs.names ]==[ V_subs.values];
+disp(EQ);
 H_hr(1).HcoeL = subs(H_hr(1).HcoeL, V_subs.names, V_subs.values);
 if H_hr(1).overlap
+    EQ2 = [S_subs.names ]==[ S_subs.values];
+    disp(EQ2);
     H_hr(2).HcoeL = subs(H_hr(2).HcoeL, S_subs.names, S_subs.values);
 end
 
