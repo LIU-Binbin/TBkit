@@ -1,14 +1,14 @@
 +++
-title = "vasplib cheatsheet"
+title = "TBkit cheatsheet"
 date = 2022-02-02T18:20:31+08:00
 draft = false
 author = "parkman"
-description = "MATLAB vasplib"
+description = "MATLAB TBkit"
 toc = true
 math = true
 featured = true
 categories = [
-	'vasplib',
+	'TBkit',
 ]
 tags = [
 	'MATLAB'
@@ -19,12 +19,12 @@ aliases = []
 images = [
 ]
 +++
-vasplib 快捷命令一览
+TBkit 快捷命令一览
 <!--more-->
 
-## vasplib
+## TBkit
 
-vasplib 和第一性原理计算对接，Tools function
+TBkit 和第一性原理计算对接，Tools function
 
 ### bandplot
 
@@ -74,7 +74,7 @@ bandplot({EIGENCAR1,EIGENCAR2},[-3,3]);
 比较两个能带
 
 ``` MATLAB
-vasplib.bandplot(EIGENCAR1,EIGENCAR2,[-3,3]);
+TBkit.bandplot(EIGENCAR1,EIGENCAR2,[-3,3]);
 ```
 
 ### export .svg
@@ -103,13 +103,13 @@ export_fig temp.png -r600
 ``` MATLAB
 pbandplot();
 %% or
-vasplib.pbandplot();
+TBkit.pbandplot();
 ```
 
 在有WEIGHTCAR(和EIGENCAR结构一致)的情况下 画投影能带图
 
 ``` MATLAB
-vasplib.pbandplot(WEIGHTCAR,EIGENCAR,'Ecut',[-3,3]);
+TBkit.pbandplot(WEIGHTCAR,EIGENCAR,'Ecut',[-3,3]);
 ```
 
 调整能量范围
@@ -188,14 +188,14 @@ POSCAR_read;
 ### plot BZ
 
 ``` MATLAB
-vasplib.BZplot(Rm);
+TBkit.BZplot(Rm);
 ```
 
 More
 {{< expand "Dependence" >}} KPOINTS {{< /expand >}}
 
 ``` MATLAB
-vasplib.BZplot(Rm,'KPOINTS','KPOINTS');
+TBkit.BZplot(Rm,'KPOINTS','KPOINTS');
 ```
 
 ### plot fermi_arc data from wt
@@ -231,7 +231,7 @@ HRobj = HR.from_wannier90('wannier90_hr.dat');
 
 ### SKTB
 
-POSCAR 需要特别的设置，详见POSCAR 设置：[vasplib_POSCAR](https://parkman.top/en/posts/matlab/vasplib/vasplib_poscar/)
+POSCAR 需要特别的设置，详见POSCAR 设置：[TBkit_POSCAR](https://parkman.top/en/posts/matlab/TBkit/TBkit_poscar/)
 {{< expand "Dependence" >}} POSCAR {{< /expand >}}
 
 #### sparse
@@ -361,7 +361,7 @@ HRobj.HcoeL(:,:,HRobj.Line_000);
 
 ``` MATLAB
 [fig,ax] = Grpahene_TB_n.BZplot(HRobj.Rm,'mode','2D');
-vasplib.bandplot_3d(EIGENCAR_3D,klist1,klist2,'fig',fig,'ax',ax);
+TBkit.bandplot_3d(EIGENCAR_3D,klist1,klist2,'fig',fig,'ax',ax);
 ```
 
 
@@ -399,6 +399,6 @@ EIGENCAR = Graphene_n.EIGENCAR_gen();
 bandplot(EIGENCAR,[-3,3],klist_l,kpoints_l,kpoints_name,'title','Graphene','Color','r');
 ```
 
-**Other functions such as slab band can be viewed in "vasplib/example/example08-1-HTrig-class/Htrig_C3/Graphene_Htrig.mlx".**
+**Other functions such as slab band can be viewed in "TBkit/example/example08-1-HTrig-class/Htrig_C3/Graphene_Htrig.mlx".**
 
 ## Oper

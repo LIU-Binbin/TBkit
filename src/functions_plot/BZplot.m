@@ -56,24 +56,20 @@ switch options.mode
         end
         
         % Generate a grid of k-points for plotting
-        vector = [];
-        for i = linspace(-2, 2, 5)
-            for j = linspace(-2, 2, 5)
-                for k = linspace(-2, 2, 5)
-                    vector = [vector; i, j, k];  % Generate k-points in the grid
-                end
-            end
-        end
+        n = 5;  
+        range = [-2, 2]; 
+        [x, y, z] = ndgrid(linspace(range(1), range(2), n));
+        vector = [x(:), y(:), z(:)];
         
         % Rotate the reciprocal lattice vectors using the provided rotation matrix
         Gk = options.Rotation * Gk;
-        vectorR = vector * Gk;  % Apply the rotation to the k-points
+        vector_cart = vector * Gk;  % Apply the rotation to the k-points
         
         % Find the index of the gamma point (0,0,0)
-        [~, Line_000] = ismember([0, 0, 0], vectorR, 'rows');
+        [~, Line_000] = ismember([0, 0, 0], vector_cart, 'rows');
         
         % Compute the Voronoi diagram for the k-points
-        [v, c] = voronoin(vectorR);
+        [v, c] = voronoin(vector_cart);
         V = v(c{Line_000}, :);  % Extract the Voronoi vertices for the relevant region
         
         % Plot the polyhedron representing the Brillouin zone
@@ -164,9 +160,9 @@ switch options.mode
         end
         
         % Apply the 2D transformation to the vector list
-        vectorR = vector * Gk_2d;
-        [~, Line_000] = ismember([0, 0], vectorR, 'rows');
-        [v, c] = voronoin(vectorR);
+        vector_cart = vector * Gk_2d;
+        [~, Line_000] = ismember([0, 0], vector_cart, 'rows');
+        [v, c] = voronoin(vector_cart);
         V = v(c{Line_000}, :);
         
         % Plot the 2D Brillouin zone
