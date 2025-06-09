@@ -53,7 +53,11 @@ switch mode
                 fprintf(hrdat,"\n");
             end
         end
-        fprintf(hrdat,"\n");
+
+        if COUNT_FLAG ~= 0
+            fprintf(hrdat,"\n");
+        end
+        
         for i=1:H_hr.NRPTS
             pb.print(i,H_hr.NRPTS,' ...');
             %fprintf('Wrinting (%d/%d)  NRPT\n',i,H_hr.NRPTS);
