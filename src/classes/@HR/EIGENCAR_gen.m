@@ -59,6 +59,10 @@ end
 % -------------- define ------------------
 norb_enforce  = options.norb;
 Hermite = options.Hermite;
+if H_hr(1).overlap
+    H_hr_overlap = H_hr(2);
+    H_hr = H_hr(1);
+end
 NRPTS_tmp = H_hr.NRPTS;
 % -------------- plot ------------------
 if options.show
@@ -140,27 +144,18 @@ else
 end
 % -------------- nargin ------------------
 if H_hr.overlap
-    NRPTS_tmp_S = size(H_hr.vectorL_overlap,1);
+    NRPTS_tmp_S = size(H_hr_overlap.vectorL,1);
 end
 if strcmp(H_hr.Type,'list')
-    if H_hr.overlap
-        H_hr = H_hr.SliceGen();
-        [ij_list_S,index_row_S] = sortrows(H_hr.vectorL_overlap(:,4:5));
-        H_hr = H_hr.reseq(':',index_row,index_row_S);
-        [Sparse_vector_S,SliceList_S] = unique(ij_list_S,'rows');
-        N_Sparse_vector_S = size(Sparse_vector_S,1);
-        CutList_S = [SliceList_S,[SliceList_S(2:end)-1;NRPTS_tmp_S]];
-    else
-        H_hr = H_hr.SliceGen();
-    end
+    H_hr = H_hr.SliceGen();
 end
 %disp("EIGENCAR gen for H_xyz(wt TB) type: HR class ");
 % reseq makes HR different! take attention
 HnumList = H_hr.HnumL ;
 vectorList = double(H_hr.vectorL(:,1:H_hr.Dim)) ;
 if H_hr.overlap
-    Snum_list = double(H_hr.SnumL) ;
-    vectorlist_overlap = double(H_hr.vectorL_overlap(:,1:H_hr.Dim)) ;
+    SnumList = double(H_hr_overlap.HnumL) ;
+    vectorlist_overlap = double(H_hr_overlap.vectorL(:,1:H_hr_overlap.Dim)) ;
 end
 if UmatMode
     WANNUM = length(subband);
@@ -270,21 +265,21 @@ if strcmp(options.convention,'II')
         end
         if norb_enforce <0
             if H_hr.overlap
-                [A, U]=eig(full(Hout),full(Sout));
+                [A, D]=eig(full(Hout),full(Sout));
             else
-                [A, U]=eig(full(Hout));
+                [A, D]=eig(full(Hout));
             end
         elseif norb_enforce >0
             if H_hr.overlap
-                [A, U]=eigs(Hout,Sout,NBANDS,fermi);
-                [A, U]= park.sorteig(U,A);
+                [A, D]=eigs(Hout,Sout,NBANDS,fermi);
+                [A, D]= sorteig(D,A);
             else
-                [A, U]=eigs(Hout,NBANDS,fermi);
-                [A, U]= park.sorteig(U,A);
+                [A, D]=eigs(Hout,NBANDS,fermi);
+                [A, D]= sorteig(D,A);
             end
         else
         end
-        EIGENCAR(:,ki) = diag(U);
+        EIGENCAR(:,ki) = diag(D);
         if options.LWAVE
             WAVECAR(:,:,ki) = A(:,subband);
         end
@@ -381,20 +376,20 @@ elseif strcmp(options.convention,'I')
         end
         if norb_enforce <0
             if H_hr.overlap
-                [A, U]=eig(full(Hout),full(Sout));
+                [A, D]=eig(full(Hout),full(Sout));
             else
-                [A, U]=eig(full(Hout));
+                [A, D]=eig(full(Hout));
             end
         elseif norb_enforce >0
             if H_hr.overlap
-                [A, U]=eigs(Hout,Sout,NBANDS,fermi);
+                [A, D]=eigs(Hout,Sout,NBANDS,fermi);
             else
-                [A, U]=eigs(Hout,NBANDS,fermi);
-                [A, U]= HR.sorteig(U,A);
+                [A, D]=eigs(Hout,NBANDS,fermi);
+                [A, D]= HR.sorteig(D,A);
             end
         else
         end
-        EIGENCAR(:,ki) = diag(U);
+        EIGENCAR(:,ki) = diag(D);
         if options.LWAVE
             WAVECAR(:,:,ki) = A;
         end

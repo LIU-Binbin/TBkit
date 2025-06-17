@@ -26,13 +26,15 @@ function [Gwl,Gwb,Gwr] = GW_iter(H00,H01,w,eta,mu_max,infinity_small)
 %
 %   See also: GREENCAR_gen, Tmatrix_iter
 %%
-if nargin <6
-    infinity_small= 1e-10;
+arguments
+    H00 
+    H01 
+    w = 0;
+    eta  = 1e-3;
+    mu_max  = 100;
+    infinity_small = 1e-10;
 end
-%%
-if nargin <5
-    mu_max = 100;
-end
+
 epsilon0 = H00;
 alpha0 = H01;
 beta0 = H01';

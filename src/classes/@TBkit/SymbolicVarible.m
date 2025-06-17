@@ -15,6 +15,12 @@ function Symble = SymbolicVarible(seeds,superscript,subscript,level)
 %   Note:
 %       Formats negative indices with '_bar' suffix
 %       Adds '_ubar' suffix if level is provided
+arguments
+    seeds 
+    superscript 
+    subscript 
+    level = [];
+end
 Superscript = "";
 Subscript = "";
 for i = 1:length(superscript)
@@ -31,7 +37,7 @@ for i = 1:length(subscript)
         Subscript = Subscript+"_"+num2str(round(abs(subscript(i))));
     end
 end
-if nargin == 4
+if ~isempty(level)
     Level = "_"+num2str(level)+"_ubar";
     Symble = sym(seeds+Subscript+Superscript+Level,'real');
 else

@@ -28,46 +28,37 @@ function [dataArray, NRPT_list, NRPTS, NUM_WAN] = hrdat_read(filename)
                          'MultipleDelimsAsOne', true);
     
     NUM_WAN = headerData{1}(1);
-    NRPTS = headerData{1}(2);
+    NRPTS = double(headerData{1}(2));
+    NRPTS_num1=fix(double(NRPTS)/15);
+    NRPTS_num2=mod(NRPTS,15);
+    delimiter = ' ';
     fclose(fileID);
 
     %% Read NRPT_LIST (k-point weights)
-    fileID = fopen(filename, 'r');
-    
-    % Calculate number of full lines (15 weights per line)
-    weightsPerLine = 15;
-    fullLines = floor(NRPTS/weightsPerLine);
-    remainingWeights = mod(NRPTS, weightsPerLine);
-    
-    % Read weight data blocks
-    weightFormat = repmat('%f', 1, weightsPerLine);
-    weightData = textscan(fileID, weightFormat, fullLines,...
-                         'HeaderLines', 3,...
-                         'Delimiter', ' ',...
-                         'MultipleDelimsAsOne', true);
-    
-    % Read remaining weights if exists
-    if remainingWeights > 0
-        partialFormat = repmat('%f', 1, remainingWeights);
-        partialData = textscan(fileID, partialFormat, 1,...
-                              'Delimiter', ' ',...
-                              'MultipleDelimsAsOne', true);
-        weightData = [weightData, partialData];
-    end
-    
-    % Flatten cell array to column vector
-    NRPT_list = cell2mat(weightData(:));
-    fclose(fileID);
+            fileID = fopen(filename,'r');
+            startRow = 4;
+            endRow = startRow+NRPTS_num1;% calculate here
+            formatSpec = '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%[^\n\r]';
+            dataArray = textscan(fileID, formatSpec,NRPTS_num1+1 , 'Delimiter', delimiter,...
+                'MultipleDelimsAsOne', true, 'TextType', 'string', 'EmptyValue', 0,...
+                'HeaderLines', startRow-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
+            NRPT_list = [dataArray{1:end-1}];
+            NRPT_list = reshape(NRPT_list',NRPTS_num1*15+15,1);
+            fclose(fileID);
 
     %% Read hopping parameters
     fileID = fopen(filename, 'r');
-    
-    % Skip header and weight sections (4 + fullLines + ceil(remainingWeights/15))
-    skipLines = 3 + double(fullLines) + (remainingWeights > 0);
+
+            if NRPTS_num2==0
+                startRow = endRow;
+            else
+                startRow = endRow+1;
+            end
+
     hoppingFormat = '%f %f %f %f %f %f %f';  % [i, j, nx, ny, nz, real, imag]
     
     dataArray = textscan(fileID, hoppingFormat,...
-                        'HeaderLines', skipLines,...
+                        'HeaderLines', startRow-1,...
                         'Delimiter', ' ',...
                         'MultipleDelimsAsOne', true);
     

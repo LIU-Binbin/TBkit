@@ -25,7 +25,16 @@ arguments
     options.force_list = false;
     options.OBC = zeros(1,H_hr.Dim);
     options.silence = false;
+    options.OverlapTest = true;
 end
+if H_hr(1).overlap && options.OverlapTest
+    options.OverlapTest = false;
+    optionscell = namedargs2cell(options);
+    H_hr(1) = supercell_hr(H_hr(1),Ns,optionscell{:});
+    H_hr(2) = supercell_hr(H_hr(2),Ns,optionscell{:});
+    return
+end
+
 V= abs(round(det(Ns)));
 OUT_WAN_NUM = H_hr.WAN_NUM*V ;
 WANNUM= H_hr.WAN_NUM;
@@ -39,9 +48,7 @@ OUT_H_hr.quantumL = sc_quantumL;
 OUT_H_hr.elementL = sc_elementL;
 OUT_H_hr.Rm = Ns * OUT_H_hr.Rm;
 NRPTS_  = H_hr.NRPTS;
-if H_hr.overlap
-    NRPTS_S = size(H_hr.vectorL_overlap,1);
-end
+
 if ~options.silence
     fprintf('Search done; begin to set hoppings\n');
     fprintf('We may improve the perfomance later\n');
@@ -119,59 +126,6 @@ switch H_hr.Type
             end
             if ~options.silence
                 pb.delete();
-            end
-            if H_hr.overlap
-                pb = CmdLineProgressBar(...
-                    ['Generate process: SUPERCELL(S mat)(',...
-                    num2str(icur_sc_vec),',',num2str(num_sc),') NRPT:']);
-                for is = 1:NRPTS_S
-                    ind_R_S = double(H_hr.vectorL_overlap(is,:));
-                    indR_in_supercell=double(ind_R_S+cur_sc_vec)/Ns;
-                    indR_in_supercell = roundn(indR_in_supercell,Accuracy_roundn);
-                    sc_part=floor(indR_in_supercell);
-                    orig_part=ind_R_S+cur_sc_vec-double(sc_part*Ns);
-                    pair_ind = 9999;
-                    for jcur_sc_vec = 1:num_sc
-                        pair_sc_vec = sc_vec(jcur_sc_vec,:);
-                        if pair_sc_vec==orig_part
-                            if pair_ind ~= 9999
-                                error("\n\nFound duplicate super cell vector!");
-                            end
-                            pair_ind=jcur_sc_vec;
-                        end
-                    end
-                    if pair_ind==9999
-                        disp(orig_part);
-                        disp('Cant find sc in ');
-                        disp(sc_vec);
-                        disp('orig_part=ind_R+cur_sc_vec-sc_part*Ns;');
-                        disp(ind_R);
-                        disp(cur_sc_vec);
-                        error("\n\nDid not find super cell vector!");
-                    end
-                    if H_hr.num
-                        tmpSnum = H_hr.SnumL(:,:,is);
-                        Nonzero_list = find(tmpSnum ~= 0);
-                        [si,sj] = ind2sub([WANNUM,WANNUM],Nonzero_list);
-                        si= si + (icur_sc_vec-1)*H_hr.WAN_NUM ;
-                        sj= sj + (pair_ind-1)*H_hr.WAN_NUM ;
-                        tmp_mat = full(sparse(si,sj,tmpSnum(Nonzero_list),OUT_WAN_NUM,OUT_WAN_NUM));
-                        OUT_H_hr = OUT_H_hr.set_overlap_mat(tmp_mat,sc_part,'add');
-                    end
-                    if H_hr.coe
-                        tmpScoe = H_hr.ScoeL(:,:,is);
-                        Nonzero_list = find(tmpScoe ~= sym(0));
-                        [si,sj] = ind2sub([WANNUM,WANNUM],Nonzero_list);
-                        si= si + (icur_sc_vec-1)*H_hr.WAN_NUM ;
-                        sj= sj + (pair_ind-1)*H_hr.WAN_NUM ;
-                        tmp_mat = sym(zeros(OUT_WAN_NUM));
-                        tmp_mat(sub2ind([OUT_WAN_NUM,OUT_WAN_NUM],si,sj)) = tmpScoe(Nonzero_list);
-                        OUT_H_hr = OUT_H_hr.set_overlap_mat(tmp_mat,sc_part,'symadd');
-                    end
-                    pb.print(is,NRPTS_S,' Overlap ...');
-                end
-                pb.delete();
-                %                     fprintf("Generate process: SUPERCELL(%d,%d) NRPT(%d,%d) RUNINGTIME: %f s.\n",...
             end
         end
     case 'list'

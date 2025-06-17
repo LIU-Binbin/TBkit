@@ -20,6 +20,15 @@ function H_hr = rewrite(H_hr, options)
         options.rewind = false;
         options.Accuracy = 1e-6;
         options.type = '';
+        options.OverlapTest = true;
+    end
+    
+    if H_hr(1).overlap && options.OverlapTest
+        options.OverlapTest = false;
+        optionscell = namedargs2cell(options);
+        H_hr(1) = rewrite(H_hr(1),optionscell{:});
+        H_hr(2) = rewrite(H_hr(2),optionscell{:});
+        return
     end
     
     WANNUM = H_hr.WAN_NUM;
@@ -32,6 +41,9 @@ function H_hr = rewrite(H_hr, options)
         handle_list_conversion();
     end
     
+    % 将矩阵按行分割成元胞数组
+    rows = num2cell(H_hr.vectorL, 2);
+    H_hr.vectorL_map  = cellfun(@mat2str, rows, 'UniformOutput', false);
     H_hr = H_hr.simplify(options.Accuracy);
 
     %% Nested functions for modular organization
@@ -76,9 +88,6 @@ function H_hr = rewrite(H_hr, options)
         H_hr.HnumL = reshape(H_hr.HnumL, [], 1);
         generate_vector_list(SizeHopping);
         
-        if H_hr.overlap
-            process_overlap_data(@H_hr.SnumL, 'vectorL_overlap');
-        end
     end
 
     function process_symbolic_data(SizeHopping)
@@ -90,9 +99,6 @@ function H_hr = rewrite(H_hr, options)
         H_hr.HcoeL = reshape(H_hr.HcoeL, [], 1);
         generate_vector_list(SizeHopping);
         
-        if H_hr.overlap
-            process_overlap_data(@H_hr.ScoeL, 'vectorL_overlap');
-        end
     end
 
     %% Helper functions
@@ -100,16 +106,6 @@ function H_hr = rewrite(H_hr, options)
         % Generate vector list from 3D matrix indices
         [iL, jL, nL] = ind2sub(SizeHopping, 1:prod(SizeHopping));
         H_hr.vectorL = [H_hr.vectorL(nL,:), iL.', jL.'];
-    end
-
-    function process_overlap_data(dataField, vectorField)
-        % Process overlap data using function handles
-        overlapData = dataField();
-        sizeCoeL = size(overlapData);
-        dataField(reshape(overlapData, [], 1));
-        
-        [iL, jL, nL] = ind2sub(sizeCoeL, 1:prod(sizeCoeL));
-        H_hr.(vectorField) = [H_hr.(vectorField)(nL,:), iL.', jL.'];
     end
 
     function process_numeric_rewind(targetArray, indexConverter)

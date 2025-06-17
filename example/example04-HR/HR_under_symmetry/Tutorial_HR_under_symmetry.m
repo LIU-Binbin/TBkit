@@ -121,3 +121,24 @@ Varlist = KaneMele_test.symvar_list;
 KaneMele_test2 = subs(KaneMele_test,Varlist,[lambda_SO,T_2,t,E_pz]);
 disp('最终化简形式 | Final Simplified Form:');
 disp(simplify(rewrite(KaneMele_test2.sym(), 'sincos')));
+%% 
+t  = 1;
+lambda_SO = 0.06;
+E_pz = 0;
+T_2 = 0;
+[~,Ax] = Figs(2,2);
+KaneMele_test2_n = KaneMele_test2.Subsall();
+EIGENCAR_origin = KaneMele_test2_n.EIGENCAR_gen();
+
+bandplot(EIGENCAR_origin,'ax',Ax(1),'title','KM:t = 1, \lambda_{SO} = 0.06');
+KaneMele_test2_n.HnumL = KaneMele_test2_n.HnumL + 0.1*rand(size(KaneMele_test2_n.HnumL));
+
+
+KaneMele_test2_n.bandplot('ax',Ax(2),'title','KM:t = 1, \lambda_{SO} = 0.06,Error:0.1')
+KaneMele_test3_n = KaneMele_test2_n.applyOper([C3,I,Mx,My,Tr], 'generator', true);
+EIGENCAR_sym = KaneMele_test3_n.EIGENCAR_gen();
+bandplot(EIGENCAR_sym,'ax',Ax(3),'title','KM:t = 1, \lambda_{SO} = 0.06,Error:0.1,sym');
+bandplot({EIGENCAR_origin,EIGENCAR_sym},'ax',Ax(4),'title','KM-vs-sym','Color',[1 0 0;0 0 1],'legends',["KM","KM-sym"]);
+for i =1:4
+    axis(Ax(i),'normal');
+end

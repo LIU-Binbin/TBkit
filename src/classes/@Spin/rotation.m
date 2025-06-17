@@ -47,8 +47,11 @@ function U = rotation(SpinObj, rotm, rightorleft, options)
             immproper = true;
         end
         if sym(abs(rotm(end))) ~= 1
+            % bug fix
+            rotm(4) = -rotm(4);
+            %
             abc = Oper.axang2eul(rotm(1:4)); % Convert axis-angle to Euler angles
-            warning('Incorrect input: Euler angle ZYZ format expected [alpha beta gamma]');
+            fprintf('Immproper input: Euler angle ZYZ format expected [alpha beta gamma]\n');
             immproper = true;
         else
             abc = rotm(1:3); % Axis vector in [nx, ny, nz] and angle in last element
@@ -62,6 +65,9 @@ function U = rotation(SpinObj, rotm, rightorleft, options)
         if sym(rotm(end)) == -1
             immproper = true;
         end
+        % bug fix
+        rotm(4) = -rotm(4);
+        %
         abc = Oper.axang2eul(rotm(1:4)); % Convert axis-angle to Euler angles
     end
 

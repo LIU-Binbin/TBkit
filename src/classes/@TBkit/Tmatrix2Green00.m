@@ -44,7 +44,7 @@ else
     [A,U] = eig(Tmatrix);
 end
 U_abs =abs(U);
-[Asort,Usort] =park.sorteig(U_abs,A);
+[Asort,Usort] =sorteig(U_abs,A);
 Lambda= diag(Usort);
 S = Asort(:,Lambda<1);
 SS = Asort(:,Lambda>1);

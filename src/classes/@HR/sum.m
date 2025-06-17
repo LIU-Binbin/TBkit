@@ -12,8 +12,12 @@ function H_hr = sum(H_hr_list)
 %       - Uses overloaded plus operator
 %       - Maintains all hopping terms
 %       - Preserves storage format of first input
-H_hr = H_hr_list(1);
-for i = 2:length(H_hr_list)
-H_hr = H_hr + H_hr_list(i);
+[ChooseHr,imax] =  max([H_hr_list.NRPTS]);
+H_hr = H_hr_list(imax);
+iL = 1:length(H_hr_list);
+for i = iL
+    if imax ~= i
+        H_hr = H_hr + H_hr_list(i);
+    end
 end
 end

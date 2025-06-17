@@ -49,14 +49,14 @@ if options.square
     V = sign(V).*(V.^2);
 end
 %
+% Prepare axes for plotting
 if isempty(options.ax)
-    Fig =  Figs(1,1);
-    ax = Fig.axes(1);
+    [Fig,ax]= Figs(1, 1); % Create new figure
 else
-    if ishandle(options.ax)
-        ax = options.ax;
+    if isvalid(options.ax)
+        ax = options.ax; % Use provided axis handle
     else
-        
+        [Fig,ax]= Figs(1, 1); % Create new figure 
     end
 end
 %

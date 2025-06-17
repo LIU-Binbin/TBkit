@@ -37,9 +37,9 @@ function A_Lj = rotaterow(A, Rc, Rf, tf, rightorleft, options)
 
 arguments
     A BasisFunc;
-    Rc {Spin.mustBeSize(Rc, [3 3])} = diag([1 1 1]);
-    Rf {Spin.mustBeSize(Rf, [3 3])} = diag([1 1 1]);
-    tf {Spin.mustBeSize(tf, [3 1;1 3])} = ([0 0 0]);
+    Rc {mustBeSize(Rc, [3 3])} = diag([1 1 1]);
+    Rf {mustBeSize(Rf, [3 3])} = diag([1 1 1]);
+    tf {mustBeSize(tf, [3 1;1 3])} = ([0 0 0]);
     rightorleft = 'right';
     options.sym = true;
     options.conjugate = false;
@@ -55,30 +55,49 @@ arguments
 end
 
 optionsCell = namedargs2cell(options);
+% for hybird
 if options.hybird
+    % the classtype of BFuncL should be same;
     error('not support yet');
     return
 else
     BFuncLtmp = ([A.BFuncL]);
-    coeLtmp = ([A.coe]);
-    BFuncLtmp = BasisFunc.introduce_coe(BFuncLtmp, coeLtmp);
+    coeLtmp = ([A.coe]); % num?
+    % giveback coe
+    BFuncLtmp = BasisFunc.introduce_coe(BFuncLtmp,coeLtmp);
 end
-
+% for cell
 if iscell(A(1).BFuncL)
     error('not support yet');
     return;
 end
-
 if ~options.orbcoupled
-    orbL = BasisFunc.rotation_orb(A(1).BForb, Rf.', tf, optionsCell{:});
+    orbL = BasisFunc.rotation_orb(A(1).BForb,Rf.',tf,optionsCell{:});
     if ~options.spincoupled
-        if isa(A(1).BFuncL, 'Qnum')
-            BFuncLtmp = rotaterow(BFuncLtmp, Rc, rightorleft, ...
-                'sym', options.sym, 'antisymmetry', options.antisymmetry, 'conjugate', options.conjugate);
+        if isa(A(1).BFuncL,'Qnum')
+            BFuncLtmp = rotaterow(BFuncLtmp,Rc,rightorleft,...
+                'sym',options.sym,'antisymmetry',options.antisymmetry,'conjugate',options.conjugate);
+            % contract row
             BFuncLtmp = contractrow(BFuncLtmp);
-            spinL = Spin([BFuncLtmp.s], [BFuncLtmp.sz]);
-            [coeLtmp, BFuncLtmp] = BasisFunc.extract_coe(BFuncLtmp, 'sym', options.sym, 'vpalevel', options.vpalevel);
-            A_Lj = BasisFunc(BFuncLtmp, spinL, 1, coeLtmp, orbL);
+            %
+            spinL = Spin([BFuncLtmp.s],[BFuncLtmp.sz]);
+            % extract coe
+            [coeLtmp,BFuncLtmp] = BasisFunc.extract_coe(BFuncLtmp,'sym',options.sym,'vpalevel',options.vpalevel);
+            A_Lj = BasisFunc(BFuncLtmp,spinL,1,coeLtmp,orbL);
         else
-            BFuncLtmp = rotaterow(BFuncLtmp, Rc, rightorleft, ...
-                'sym', options.sym, 'antisymmetry', options.antis
+            BFuncLtmp = rotaterow(BFuncLtmp,Rc,rightorleft,...
+                'sym',options.sym,'antisymmetry',options.antisymmetry,'conjugate',options.conjugate);
+            spinL = rotaterow([A.spin],Rc,rightorleft,...
+                'sym',options.sym,'antisymmetry',options.antisymmetry,'conjugate',options.conjugate);
+            % contract row
+            BFuncLtmp = contractrow(BFuncLtmp);
+            spinL = contractrow(spinL);
+        end
+    else
+
+    end
+else
+    % not imply yet
+    error('not imply yet');
+end
+end

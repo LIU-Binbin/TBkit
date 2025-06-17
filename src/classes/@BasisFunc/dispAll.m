@@ -18,13 +18,13 @@ for i = 1:size(BasisFunction, 1)
     % Display the first element in the current row.
     fprintf('%s', string(BasisFunction(i, 1).coe));
     fprintf('%s', string(BasisFunction(i, 1).BFuncL));
-    fprintf('%s', string(BasisFunction(i, 1).spin));
+    fprintf( string(BasisFunction(i, 1).spin));
     % Loop through remaining elements in the row.
     for j = 2:size(BasisFunction, 2)
         fprintf(' + ');
         fprintf('%s', string(BasisFunction(i, j).coe));
         fprintf('%s', string(BasisFunction(i, j).BFuncL));
-        fprintf('%s', string(BasisFunction(i, j).spin));
+        fprintf( string(BasisFunction(i, j).spin));
     end
     fprintf('\n');
 end

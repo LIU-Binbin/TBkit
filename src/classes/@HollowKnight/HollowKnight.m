@@ -20,34 +20,140 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
     %% Overload Methods for Mathematical Operations
     methods
         function C = mtimes(A,B)
-            % Overload * operator for matrix multiplication of HollowKnight objects.
-            % This method defines the matrix multiplication for HollowKnight objects, including special cases.
-
-            if isa(A, 'HollowKnight') && isa(B, 'HollowKnight')
-                % Matrix multiplication between two HollowKnight objects.
-                C = handleHollowKnightMultiplication(A, B);
-            elseif ~isa(A, 'HollowKnight') && isa(B, 'HollowKnight')
-                % Scalar * HollowKnight multiplication.
-                C = scalarMultiplyHollowKnight(A, B);
-            elseif isa(A, 'HollowKnight') && ~isa(B, 'HollowKnight')
-                % HollowKnight * Scalar multiplication.
-                C = scalarMultiplyHollowKnight(B, A);
+            % only care structure
+            if isa(A,'HollowKnight') && isa(B,'HollowKnight')
+                if length(A) == 1 && length(B) == 1
+                    C = A.*B;
+                    return
+                end
+                % Define mtimes is very difficult. hard coding
+                if isrow(A) && isrow(B)
+                    C = A(1,1).*B(1,1);
+                    for j = 2:size(B,2)
+                        D = A(1).*B(j);
+                        if ~D.hollow
+                            C = [C,D];
+                        end
+                    end
+                    for i = 2:size(A,2)
+                        for j = 1:size(B,2)
+                            D = A(i).*B(j);
+                            if ~D.hollow
+                                C = [C,D];
+                            end
+                        end
+                    end
+                    C = contractrow(C);
+                    return;
+                end
+                % 1*col = col multipliy means
+                if isrow(A) && ~isrow(B)
+                    C = A*B(1,:);
+                    for  j= 2:size(B,1)
+                        C = [C;A*B(j,:)];
+                    end
+                    return;
+                end
+                % col*col  = col*col multipliy means kron
+                if ~isrow(A) && ~isrow(B)
+                    C = A(1,:)*B;
+                    for i = 2:size(A,1)
+                        C = [C;A(i,:)*B];
+                    end
+                    return;
+                end
+            elseif ~isa(A,'HollowKnight') && isa(B,'HollowKnight')
+                % Define mtimes is very difficult. hard coding
+                if length(A) == 1 && length(B) == 1
+                    C = A.*B;
+                    return
+                end
+                % 1 *(m*n)
+                if isscalar(A)
+                    C = B;
+                    for i = 1:numel(C)
+                        C(i) = A.*B(i);
+                    end
+                    C = contract(C);
+                    return
+                end
+                % row * row
+                if isrow(A) && isrow(B)
+                    if length(A) == length(B)
+                        C = A(1).*B(1);
+                        for j = 2:size(B,2)
+                            D = A(j).*B(j);
+                            if ~D.hollow
+                                C = [C,D];
+                            end
+                        end
+                        C = contractrow(C);
+                        return;
+                    else
+                        error('not imply yet')
+                    end
+                end
+                % row*col = 1*? multipliy means
+                if isrow(A) && ~isrow(B)
+                    if size(A,2) == size(B,1)
+                        C = A(1)*B(1,:);
+                        for  j= 2:size(B,1)
+                            C = [C,A(j)*B(j,:)];
+                        end
+                        C = contractrow(C);
+                    else
+                        error('not imply yet')
+                    end
+                    return;
+                end
+                % (row*col)*col  = row*? multipliy means kron
+                if ~isrow(A) && ~isrow(B)
+                    if size(A,2) == size(B,1)
+                        C = A(1,:)*B;
+                        for i = 2:size(A,1)
+                            C = [C;A(i,:)*B];
+                        end
+                    else
+                        error('not imply yet')
+                    end
+                    return;
+                end
+            elseif isa(A,'HollowKnight') && ~isa(B,'HollowKnight')
+                C = mtimes(B,A);
+            else
             end
         end
         
         function C = times(A,B)
-            % Overload .* operator for element-wise multiplication.
-            % Defines element-wise multiplication between HollowKnight objects or between scalar and HollowKnight.
+            if isa(A,'HollowKnight') && isa(B,'HollowKnight')
+                % return times
+                C = innertimes(A,B);
+            elseif ~isa(A,'HollowKnight') && isa(B,'HollowKnight')
+                C = B;
+                if length(A) == 1
+                    for i =1:numel(B)
+                        C(i).coe = A.*C(i).coe ;
+                    end
+                elseif isvector(A) && length(A) == size(B,1)
+                    for i = 1:size(B,1)
+                        C(i,:) = A(i).*B(i,:);
+                    end
+                elseif isequal(size(A) ,size(B))
+                    for i = 1:size(B,1)
+                        for j = 1:size(B,2)
+                            C(i,j) = A(i,j).*B(i,j);
+                        end
+                    end
+                else
+                    error('times wrong')
+                end
+            elseif isa(A,'HollowKnight') && ~isa(B,'HollowKnight')
+                C = times(B,A);% suppose commute!!
+            else
 
-            if isa(A, 'HollowKnight') && isa(B, 'HollowKnight')
-                C = innertimes(A, B);
-            elseif ~isa(A, 'HollowKnight') && isa(B, 'HollowKnight')
-                C = scalarElementwiseMultiply(A, B);
-            elseif isa(A, 'HollowKnight') && ~isa(B, 'HollowKnight')
-                C = scalarElementwiseMultiply(B, A);
             end
         end
-        
+
         function C = innertimes(A, B)
             % Inner product of two HollowKnight objects.
             % Computes the inner product of two HollowKnight objects, multiplying their coefficients.
@@ -64,7 +170,7 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
             
             arguments
                 A HollowKnight;         % HollowKnight object
-                rotm {mustBeSize(rotm, [3, 3; 1, 5])} = diag([1, 1, 1]); % Rotation matrix or quaternion
+                rotm {mustBeSize(rotm, [3, 3; 1, 5;1 4])} = diag([1, 1, 1]); % Rotation matrix or quaternion
                 rightorleft = 'right'; % Rotation direction
                 options.sym = true;     % Whether to use symbolic rotation
                 options.conjugate = false; % Whether to use conjugate symmetry
@@ -84,7 +190,7 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
             
             arguments
                 A HollowKnight; 
-                rotm {mustBeSize(rotm, [3, 3; 1, 5])} = diag([1, 1, 1]); 
+                rotm {mustBeSize(rotm, [3, 3; 1, 5;1 4])} = diag([1, 1, 1]); 
                 rightorleft = 'right';
                 options.sym = true;
                 options.conjugate = false;
@@ -97,43 +203,66 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
                 A_Lj = [A_Lj, contractrow(rotatesingle(A(i), rotm, rightorleft, optionsCell{:}))];
             end
         end
-        
-        function Ak = rotatesingle(A, rotm, rightorleft, options)
-            % Rotate a single element of the HollowKnight object.
-            % Rotates a single element based on the rotation matrix and direction.
-            
+         function Ak = rotatesingle(A,rotm,rightorleft,options)
             arguments
                 A HollowKnight;
-                rotm {mustBeSize(rotm, [3, 3; 1, 5])} = diag([1, 1, 1]); 
+                rotm {mustBeSize(rotm,[3 3;1 5;5 1;1 4;4 1])}= diag([1 1 1]);% [alpha beta gamma]
                 rightorleft = 'right';
                 options.sym = true;
                 options.conjugate = false;
                 options.antisymmetry = false;
             end
-            
             optionsCell = namedargs2cell(options);
-            if strcmp(rightorleft, 'right')
-                RightorLeft = 1;
+            if strcmp(rightorleft,'right')
+                RightorLeft = 1; % Check which is right!!!!!
             else
                 RightorLeft = -1;
             end
-            
-            % Perform the rotation based on the provided rotation matrix or quaternion
-            if isequal(size(rotm), [3, 3])
-                rotm = inv(rotm);  % Inverse for rotation
-                abc = Oper.Rotation2eul(rotm); % Convert rotation matrix to Euler angles
-            elseif isequal(size(rotm), [4, 1]) || isequal(size(rotm), [1, 4])
-                abc = rotm(1:3);
-            elseif isequal(size(rotm), [5, 1]) || isequal(size(rotm), [1, 5])
+            if isequal(size(rotm),[3 3])
+                if det(rotm) == -1
+                    % inversion
+                    immproper = true;
+                    rotm = -rotm;
+                else
+                    immproper = false;
+                end
+                %
+                % note the robot toolbos use left axis! clockwise rotation
+                % here we change our right rotm to left rotm
+                rotm = inv(rotm);
+                abc = Oper.Rotation2eul(rotm);% alpha beta gamma in ZYZ
+            elseif isequal(size(rotm),[4 1]) || isequal(size(rotm),[1 4])
+                if sym(abs(rotm(end))) ~= sym(1)
+                    warning('wrong input,eular angle ZYZ right format:[alpha beta gamma det()]');
+                    abc = Oper.axang2eul(rotm(1:4));
+                    immproper = false;
+                else
+                    if sym(rotm(end)) == sym(-1)
+                        immproper = true;
+                    else
+                        immproper = false;
+                    end
+                    abc = rotm(1:3);
+                end
+            elseif isequal(size(rotm),[5 1]) || isequal(size(rotm),[1 5])
+                if sym(abs(rotm(end))) ~= sym(1)
+                    error('wrong input,axis angle det right format:[nx ny nz theta det()]');
+                end
+                if sym(rotm(end)) == sym(-1)
+                    immproper = true;
+                else
+                    immproper = false;
+                end
                 abc = Oper.axang2eul(rotm(1:4));
             end
-            
             if options.sym
                 abc = sym(abc);
+            else
+                %abc
             end
-            
-            Ak = rotateinner(A, abc, RightorLeft, immproper, options.conjugate, options.antisymmetry);
+            Ak = rotateinner(A,abc,RightorLeft,immproper,options.conjugate,options.antisymmetry);
         end
+    
     end
 
     %% Contract Methods
@@ -235,24 +364,33 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
         function A = HollowMe(A)
             % Marks the object as a "hollow" object by setting the coefficient to NaN.
             % This method makes the object hollow by setting its coefficient to NaN.
-            A.coe = nan;
+            try
+                A.coe = nan;
+            catch
+                for i = numel(A)
+                    A(i).coe = nan;
+                end
+            end
+            
         end
     end
 
     %% Static Helper Methods
     methods(Static)
-        function [comparerow_unique, sumrow_unique] = generalcontractrow(comparerow, sumrow)
-            % General contract method to process rows by removing NaN values and performing the row contraction.
-            % Returns unique rows and the corresponding sums.
-            
+        function [comparerow_unique,sumrow_unique] = generalcontractrow(comparerow,sumrow)
             arguments
                 comparerow
                 sumrow
             end
-            
-            [comparerow_unique, ~, compareindex_unique] = unique(comparerow);
-            sumrow_unique = accumarray(compareindex_unique, sumrow);
+            % rm nan
+            selecL =  ~logical(sum(isnan(sumrow),2));
+            %
+            [comparerow_unique,sumrow_unique] = HollowKnight.generalcontractrow2(comparerow(selecL,:),sumrow(selecL,:));
+            Lic = find(sum(logical(zeros(1,size(sumrow,2),class(sumrow))==sumrow_unique),2));
+            sumrow_unique(Lic,:) = [];
+            comparerow_unique(Lic,:) = [];
         end
+
         function [comparerow_unique, sumrow_unique] = generalcontractrow2(comparerow, sumrow)
             % This function contracts rows based on unique comparisons and sums them.
             % It returns unique comparerows and the corresponding sumrow_unique.
@@ -443,11 +581,11 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
         if isvector(P)
             permVec = P;
         else
-            permVec = HollowKnight.permMatToVec(P);
+            permVec = permMatToVec(P);
         end
         % Determine the parity of the permutation
         if options.antisymmetric
-            Parity = HollowKnight.ParityPerm(permVec)^(HollowKnightObj(1).J * 2);
+            Parity = ParityPerm(permVec)^(HollowKnightObj(1).J * 2);
         else
             Parity = 1;
         end
@@ -465,11 +603,11 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
         if isvector(P)
             permVec = P;
         else
-            permVec = HollowKnight.permMatToVec(P);
+            permVec = permMatToVec(P);
         end
         % Determine the parity of the permutation
         if options.antisymmetric
-            Parity = HollowKnight.ParityPerm(permVec)^(HollowKnightObj(1).J * 2);
+            Parity = ParityPerm(permVec)^(HollowKnightObj(1).J * 2);
         else
             Parity = 1;
         end
@@ -485,7 +623,7 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
             options.antisymmetric = false; % Whether the permutation is antisymmetric
         end
         if isvector(P)
-            permMat = HollowKnight.permVecToMat(P);
+            permMat = permVecToMat(P);
         else
             permMat = P;
         end

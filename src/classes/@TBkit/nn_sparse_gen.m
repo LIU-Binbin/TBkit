@@ -1,6 +1,6 @@
 function [nn_sparse_temp, Rnn_list] = nn_sparse_gen(orb1, orb2, Rm, search_rangex, search_rangey, search_rangez, Accuracy, Rlength_cut, onsite)
 %NN_SPARSE_GEN Generate sparse neighbor list for tight-binding models
-%   This function calculates valid hopping terms between two orbitals within specified 
+%   This function calculates valid hopping terms between two orbitals within specified
 %   search ranges and distance cutoff. Supports both numerical and symbolic computations.
 %
 %   Inputs:
@@ -32,7 +32,7 @@ if symmode
 else
     nn_sparse_temp = zeros(reducible_num, 10);
 end
-
+AccuracyNum = round(log(Accuracy)/log(10));
 % Main search loop over neighboring cells
 for Rf_a1 = -search_rangex:search_rangex
     for Rf_a2 = -search_rangey:search_rangey
@@ -40,15 +40,15 @@ for Rf_a1 = -search_rangex:search_rangex
             R_vector = [Rf_a1, Rf_a2, Rf_a3];
             Rij_cart = (R_vector + R_fractional_diff) * Rm;
             Rlength = norm(Rij_cart);
-            
+
             % Apply numerical rounding or symbolic comparison
             if ~symmode
-                Rlength = roundn(Rlength, round(log(Accuracy)/log(10)));
+                Rlength = round(Rlength, -AccuracyNum);
                 valid = ((0 < Rlength) || (Rlength == 0 && onsite)) && (Rlength < Rlength_cut);
             else
                 valid = (sym(0) < Rlength || (sym(0) == Rlength && onsite)) && (Rlength < sym(Rlength_cut));
             end
-            
+
             % Store valid neighbor information
             if valid
                 nn_sparse_temp(count, 6:8) = R_vector;
@@ -70,5 +70,5 @@ end
 
 function y = roundn(x, n)
 %ROUNDN Round to nearest 10^n (compatibility function)
-    y = round(x*(10^-n))*(10^n);
+y = round(x*(10^-n))*(10^n);
 end

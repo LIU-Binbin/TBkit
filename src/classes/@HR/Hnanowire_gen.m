@@ -35,6 +35,7 @@ arguments
     vacuum_mode double = 0;
     options.symbolic logical = false;
     options.fast logical = true;
+    options.POSCAR='POSCAR'
 end
 if options.symbolic
     % not recommend
@@ -114,7 +115,7 @@ else
     H_hr.HnumL = HnumL_temp ;
 end
 H_hr.vectorL = (vector_list_wire);
-H_hr.orbL = H_hr.nanowire_orb(Nslab,vacuum_mode,'fast',options.fast);
+H_hr.orbL = H_hr.nanowire_orb(Nslab,vacuum_mode,'fast',options.fast,'POSCAR',options.POSCAR);
 for i = 1:H_hr.Dim
     if  Nslab(i)<1
         Nslab(i) = 1;

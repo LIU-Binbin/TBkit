@@ -33,7 +33,7 @@ if size(Gk,1) < 3 || size(Gk,2) <3
     Gk(3,3) = 1;
 end
 if options.cartesian
-    Gk_ = vasplib.CartisianMat(Gk,options.dir_seq,options.dir_start);
+    Gk_ = TBkit.CartisianMat(Gk,options.dir_seq,options.dir_start);
     kstart_frac  = options.kstart * Gk_ /Gk;
 else
     Gk_ = Gk;
@@ -44,9 +44,9 @@ knum1 = options.knum_evol;
 knum2 = options.knum_int;
 %
 [kloop1_cart,kloop1_frac,~,~] =...
-    vasplib.kpathgen([[0,0,0];options.kevolution],knum1,Gk_,Gk);
+    TBkit.kpathgen([[0,0,0];options.kevolution],knum1,Gk_,Gk);
 [kloop2_cart,kloop2_frac,~,~] =...
-    vasplib.kpathgen([[0,0,0];options.kintegral],knum2,Gk_,Gk);
+    TBkit.kpathgen([[0,0,0];options.kintegral],knum2,Gk_,Gk);
 %
 klist_l = zeros(knum1,1);
 normklist_l = norm(options.kevolution)/norm(kloop1_frac(end,:));

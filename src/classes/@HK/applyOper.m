@@ -42,7 +42,11 @@ try
     BasisFunction = BasisFunc(H_hk);
     SymOper = SymOper.Ugen(BasisFunction,'Rm',H_hk.Rm,'center',options.center);
 catch
-    error('Oper U is nan');
+    if ~isnan(SymOper.U)
+
+    else
+        error('Oper U is nan');
+    end
 end
 if length(SymOper) == 1
     nSymOper = length(SymOper);

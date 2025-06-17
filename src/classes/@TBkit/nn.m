@@ -1,12 +1,12 @@
 function TBkitobj = nn(TBkitobj, search_range, Accuracy, Rlength_cut, options)
 %% Calculate nearest neighbor information for primitive cell structure
-% This function computes neighbor relationships between atomic orbitals in 
+% This function computes neighbor relationships between atomic orbitals in
 % a crystal structure based on lattice vectors and orbital positions.
 %
 % Inputs:
 %   TBkitobj   - TBkit object containing structural information:
 %                  Rm (3x3 lattice vectors), orbL (Nx3 orbital positions)
-%   search_range - [Optional] 3-element vector specifying search range 
+%   search_range - [Optional] 3-element vector specifying search range
 %                  in lattice units (default: [0 0 0])
 %   Accuracy     - [Optional] Numerical tolerance for distance comparison
 %                  (default: 1e-4)
@@ -28,7 +28,7 @@ function TBkitobj = nn(TBkitobj, search_range, Accuracy, Rlength_cut, options)
 
 %% Argument validation and initialization
 arguments
-    TBkitobj 
+    TBkitobj
     search_range = zeros(1, TBkitobj.Dim)
     Accuracy = 1e-4
     Rlength_cut = 5
@@ -70,22 +70,24 @@ count  = 1;
 progress = CmdLineProgressBar('Neighbor Search Progress: ');
 for j = 1:sites_num
     orb_j = double(TBkitobj.orbL(j,:));
-    
+
     for i = 1:sites_num
         orb_i = double(TBkitobj.orbL(i,:));
-        
+
         % Generate neighbor pairs for current orbital combination
         [nn_sparse_temp, displacements] = TBkitobj.nn_sparse_gen(...
             orb_i, orb_j, Rm_, search_rangex, search_rangey, search_rangez,...
             Accuracy, Rlength_cut, options.onsite);
 
         % Store results with orbital indices
-        countadd = size(nn_sparse_temp,1);
-        nn_sparse_temp(:,1) = i;
-        nn_sparse_temp(:,2) = j;
-        nn_sparse(count:count+countadd-1,:) = nn_sparse_temp;
-        count = count+countadd;
-        Rnn_list = [Rnn_list; displacements];
+        if ~isempty(nn_sparse_temp)
+            countadd = size(nn_sparse_temp,1);
+            nn_sparse_temp(:,1) = i;
+            nn_sparse_temp(:,2) = j;
+            nn_sparse(count:count+countadd-1,:) = nn_sparse_temp;
+            count = count+countadd;
+            Rnn_list = [Rnn_list; displacements];
+        end
     end
     progress.print(j, sites_num, ' Processing orbitals...');
 end

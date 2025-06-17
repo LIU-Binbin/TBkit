@@ -65,12 +65,12 @@ if nargin < 2
         case 1
             [BF_WAVE,Ei] = eig(Wan);
             Ei = angle((Ei));
-            [BF_WAVE,Ei] = park.sorteig(Ei,BF_WAVE);
+            [BF_WAVE,Ei] = sorteig(Ei,BF_WAVE);
             BF=diag(Ei);
         case {2,3}
             [BF_WAVE,Ei] = eig(Wan);
             Ei = angle((Ei));
-            [BF_WAVE,Ei] = park.sorteig(Ei,BF_WAVE);
+            [BF_WAVE,Ei] = sorteig(Ei,BF_WAVE);
             BF=diag(Ei);
     end
 

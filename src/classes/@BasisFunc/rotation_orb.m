@@ -47,8 +47,8 @@ function BForb = rotation_orb(BForb, Rf, tf, options)
 
     arguments
         BForb
-        Rf {Spin.mustBeSize(Rf,[3 3])} = diag([1 1 1]);  % Rotation matrix
-        tf {Spin.mustBeSize(tf,[3 1;1 3])} = [0 0 0];     % Translation vector
+        Rf {mustBeSize(Rf,[3 3])} = diag([1 1 1]);  % Rotation matrix
+        tf {mustBeSize(tf,[3 1;1 3])} = [0 0 0];     % Translation vector
         options.sym = true;
         options.conjugate = false;
         options.antisymmetry = false;
@@ -58,7 +58,7 @@ function BForb = rotation_orb(BForb, Rf, tf, options)
         options.spincoupled = false;
         options.orbcoupled = false;
         options.raw = true;
-        options.vpalevel = 6;
+        options.vpalevel = 5;
         options.center = [0, 0, 0];
     end
 
@@ -66,7 +66,7 @@ function BForb = rotation_orb(BForb, Rf, tf, options)
         return;  
     end
 
-    BForb = (BForb - options.center) * Rf.' + options.center + tf;
+    BForb = roundn((BForb - options.center) * Rf.' + options.center + tf,-options.vpalevel);
 
     for i = 1:3
         BForb(i) = mod(BForb(i), 1);

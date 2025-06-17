@@ -28,7 +28,7 @@ arguments
     opt.anticlockwise = true;
 end
 if isempty(opt.Gk)
-    Rm = vasplib.POSCAR_read;
+    Rm = TBkit.POSCAR_read;
     opt.Gk = (2*pi*eye(3)/Rm).';
 end
 if opt.inputCar

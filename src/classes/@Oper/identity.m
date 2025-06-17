@@ -11,5 +11,6 @@ else
     U_ = nan;
 end
 SymOper = Oper(eye(dim),U_,propertyCell{:});
-SymOper.IsIdentity = true;
+SymOper.isIdentity = true;
+
 end

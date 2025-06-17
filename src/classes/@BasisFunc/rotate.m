@@ -1,8 +1,8 @@
 function Am = rotate(A, Rc, Rf, tf, rightorleft, optionsOper, options)
 %ROTATE  Rotate a BasisFunc object using specified rotation matrices and translation.
 %
-%   Am = ROTATE(A, Rc, Rf, tf, rightorleft, optionsOper, options) applies a rotation 
-%   and translation transformation to the input BasisFunc object array A. The transformation 
+%   Am = ROTATE(A, Rc, Rf, tf, rightorleft, optionsOper, options) applies a rotation
+%   and translation transformation to the input BasisFunc object array A. The transformation
 %   is defined by the following parameters:
 %
 %       Rc          - A 3x3 rotation matrix for coordinate transformation.
@@ -43,38 +43,39 @@ function Am = rotate(A, Rc, Rf, tf, rightorleft, optionsOper, options)
 %       Am = rotate(A, diag([1, 1, 1]), diag([1, 1, 1]), [0, 0, 0], 'right', struct('Oper', []), struct());
 %
 %   See also: rotaterow
-
-    arguments
-        A BasisFunc;
-        Rc {Spin.mustBeSize(Rc, [3 3])} = diag([1 1 1]);
-        Rf {Spin.mustBeSize(Rf, [3 3])} = diag([1 1 1]);
-        tf {Spin.mustBeSize(tf, [3 1; 1 3])} = ([0 0 0]);
-        rightorleft = 'right';
-        optionsOper.Oper = [];
-        options.sym = false;
-        options.conjugate = false;
-        options.antisymmetry = false;
-        options.forgetcoe = false;
-        options.fast = true;
-        options.hybird = false;
-        options.spincoupled = false;
-        options.orbcoupled = false;
-        options.raw = true;
-        options.vpalevel = 6;
-        options.center = [0, 0, 0];
-    end
-
-    if ~isempty(optionsOper.Oper)
-        Rc = optionsOper.Oper.R;
-        Rf = optionsOper.Oper.Rf;
-        tf = optionsOper.Oper.tf;
-        options.conjugate = optionsOper.Oper.conjugate;
-        options.antisymmetry = optionsOper.Oper.antisymmetry;
-        optionsCell = namedargs2cell(options);
-        Am = rotate(A, Rc, Rf, tf, rightorleft, optionsCell{:});
-        return
-    end
-
+arguments
+    A BasisFunc;
+    Rc {mustBeSize(Rc,[3 3])}= diag([1 1 1]);%
+    Rf {mustBeSize(Rf,[3 3])}= diag([1 1 1]);%
+    tf {mustBeSize(tf,[3 1;1 3])}= ([0 0 0]);%
+    rightorleft = 'right';
+    optionsOper.Oper = [];
+    options.sym = false;
+    options.conjugate = false;
+    options.antisymmetry = false;
+    options.forgetcoe = false;
+    options.fast = true;
+    options.hybird = false;
+    options.spincoupled = false;
+    options.orbcoupled = false;
+    options.raw = true;
+    options.vpalevel = 6;
+    options.center = [0,0,0];
+end
+if ~isempty(optionsOper.Oper)
+    Rc = optionsOper.Oper.R;
+    Rf = optionsOper.Oper.Rf;
+    tf = optionsOper.Oper.tf;
+    options.conjugate = optionsOper.Oper.conjugate;
+    options.antisymmetry = optionsOper.Oper.antisymmetry;
     optionsCell = namedargs2cell(options);
-    Am = rotaterow(A
+    Am = rotate(A,Rc,Rf,tf,rightorleft,optionsCell{:});
+    return
+end
+optionsCell = namedargs2cell(options);
+Am = rotaterow(A(1,:),Rc,Rf,tf,rightorleft,optionsCell{:});
+for i = 2:size(A,1)
+    Am = [Am;rotaterow(A(i,:),Rc,Rf,tf,rightorleft,optionsCell{:})];
+end
+end
 

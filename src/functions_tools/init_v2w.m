@@ -23,10 +23,10 @@ function dirstring = init_v2w(SOCFLAG, Erange, options)
         Erange = [-3, 3];  % Default energy range for bands
         options.check = false;  % Default to no check
         options.Projector_list = [];  % Default empty projector list
+        options.BandIndex = [];
     end
 
     %% Import custom functions (if necessary)
-    import park.*;
 
     %% Read POSCAR file for lattice and atom information
     SOCflag = SOCFLAG;
@@ -44,10 +44,10 @@ function dirstring = init_v2w(SOCFLAG, Erange, options)
     %% Optionally check and find bands
     if options.check && nargin < 2
         while ~strcmp(input('y/n for continue or break to find bands', 's'), 'n')
-            findbands(EIGENCAR);  % Function to find bands
+            [allk_min, anyk_max] =findbands(EIGENCAR);  % Function to find bands
         end
     elseif options.check
-        findbands(EIGENCAR, Erange);  % If check is true, find bands within the given energy range
+        [allk_min, anyk_max] = findbands(EIGENCAR, Erange);  % If check is true, find bands within the given energy range
     end
 
     %% Generate kpath for band structure visualization
@@ -65,11 +65,11 @@ function dirstring = init_v2w(SOCFLAG, Erange, options)
 
     % If the EIGENCAR file was available and the check flag is set, select bands
     if check && options.check
-        [num_bands, Nmin, Nmax] = selectbands(EIGENCAR, Rm);  % Select bands for Wannier90
+        [num_bands, Nmin, Nmax,win_info] = selectbands(EIGENCAR, Rm,"win_gen&dis_check",'BandIndex',options.BandIndex);  % Select bands for Wannier90
         Nbands = size(EIGENCAR, 1);  % Get the total number of bands
-        wannier90_win_gen(SOCflag, num_bands, num_wan, Nmin, Nmax, Nbands);  % Generate Wannier90 input with selected bands
+        wannier90_win_gen(SOCflag, num_bands, num_wan, Nmin, Nmax, Nbands,win_info);  % Generate Wannier90 input with selected bands
     else
-        wannier90_win_gen(SOCflag, 10, num_wan, 1, 10, 10);  % Generate default Wannier90 input if no bands are selected
+        wannier90_win_gen(SOCflag, 10, num_wan, 1, 10, 10,win_info);  % Generate default Wannier90 input if no bands are selected
     end
 
     %% Completion message

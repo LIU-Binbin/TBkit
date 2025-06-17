@@ -8,11 +8,12 @@ arguments
     options.Orientation = eye(3);
 end
 
+
+% Create a new figure and axis handle if none is provided
 if isempty(options.ax)
-    Fig =  Figs(1,1);
-    ax = Fig.axes(1);
+    [Fig,ax] = Figs(1, 1);
 else
-    ax = options.ax;
+    ax = options.ax;  % Use the provided axis handle
 end
 % if nargin < 2
 %     color = 'r';

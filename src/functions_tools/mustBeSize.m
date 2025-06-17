@@ -10,11 +10,17 @@ function mustBeSize(a, b)
             throwAsCaller(MException(eid, msg));
         end
         
-    % Case 2: If b is a 2xN matrix, check if size(a) matches either of the rows of b
-    elseif size(b, 1) == 2
-        if ~isequal(size(a), b(1,:)) && ~isequal(size(a), b(2,:))
+    % Case 2: If b is a Nx2 matrix, check if size(a) matches either of the rows of b
+    elseif size(b, 2) == 2
+        Check = false;
+        for i = 1:size(b,1)
+            if isequal(size(a), b(i,:))
+                Check = true;
+            end
+        end
+        if ~Check
             eid = 'Size:notRequired';
-            msg = ['Inputs must have size ' mat2str(b) ', but size(a) is ' mat2str(size(a))];
+            msg = ['Inputs must have size ' mat2str( b(i,:)) ', but size(a) is ' mat2str(size(a))];
             throwAsCaller(MException(eid, msg));
         end
     else

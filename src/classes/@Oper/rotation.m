@@ -1,13 +1,37 @@
 function SymOper = rotation(angle, axis, inversion, U, spin,options,propArgs)
+%ROTATION Generate symmetry operation operator for rotation transformations
+%   This function creates a symmetry operator combining spatial rotation and 
+%   spin rotation components. Supports both numeric and symbolic calculations.
+%
+%   Input Arguments:
+%       angle       - Rotation angle (in fractions of 2π)
+%       axis        - [Optional] 3D rotation axis vector (default: NaN for 2D rotation)
+%       inversion   - [Optional] Logical flag for spatial inversion (default: false)
+%       U           - [Optional] Predefined rotation matrix or Pauli matrices object
+%       spin        - [Optional] Spin quantum number or spin rotation matrix
+%       options     - [Optional] Structure with additional parameters:
+%           .sym         - Enable symbolic calculation (default: false)
+%           .rightorleft - Rotation direction ('left' or 'right', default: 'right')
+%       propArgs    - [Optional] Additional properties for Oper class
+%
+%   addition note for rightorleft
+%       right: (1,0) -> (cos(theta),sin(theta))
+%   Output:
+%       SymOper - Oper object containing combined rotation operation
+%
+%   Example:
+%       % Create a right-handed π/2 rotation about z-axis
+%       op = rotation(1/4, [0 0 1]);
+
 arguments
-    angle  ;
-    axis  = nan;
-    inversion logical = false;
-    U  = nan;
-    spin  = nan;
-    options.sym = false;
-    options.rightorleft {mustBeMember(options.rightorleft,{'left','right'})}= 'right';
-    propArgs.?Oper;
+    angle                       % Rotation angle (fraction of 2π)
+    axis          = nan         % Rotation axis (NaN for 2D)
+    inversion logical = false   % Spatial inversion flag
+    U             = nan         % Rotation matrix/Pauli matrices
+    spin          = nan         % Spin quantum number/matrix
+    options.sym logical = false % Symbolic calculation flag
+    options.rightorleft {mustBeMember(options.rightorleft, {'left','right'})} = 'right'
+    propArgs.?Oper               % Additional Oper properties
 end
 propertyCell = namedargs2cell(propArgs);
 if isa(U,'double')

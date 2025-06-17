@@ -1,4 +1,4 @@
-function H_hr = clean(H_hr, WANNUM)
+function H_hr = clean(H_hr, WANNUM,options)
 % CLEAN Reset Hamiltonian and overlap matrices while preserving structure
 %
 %   H_hr = CLEAN(H_hr) resets all Hamiltonian (and overlap) matrices to zero 
@@ -24,6 +24,12 @@ function H_hr = clean(H_hr, WANNUM)
     arguments
         H_hr HR
         WANNUM {mustBeInteger,mustBePositive} = H_hr.WAN_NUM
+        options.OverlapTest = true;
+    end
+    if H_hr(1).overlap && options.OverlapTest
+        H_hr(1) = add_empty_one(H_hr(1),WANNUM,'OverlapTest',false);
+        H_hr(2) = add_empty_one(H_hr(2),WANNUM,'OverlapTest',false);
+        return
     end
 
     % Update Wannier orbital count
@@ -56,16 +62,6 @@ function H_hr = clean(H_hr, WANNUM)
             H_hr.HcoeL = sym([]);
         end
         
-        % Process overlap matrices if present
-        if isfield(H_hr, 'overlap') && H_hr.overlap
-            H_hr.SnumL = zeros(WANNUM, WANNUM, H_hr.NRPTS);
-            
-            if H_hr.coe
-                H_hr.ScoeL = sym(H_hr.SnumL);
-            else
-                H_hr.ScoeL = sym([]);
-            end
-        end
     end
 
     function reset_sparse_matrices()
@@ -83,14 +79,6 @@ function H_hr = clean(H_hr, WANNUM)
             H_hr.HnumL{i} = sparse(WANNUM, WANNUM);
             if H_hr.coe
                 H_hr.HcoeL{i} = sym(sparse(WANNUM, WANNUM));
-            end
-        end
-        
-        % Handle overlap matrices
-        if isfield(H_hr, 'overlap') && H_hr.overlap
-            H_hr.SnumL = cell(1, H_hr.NRPTS);
-            if H_hr.coe
-                H_hr.ScoeL = cell(1, H_hr.NRPTS);
             end
         end
     end

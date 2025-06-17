@@ -21,6 +21,7 @@ H_hr HR;
 fin_dir = [10 10 1];
 vacuum_mode = false;
 options.fast = true;
+options.POSCAR = 'POSCAR'; % Default POSCAR file
 end
 if isempty(H_hr.orbL)
 orbital_init = zeros(H_hr.WAN_NUM,3);
@@ -51,7 +52,7 @@ Ns = [1 0 0;0 1 0;0 0 1];
 Ns = Ns.*fin_dir;
 fin_dir_list = [0 0 0];
 if ~options.fast
-[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=HR.POSCAR_read();
+[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=HR.POSCAR_read(options.POSCAR);
 H_hr.supercell(Ns,'POSCAR_super_fin',Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp,fin_dir_list);
 end
 else
@@ -78,10 +79,10 @@ Ns = [1 0 0;0 1 0;0 0 1];
 Ns = Ns.*fin_dir;
 fin_dir_list = double(fin_dir>1);
 if ~options.fast
-[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=HR.POSCAR_read();
+[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=HR.POSCAR_read(options.POSCAR);
 H_hr.supercell(Ns,'POSCAR_super_fin',Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp,fin_dir_list);
 else
-[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=POSCAR_read();
+[Rm_tmp,sites_tmp,Atom_name_tmp,Atom_num_tmp]=POSCAR_read(options.POSCAR);
 end
 Rm_tmp = Ns*Rm_tmp;
 Rmlength1 = norm (Rm_tmp(1,:));

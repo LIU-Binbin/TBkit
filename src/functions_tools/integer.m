@@ -15,8 +15,15 @@ function A = integer(A)
             roundedValue = round(A(i,j));  % 先进行四舍五入
             
             % 判断是否需要替换
-            % Determine whether to replace the value
-            if abs(A(i,j) - roundedValue) < 1e-6
+            % Try to Determine whether to replace the value
+            try
+                DoubleValue = double(abs(A(i,j) - roundedValue));
+            catch
+                DoubleValue = 0;
+                continue;
+            end
+           
+            if  DoubleValue < 1e-6
                 A(i,j) = roundedValue;  % 替换为整数
             end
         end
