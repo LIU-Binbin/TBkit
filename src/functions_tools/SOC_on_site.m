@@ -2,14 +2,15 @@ function [H_soc_sym, lambda_syms] = SOC_on_site(orbL, elementL, quantumL, option
 %   Generate an atomic on-site spin-orbit coupling (SOC) term with symbolic
 %   SOC constants for each element and orbit
 arguments
-    orbL
-    elementL
-    quantumL
+    orbL     = []
+    elementL = []
+    quantumL = []
     
     options.mode {mustBeMember(options.mode, ["direct", "basis"])} = "basis";
-    options.element_names = ["Mn", "Pt"];
-    options.element_atom_nums = [2 2];
-    options.element_projs = {2, [0,1,2]};
+    options.element_names     %  ["Mn", "Pt"];
+    options.element_atom_nums % [2 2];
+    options.element_projs     % {2, [0,1,2]};
+    options.spin_basis {mustBeMember(options.spin_basis, ["udud", "uudd"])}
 end
 
 if strcmp(options.mode,'direct')
@@ -62,6 +63,13 @@ if strcmp(options.mode,'direct')
                 end
             end
         end
+    end
+    if options.spin_basis == "udud"
+
+    elseif options.spin_basis == "uudd"
+        WAN_NUM = length(H_soc_sym);
+        udud2uudd = [1:2:(WAN_NUM-1),2:2:(WAN_NUM)];
+        H_soc_sym = H_soc_sym(udud2uudd,udud2uudd);
     end
 elseif strcmp(options.mode,'basis')
     % only on-site SOC is allowed
