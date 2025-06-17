@@ -1,3 +1,4 @@
+function H_hr = Htrig2HR(H_htrig, options)
 % HTRIG2HR Convert a Htrig object to an HR object.
 %
 % SYNTAX:
@@ -28,7 +29,6 @@
 %   % Convert a Htrig object H to an HR object using the default POSCAR file:
 %   H_hr = Htrig2HR(H, struct('POSCAR','POSCAR'));
 %
-function H_hr = Htrig2HR(H_htrig, options)
 arguments
     H_htrig Htrig;
     options.POSCAR = 'POSCAR';
@@ -74,6 +74,8 @@ for n = 1:length(hsym)
         end
         kd_num = double(fold(@horzcat, cDim));
     end
+    % Factorlist_R $H_{i j}^{\mathbf{k}}=\left\langle\chi_{i}^{\mathbf{k}}|H| \chi_{j}^{\mathbf{k}}\right\rangle=\sum_{\mathbf{R}} e^{i \mathbf{k} \cdot\left(\mathbf{R}+\mathbf{t}_{j}-\mathbf{t}_{i}\right)} H_{i j}(\mathbf{R})$
+    % exp(i(R+tj-ti))
     for i = 1:WAN_NUM
         for j = 1:WAN_NUM
             if isequal(Hexp(i, j, n), sym(0))
