@@ -20,7 +20,7 @@ function H_hr = add_empty_one(H_hr, vector,options)
 % Handle vector hopping mode (block diagonal expansion)
 arguments
     H_hr 
-    vector
+    vector double
     options.OverlapTest = true;
 end
 if H_hr(1).overlap && options.OverlapTest

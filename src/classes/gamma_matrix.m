@@ -15,7 +15,7 @@ classdef gamma_matrix < pauli_matrix
             arguments
                 label1 double = 0;   % First label for selecting the matrix
                 label2 double = 0;   % Second label (used in commutation)
-                options.rep char = 'ZYX';  % Representation style, default is 'ZYX'
+                options.rep char {mustBeMember(options.rep,{'ZYX','BJY','ZSC','ZSC_2004','KM','Dirac','Weyl'})}= 'ZYX';  % Representation style, default is 'ZYX'
             end
             
             % Call the parent constructor (pauli_matrix)
