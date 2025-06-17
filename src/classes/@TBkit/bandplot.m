@@ -38,12 +38,12 @@ if (nargin-1 == 1 && isvector(varargin{1}))
     Ecut = varargin{1};
     varargin = varargin(2:end);
     bandplot(EIGENCAR, Ecut, TBkitobj.klist_l, TBkitobj.kpoints_l, TBkitobj.kpoints_name, varargin{:});
-elseif nargin == 1 || ((ischar(varargin{1}) || isstring(varargin{1}))
+elseif nargin == 1 || ((ischar(varargin{1}) || isstring(varargin{1}))   )
     % Case: bandplot(TBkitobj) or bandplot(TBkitobj, style...)
     EIGENCAR = TBkitobj.EIGENCAR_gen();
     Ecut = [-3, 3];
     bandplot(EIGENCAR, Ecut, TBkitobj.klist_l, TBkitobj.kpoints_l, TBkitobj.kpoints_name, varargin{:});
-elseif ismatrix(varargin{1}) && ((ischar(varargin{2}) || isstring(varargin{2}))
+elseif ismatrix(varargin{1}) && ((ischar(varargin{2}) || isstring(varargin{2}))   )
     % Case: bandplot(TBkitobj, EIGENCAR, style...)
     EIGENCAR = varargin{1};
     varargin = varargin(2:end);
