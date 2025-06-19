@@ -13,8 +13,11 @@
 % S6z = Mz*C6z;
 %% 从Mvasp2trace的磁群对称性表中统一读入对称性操作，必须指明晶系
 
-msg_BNS_number = "194_268";
-Msg = read_Magnetic_Sym_El("Magnetic_Sym_El/Magnetic_Sym_El_"+msg_BNS_number+".txt","hexagonal");
+%msg_BNS_number = "194_268";
+%Msg = read_Magnetic_Sym_El("Magnetic_Sym_El/Magnetic_Sym_El_"+msg_BNS_number+".txt","hexagonal");
+
+Msg = read_Magnetic_Sym_El([194,268],"hexagonal");
+
 gen_list = Msg([1,2,7,11,13])
 % %% basic setting of the tensor,
 % tensor_rank = 3;
@@ -49,12 +52,12 @@ end
 
 pretty(Tensor5,"Table")
 toc;
-%% Test for [V]
-
+%% Test for {V}
+% bug here ! 
 tic;
-jahn_symbol_Str = 'a[V2]VV';
+jahn_symbol_Str = 'a{V2}VV';
 Tensor4 = jahn_symbol(jahn_symbol_Str);
-%%
+%
 for i = 1:length(gen_list)
     Tensor4 = group_transformation(Tensor4, gen_list(i));
 end

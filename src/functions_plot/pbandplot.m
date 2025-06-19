@@ -219,8 +219,12 @@ if ~options.silent && (strcmp(plotMode,"bubble_only") || strcmp(plotMode,"bubble
     prompt = "0) all(or just press Enter)\n1) s    2) py    3) pz    4) px\n"...
         +"5) dxy  6) dyz   7) dz2   8) dxz   9) dx2-y2:\n";
     selectedProjs = input(prompt);
-    if isempty(selectedProjs)
+    if isempty(selectedProjs) 
         selectedProjs = 1:nProj;
+    elseif isscalar(selectedProjs)
+        if selectedProjs==0 
+            selectedProjs = 1:nProj;
+        end
     end
 else
     selectedProjs = 1:nProj;
