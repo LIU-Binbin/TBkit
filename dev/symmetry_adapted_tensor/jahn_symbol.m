@@ -63,9 +63,9 @@ function Tensor = jahn_symbol(jahn_symbol_Str)
                 StackFlag = 0;
             case {'}'}
                 if strcmp(CharJahn(ichar_plus1),"*")
-                    Tensor.TsymmetricPair = [Tensor.TsymmetricPair ;StackFlag,Pos];
+                    Tensor.TasymmetricPair = [Tensor.TasymmetricPair ;StackFlag,Pos];
                 else
-                    Tensor.SymmetricPair = [Tensor.SymmetricPair;StackFlag,Pos];
+                    Tensor.AsymmetricPair = [Tensor.AsymmetricPair;StackFlag,Pos];
                 end
                 StackFlag = 0;
             case {'V'}

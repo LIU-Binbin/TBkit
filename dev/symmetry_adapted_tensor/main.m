@@ -54,6 +54,8 @@ pretty(Tensor5,"Table")
 toc;
 %% Test for {V}
 % bug here ! 
+% check difference
+% https://www.cryst.ehu.es/cgi-bin/cryst/programs/mtensor_build.pl?magnum=194.268&generators=&transfmat=&jahnsymbol=a{V2}VV&database_type=mtensor&trm=a,b,c&sym_cards=&input_type=&x1=1&x2=0&x3=0&x4=0&y1=0&y2=1&y3=0&y4=0&z1=0&z2=0&z3=1&z4=0&pointo=
 tic;
 jahn_symbol_Str = 'a{V2}VV';
 Tensor4 = jahn_symbol(jahn_symbol_Str);
