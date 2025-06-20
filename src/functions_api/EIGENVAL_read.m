@@ -97,11 +97,20 @@ function [EIGENCAR,EIGENCAR2,Efermi,klist_l]=EIGENVAL_read(mode,EIGENVAL,Efermi)
     switch mode
         case 'vasp'
             % read EIGENVAL
-            data=textread(EIGENVAL,'','headerlines',5);
+            try
+                data=textread(EIGENVAL,'','headerlines',5);
+            catch ME
+                error('EIGENVAL file is empty or cannot be read.', ME.message);
+            end
             NBands=data(1,3);
             Nelectrons=data(1,1);
             Ktotal=data(1,2);
             % setup EIGENCAR
+            try
+                data=textread(EIGENVAL,'','headerlines',8);
+            catch ME
+                error('EIGENVAL file is empty or cannot be read.', ME.message);
+            end
             data=textread(EIGENVAL,'','headerlines',8);
             for i=1:1:NBands
                 for j=1:1:Ktotal
