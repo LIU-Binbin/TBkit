@@ -38,11 +38,11 @@ if level_cut == -1
 end
 
 % Extract nearest-neighbor distances
-Rnn = H_hr.nn_information();
+Rnn = H_hr(1).nn_information();
 
 % Define interaction types and symbolic variable patterns
 base_string = ["VssS", "VspS", "VsdS", "VppS", "VpdS", "VppP", "VpdP", "VddS", "VddP", "VddD"];
-strvar_list = string(H_hr.symvar_list);
+strvar_list = string(H_hr(1).symvar_list);
 
 % Initialize substitution parameters for Hamiltonian
 base_symvar = sym([]);
@@ -57,20 +57,20 @@ for ibase = base_string
             count = count + 1;
             base_symvar(count) = sym(term, 'real');
             base_num(count) = i;
+            base_symvar_str(count) = string(ibase);
             break;
         end
     end
 end
-
 % Handle overlap matrix if present
-if H_hr.overlap
+if H_hr(1).overlap
     base_string_S = ["SssS", "SspS", "SsdS", "SppS", "SpdS", "SppP", "SpdP", "SddS", "SddP", "SddD"];
-    symvar_list_S = string(symvar(H_hr.ScoeL));
-    
+    symvar_list_S = string(symvar(H_hr(2).HcoeL));
+
     base_symvar_S = sym([]);
     base_num_S = [];
     count_S = 0;
-    
+
     for ibase_S = base_string_S
         for i = 1:level_cut
             term = string(ibase_S) + "_" + num2str(i);
@@ -78,6 +78,7 @@ if H_hr.overlap
                 count_S = count_S + 1;
                 base_symvar_S(count_S) = sym(term, 'real');
                 base_num_S(count_S) = i;
+                base_symvar_str_S(count) = string(ibase_S);
                 break;
             end
         end
@@ -94,7 +95,7 @@ else
         RdL = options.Rd;
     end
     base_num = 1:count; % Reset to use all identified terms
-    if H_hr.overlap
+    if H_hr(1).overlap
         base_num_S = 1:count_S;
     end
 end
@@ -104,58 +105,62 @@ switch mode
     case 1
         % Single delta parameter for all interactions
         delta = sym('delta', 'real');
-        
+
         % Substitute Hamiltonian terms
         for j = 2:level_cut
             for i = 1:count
-                V_n = string(base_symvar(i)) + "_" + num2str(j);
+                V_n = string(base_symvar_str(i)) + "_" + num2str(j);
                 if any(contains(strvar_list, V_n))
                     coeff = (Rnn(j) - RdL(base_num(i)));
                     subs_expr = base_symvar(i) * exp(-coeff / delta);
-                    H_hr.HcoeL = subs(H_hr.HcoeL, sym(V_n), subs_expr);
+                    fprintf('%s\n',string(sym(V_n) == subs_expr));
+                    H_hr(1).HcoeL = subs(H_hr(1).HcoeL, sym(V_n), subs_expr);
                 end
             end
         end
-        
+
         % Substitute overlap terms if present
-        if H_hr.overlap
+        if H_hr(1).overlap
             delta_S = sym('delta__2', 'real');
             for j = 2:level_cut
                 for i = 1:count_S
-                    S_n = string(base_symvar_S(i)) + "_" + num2str(j);
+                    S_n = string(base_symvar_str_S(i)) + "_" + num2str(j);
                     if any(contains(symvar_list_S, S_n))
                         coeff = (Rnn(j) - RdL(base_num_S(i)));
                         subs_expr = base_symvar_S(i) * exp(-coeff / delta_S);
-                        H_hr.ScoeL = subs(H_hr.ScoeL, sym(S_n), subs_expr);
+                        fprintf('%s\n',string(sym(S_n) == subs_expr));
+                        H_hr(2).HcoeL = subs(H_hr(2).HcoeL, sym(S_n), subs_expr);
                     end
                 end
             end
         end
-        
+
     case 2
         % Unique delta parameters for each interaction type
         for j = 2:level_cut
             for i = 1:count
-                V_n = string(base_symvar(i)) + "_" + num2str(j);
+                V_n = string(base_symvar_str(i)) + "_" + num2str(j);
                 if any(contains(strvar_list, V_n))
                     delta = sym(['delta_', num2str(i)], 'real');
                     coeff = (Rnn(j) - RdL(base_num(i)));
                     subs_expr = base_symvar(i) * exp(-coeff / delta);
-                    H_hr.HcoeL = subs(H_hr.HcoeL, sym(V_n), subs_expr);
+                    fprintf('%s\n',string(sym(V_n) == subs_expr));
+                    H_hr(1).HcoeL = subs(H_hr(1).HcoeL, sym(V_n), subs_expr);
                 end
             end
         end
-        
+
         % Substitute overlap terms if present
-        if H_hr.overlap
+        if H_hr(1).overlap
             for j = 2:level_cut
                 for i = 1:count_S
-                    S_n = string(base_symvar_S(i)) + "_" + num2str(j);
+                    S_n = string(base_symvar_str_S(i)) + "_" + num2str(j);
                     if any(contains(symvar_list_S, S_n))
                         delta = sym(['delta__2_', num2str(i)], 'real');
                         coeff = (Rnn(j) - RdL(base_num_S(i)));
                         subs_expr = base_symvar_S(i) * exp(-coeff / delta);
-                        H_hr.ScoeL = subs(H_hr.ScoeL, sym(S_n), subs_expr);
+                        fprintf('%s\n',string(sym(S_n) == subs_expr));
+                        H_hr(2).HcoeL = subs(H_hr(2).HcoeL, sym(S_n), subs_expr);
                     end
                 end
             end

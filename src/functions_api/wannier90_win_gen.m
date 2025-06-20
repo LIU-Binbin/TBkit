@@ -1,6 +1,19 @@
 %% To generate Different card for vasp2wannier
-function wannier90_win_gen(SOCflag,num_bands,num_wan,Nmin,Nmax,Nbands)
+function wannier90_win_gen(SOCflag,num_bands,num_wan,Nmin,Nmax,Nbands,win_info)
+arguments
+    SOCflag 
+    num_bands = 10;
+    num_wan  = 10;
+    Nmin  = 1;
+    Nmax  = 10;
+    Nbands  = 10;
+    win_info = [];
+end
 fid = fopen('wannier90.win.bk','w');
+if isempty(win_info)
+else
+    win_info_mode = 1;
+end
 if SOCflag==1
     %% num_band card
     for flag=1:1
@@ -30,10 +43,18 @@ if SOCflag==1
     " !dis_conv_window  = 1.0E-10\n\n"+ ...
     " write_proj = .true.\n"+ ...
     " write_xyz = .true.\n"+ ...
+    " use_ws_distance = .false.\n"+ ...
     " translate_home_cell = .false.\n"+ ...
     " iprint=3 \n"+ ...
     " guiding_centres = .true.\n\n" ...
     );
+    %%
+    if win_info_mode
+        fprintf(fid,'dis_win_min = %f\n',win_info.dis_min);
+        fprintf(fid,'dis_win_max = %f\n',win_info.dis_max);
+        fprintf(fid,'dis_froz_min = %f\n',win_info.foz_min);
+        fprintf(fid,'dis_froz_max = %f\n',win_info.foz_max);
+    end
     %% projections card
     phns='wannier90projector_card'; %?????????????
     fpn=fopen(phns,'rt');%??????

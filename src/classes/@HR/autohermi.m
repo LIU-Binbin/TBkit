@@ -193,11 +193,11 @@ function H_hr = autohermi(H_hr, mode, options)
 
     function handle_list_offdiagonal(i, j, vec, vec_oppo, DIM)
         if j == 0
-            fprintf('Creating missing opposite vector for NRPT %d\n', i);
+            fprintf('Creating missing opposite vector for %s \n', num2str(vec));
             H_hr_tmp = H_hr_tmp.set_hop(H_hr.HcoeL(i)', vec_oppo(DIM+1), vec_oppo(DIM+2), vec_oppo(1:DIM), 'sym');
         else
             if ~isequal(H_hr.HcoeL(i), H_hr_tmp.HcoeL(j)')
-                fprintf('Resolving Hermitian mismatch between NRPT %d and %d\n', i, j);
+                fprintf('Resolving Hermitian mismatch between NRPT %s and %s\n', num2str(vec), num2str(vec_oppo));
                 tmpsym = (H_hr.HcoeL(i) + H_hr.HcoeL(j)')/2;
                 H_hr_tmp = H_hr_tmp.set_hop(tmpsym, vec(DIM+1), vec(DIM+2), vec(1:DIM), 'sym');
                 H_hr_tmp = H_hr_tmp.set_hop(tmpsym', vec_oppo(DIM+1), vec_oppo(DIM+2), vec_oppo(1:DIM), 'sym');

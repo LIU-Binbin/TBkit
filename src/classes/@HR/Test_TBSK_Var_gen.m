@@ -39,8 +39,10 @@ if testmode == 1
                         ' - ','m')...
                         );
 
-                    SymVarR = HR.TBSK_Var_gen_single(L_1,L_2,m_1,m_2);
-                    EQ(count,:) = (SymvarL == SymVarR);
+                    SymVarR = HR.TBSK_Var_gen_single(L_1,L_2,m_1,m_2,'sym_mode',1);
+                    SymVarR_exchange = HR.TBSK_Var_gen_single(L_2,L_1,m_2,m_1,'sym_mode',1);
+                    exchange_test = sym('Exchange') == simplify(SymVarR_exchange - SymVarR);
+                    EQ(count,:) = [(SymvarL == SymVarR),exchange_test];
                 end
             end
         end
@@ -68,7 +70,7 @@ else
                         ' - ','m')...
                         );
 
-                    SymVarR = HR.TBSK_Var_gen_single(L_1,L_2,m_1,m_2);
+                    SymVarR = HR.TBSK_Var_gen_single(L_1,L_2,m_1,m_2,'sym_mode',1);
                     EQ(count,:) = (SymvarL == SymVarR);
                 end
             end

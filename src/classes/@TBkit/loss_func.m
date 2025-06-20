@@ -33,10 +33,20 @@ arguments
     options.fig = handle([]);
     options.ax = handle([]);
     options.KPOINTS = 'KPOINTS';
+    options.SubsIndexL = []; 
 end
 %%%%%%%%%%%%%%
 EIGENCAR_DFT = evalin(options.namespace,options.DFTBAND);
 FITobj = evalin(options.namespace,options.FITobj);
+if isempty(options.SubsIndexL)
+    % normal
+    FITobj.HnumL = zeros(size(FITobj.HcoeL));
+    SubsIndexL = 1:numel(FITobj.HnumL);
+else
+    SubsIndexL = options.SubsIndexL;
+end
+
+
 try
     Varlist = evalin(options.namespace,options.Varlist);
 catch
@@ -46,6 +56,7 @@ catch
         Varlist = [];
     end
 end
+
 %%%%%%%%%%%%%%%
 if isa(parameters,'table')
     fitmethod = 'Bayes';
@@ -64,12 +75,15 @@ switch fitmethod
             FITobj_n = FITobj_n <options.KPOINTS;
         else
             try
-                FITobj = FITobj.subs(Varlist,parameters);
+                SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
+                SubsHnumL = [SubsHnumL(SubsIndexL)];
             catch
                 Varlist = FITobj.symvar_list;
-                FITobj = FITobj.subs(Varlist,parameters);
+                SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
+                SubsHnumL = [SubsHnumL(SubsIndexL)];
             end
-            FITobj_n = FITobj.Subsall();
+            FITobj_n = FITobj;
+            FITobj_n.HnumL(SubsIndexL) = FITobj_n.HnumL(SubsIndexL) + SubsHnumL;
         end
         EIGENCAR_TBkit = FITobj_n.EIGENCAR_gen('printmode',false);
     case 'Bayes'
@@ -79,15 +93,21 @@ switch fitmethod
         catch
 
         end
+        SubsHnumL = FITobj.HcoeL;
         %%%%%%%%%%%%%%%%%
         for i  = 1:length(Varlist)
-            try  % Generate Field Names from Variables  dynamic fieldnames, or sometimes dynamic field names.
-                FITobj = FITobj.subs(Varlist(i),parameters.(string(Varlist(i))));
+            % Generate Field Names from Variables  dynamic fieldnames, or sometimes dynamic field names.
+            %FITobj = FITobj.subs(Varlist(i),parameters.(string(Varlist(i))));
+            try
+                SubsHnumL = (subs(SubsHnumL,Varlist(i),parameters.(string(Varlist(i))) ));
             catch
-                FITobj = FITobj.subs(Varlist(i),Varlock(i));
+                Varlist = FITobj.symvar_list;
+                SubsHnumL = (subs(SubsHnumL,Varlist(i),parameters.(string(Varlist(i))) ));
             end
         end
-        FITobj_n = FITobj.Subsall();
+        SubsHnumL = [SubsHnumL(SubsIndexL)];
+        FITobj_n = FITobj;
+        FITobj_n.HnumL(SubsIndexL) = FITobj_n.HnumL(SubsIndexL) + SubsHnumL;
         EIGENCAR_TBkit = FITobj_n.EIGENCAR_gen('printmode',false);
     otherwise
         error('not be implemented');

@@ -58,7 +58,7 @@ function BForb = rotation_orb(BForb, Rf, tf, options)
         options.spincoupled = false;
         options.orbcoupled = false;
         options.raw = true;
-        options.vpalevel = 6;
+        options.vpalevel = 5;
         options.center = [0, 0, 0];
     end
 
@@ -66,7 +66,7 @@ function BForb = rotation_orb(BForb, Rf, tf, options)
         return;  
     end
 
-    BForb = (BForb - options.center) * Rf.' + options.center + tf;
+    BForb = roundn((BForb - options.center) * Rf.' + options.center + tf,-options.vpalevel);
 
     for i = 1:3
         BForb(i) = mod(BForb(i), 1);

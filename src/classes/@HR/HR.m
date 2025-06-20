@@ -45,7 +45,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         overlap logical= false;
         num logical= false;
         coe logical= true;
-        soc logical= false;
+        % soc logical= false;
         AvectorL;
         BvectorL;
         CvectorL;
@@ -67,9 +67,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         nn_sparse_n      ;
         Atom_store_smart ;
         Rnn_map          ;
-        ScoeL            ;
-        SnumL            ;
-        vectorL_overlap  ;
+        vectorL_map      ;
     end
     methods (Access = protected)
         propgrp = getPropertyGroups(~)
@@ -95,9 +93,6 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
                 options.HcoeL sym=sym([]) ;
                 options.Type char = 'mat' ;
                 options.overlap logical = false;
-                options.SnumL double=[]   ;
-                options.ScoeL sym=sym([]) ;
-                options.vectorL_overlap = ([0 ,0 ,0]);
                 options.sym = true;
                 propArgs.?TBkit;
             end
@@ -166,32 +161,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
             else
                 HcoeL = options.HcoeL;
             end
-            if options.overlap
-                if isempty(options.SnumL )
-                    if strcmp(Type,'sparse')
-                        SnumL{NRPTS} = sparse(WAN_NUM,WAN_NUM);
-                        for i =1:NRPTS-1
-                            SnumL{i} = sparse(WAN_NUM,WAN_NUM);
-                        end
-                    else
-                        SnumL = zeros(WAN_NUM,WAN_NUM,NRPTS);
-                    end
-                    H_hr.SnumL = SnumL;
-                else
-                    H_hr.SnumL = options.SnumL  ; % Snum_list
-                end
-                if isempty(options.ScoeL ) && isempty(options.SnumL )
-                    if strcmp(Type,'sparse')
-                        ScoeL = [];
-                    else
-                        ScoeL = sym(SnumL);
-                    end
-                    H_hr.ScoeL = ScoeL;
-                else
-                    H_hr.ScoeL = options.ScoeL  ; % Scoe_list
-                end
-                H_hr.vectorL_overlap =  (options.vectorL_overlap);
-            end
+
             %
             % H_hr.NRPTS   =  NRPTS; % the total number of H(Rn)
             % H_hr.WAN_NUM =  WAN_NUM ; % the num of wannier like orbs
@@ -206,6 +176,9 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
             %             end
             H_hr.orbL  = zeros(WAN_NUM,H_hr.Dim);
             H_hr.overlap = options.overlap;
+            if options.overlap
+                %H_hr = HR(WAN_NUM,vectorL,options,propArgs)
+            end
             %H_hr.Duality_vector_dist = containers.Map('KeyType','double','ValueType','double');
         end
     end
@@ -226,9 +199,6 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = set_hop(H_hr,amp,hi,hj,vector_list,mode)
         H_hr = set_hop_mat(H_hr,amp,vector,mode)
         H_hr = set_hop_single(H_hr,amp,hi,hj,vector,mode)
-        H_hr = set_overlap(H_hr,amp,si,sj,vector_list,mode)
-        H_hr = set_overlap_mat(H_hr,amp,vector,mode)
-        H_hr = set_overlap_single(H_hr,amp,si,sj,vector,mode)
     end
     %% get
     % ----------------  get property method --------------------
@@ -249,9 +219,9 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
             else
                 %WAN_NUM = max(size(H_hr.HnumL,1),size(H_hr.HcoeL,1));
                 if H_hr.num && ~H_hr.coe
-                    WAN_NUM = size(H_hr.HnumL,2);
+                    WAN_NUM = size(H_hr.HnumL,1);
                 elseif ~H_hr.num && H_hr.coe
-                    WAN_NUM = size(H_hr.HcoeL,2);
+                    WAN_NUM = size(H_hr.HcoeL,1);
                 elseif H_hr.num && H_hr.coe
                     WAN_NUM = max(size(H_hr.HnumL,1),size(H_hr.HcoeL,1));
                 else
@@ -314,6 +284,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
     %% reshape 
     methods
         H_hr = reseq(H_hr,wan_list,nrpt_list,nrpt_list_S)
+        H_hr = reseq_spin_basis(H_hr,old2new)        
         H_hr = cut_orb(H_hr,rm_list,options)
         H_hr = clean(H_hr,WANNUM)
         H_hr = project(H_hr,BASIS_MAT)
@@ -328,12 +299,12 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
 
     methods
         H_hr = enlarge(H_hr,dir,amp)
-        H_hr = add_soc(H_hr)
         H_hr = addorb(H_hr,orblist,options)
         H_hr = add_orb(H_hr,hop_struct,orbOne,QuantumOne,elementOne)
-        H_hr = addsoc(H_hr,quantumL)
         H_hr = deltarule(H_hr,level_cut,mode,options)
         H_hr = alpharule(H_hr,level_cut,mode,options)
+        H_hr = shift_Fermi_energy(H_hr, Efermi)
+        [H_soc_sym, lambda_syms] = SOC_on_site_gen(H_hr)
     end
     %% expand
     methods
