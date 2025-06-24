@@ -142,7 +142,10 @@ end
 function GM = generateFullSet(rep)
     count = 0;
     GM = gamma_matrix(0, 'rep', rep);
-    
+    for i = 0:5
+        count = count +1;
+        GM(count)=gamma_matrix(i,'rep',rep);
+    end
     switch rep
         case {'Dirac', 'Weyl'}
             for i = [0, 1, 2, 3, 5]

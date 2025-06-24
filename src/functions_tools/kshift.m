@@ -1,165 +1,189 @@
-function [klist_new, DATA_L_new] = kshift(klist, KCUBE_BULK, DATA_L, opt)
-% KSHIFT shifts or expands the k-point mesh and interpolates data at new k-points.
-%   Input:
-%     klist        : Array of k-points (N x 3).
-%     KCUBE_BULK   : Bulk lattice vectors (N x 3).
-%     DATA_L       : Data associated with k-points (N x M).
-%     opt          : Structure of optional parameters, including:
-%       cart      : Boolean, whether to convert k-points to fractional coordinates.
-%       Rm        : Lattice matrix (reciprocal).
-%       tol       : Tolerance for uniqueness of k-points (default: 1e-12).
-%       MeshOutput: Boolean, whether to output mesh data (default: false).
-%       method    : Interpolation method (options: 'linear', 'nearest', 'natural').
-%   Output:
-%     klist_new   : Expanded list of k-points (new k-points).
-%     DATA_L_new  : Interpolated data at the new k-points.
-
-% Default arguments
+function [klist_new,DATA_L_new] = kshift(klist,KCUBE_BULK,DATA_L,opt)
 arguments
-    klist        = [];  % K-point list (default empty)
-    KCUBE_BULK   = [-0.5 -0.5 -0.5; 1 0 0; 0 1 0; 0 0 1];  % Default lattice vectors
-    DATA_L       = [];  % Associated data (default empty)
-    opt.cart      = false;  % Whether to use Cartesian coordinates (default false)
-    opt.Rm        = POSCAR_read();  % Reciprocal lattice matrix (from POSCAR by default)
-    opt.tol       = 1e-12;  % Tolerance for uniqueness of k-points
-    opt.MeshOutput = false;  % Mesh output flag
-    opt.method    {mustBeMember(opt.method, {'linear', 'nearest', 'natural'})} = 'linear';  % Interpolation method
+    klist =[]; 
+    KCUBE_BULK  = [-0.5 -0.5 -0.5;1 0 0;0 1 0;0 0 1];
+    DATA_L = [];
+    opt.cart = false;
+    opt.Rm = POSCAR_read;
+    opt.tol = 1e-12;
+    opt.MeshOutput = false;
+    opt.method {mustBeMember(opt.method,{'linear','nearest','natural'})} = 'linear';
 end
-
-%% Reshape DATA_L if needed
+%% DATA format
 sizemesh = size(DATA_L);
-if numel(sizemesh) == 3
-    DATA_L = reshape(DATA_L, [sizemesh(1) * sizemesh(2), sizemesh(3)]);
-elseif (size(klist, 1) * size(klist, 2) == sizemesh(1) * sizemesh(2)) || (size(klist, 1) == sizemesh(1) * sizemesh(2))
-    DATA_L = reshape(DATA_L, [sizemesh(1) * sizemesh(2), 1]);
+if length(sizemesh) == 3
+    DATA_L = reshape(DATA_L,[sizemesh(1)*sizemesh(2),sizemesh(3)]);
+elseif ( (size(klist,1)*size(klist,2) == sizemesh(1)*sizemesh(2))|| (size(klist,1) == sizemesh(1)*sizemesh(2)) ) && length(sizemesh) == 2
+    DATA_L = reshape(DATA_L,[sizemesh(1)*sizemesh(2),1]);
+    %DATA_L = DATA_L(:);
 end
-
-% Handle 3D klist (reshape if needed)
+%figure()
+%scatter3(klist(:,1),klist(:,2),klist(:,3),abs(DATA_L)*10000,DATA_L);view(2);axis equal
+%surf(Grid(:,:,1),Grid(:,:,2),Grid(:,:,3),reshape(DATA_L,[100 100]))
 sizemeshk = size(klist);
-if numel(sizemeshk) == 3
-    klist = reshape(klist, [sizemesh(1) * sizemesh(2), 3]);
+if length(sizemeshk) == 3
+    Grid = klist;
+    klist = zeros(sizemesh(1)*sizemesh(2),3);
+    klist(:,1) = reshape(Grid(:,:,1),[sizemesh(1)*sizemesh(2),1]);
+    klist(:,2) = reshape(Grid(:,:,2),[sizemesh(1)*sizemesh(2),1]);
+    klist(:,3) = reshape(Grid(:,:,3),[sizemesh(1)*sizemesh(2),1]);
+    %Gridtmp = Grid(:,:,1);klist(:,1) = Gridtmp(:).';
+    %Gridtmp = Grid(:,:,2);klist(:,2) = Gridtmp(:).';
+    %Gridtmp = Grid(:,:,3);klist(:,3) = Gridtmp(:).';
+    %figure()
+    %surf(Grid(:,:,1),Grid(:,:,2),Grid(:,:,3),reshape(DATA_L,[100 100]))
 end
-
-%% Convert klist to fractional coordinates if needed
+%%
 if opt.cart
-    Gk = (2 * pi * eye(3) / opt.Rm).';  % Reciprocal lattice matrix for Cartesian coordinates
-    klist = klist / Gk;  % Convert to fractional coordinates
+    Gk = (2*pi*eye(3)/opt.Rm).';
+    klist = klist/Gk;
 else
-    Gk = (2 * pi * eye(3) / opt.Rm).';  % Reciprocal lattice matrix (for fractional coordinates)
+    Gk = (2*pi*eye(3)/opt.Rm).';
 end
-
-%% Remove duplicate k-points
-[klist, uniqueseq, ~] = uniquetol(klist, opt.tol, 'ByRows', true);
+%% unique!
+[klist,uniqueseq,~] = uniquetol(klist,opt.tol,'ByRows',true);
 if ~isempty(DATA_L)
-    DATA_L = DATA_L(uniqueseq, :);
+    DATA_L = DATA_L(uniqueseq,:);
 end
-
-%% Adjust KCUBE_BULK based on lattice dimension (2D or 3D)
-switch size(KCUBE_BULK, 1)
-    case 2  % 2D lattice (treat as 2D)
-        KCUBE_BULK(3, :) = KCUBE_BULK(2, :) + KCUBE_BULK(1, :);  % Generate the third vector
-        CENTER = mean(KCUBE_BULK, 1);  % Center of the bulk
-        CENTER_base = round(CENTER);  % Shift to the origin
-        KCUBE_BULK = KCUBE_BULK(:, 1:2);  % Only keep 2D components
+% figure()
+% scatter3(klist(:,1),klist(:,2),klist(:,3),abs(DATA_L)*10000,DATA_L);view(2);axis equal
+%% Converge KCUBE_BULK
+switch size(KCUBE_BULK,1)
+    case {0,1}
+    case 2
+    case 3 % 2D we use cart
+        KCUBE_BULK(4,:) = KCUBE_BULK(2,:) + KCUBE_BULK(3,:);
+        % Project mat too complex 
+        % suppse pure 2D
+        %K1 = KCUBE_BULK(2,:);K2 = KCUBE_BULK(3,:);
+        %K1 = KCUBE_BULK(2,:);K2 = KCUBE_BULK(3,:);
+        %Pplane_cart = [K1/norm(K1);K2/norm(K2)].';
+        KCUBE_BULK(2:4,:) = KCUBE_BULK(2:4,:) + KCUBE_BULK(1,:);
+        CENTER = (KCUBE_BULK(1,:) + KCUBE_BULK(4,:))/2;
+        CENTER_base = round(CENTER); %remove  to origin;
+        %CENTER_base_cart = CENTER_base*Gk;
+        %KCUBE_BULK_cart = KCUBE_BULK*Gk;
+        %KCUBE_BULK_project = KCUBE_BULK_cart*Pplane_cart;
+        KCUBE_BULK = KCUBE_BULK(:,1:2);
+        %klist_project = klist*Pplane;
         mode = '2D';
-        
-    case 3  % 3D lattice
-        KCUBE_BULK(4, :) = KCUBE_BULK(2, :) + KCUBE_BULK(3, :);
-        KCUBE_BULK(5, :) = KCUBE_BULK(2, :) + KCUBE_BULK(4, :);
-        KCUBE_BULK(6, :) = KCUBE_BULK(3, :) + KCUBE_BULK(4, :);
-        KCUBE_BULK(7, :) = KCUBE_BULK(2, :) + KCUBE_BULK(3, :) + KCUBE_BULK(4, :);
-        CENTER = mean(KCUBE_BULK([1, 7], :), 1);  % Center of the bulk
-        CENTER_base = round(CENTER);  % Shift to the origin
+    case 4
+        KCUBE_BULK(5,:) = KCUBE_BULK(2,:) + KCUBE_BULK(3,:);
+        KCUBE_BULK(6,:) = KCUBE_BULK(2,:) + KCUBE_BULK(4,:);
+        KCUBE_BULK(7,:) = KCUBE_BULK(3,:) + KCUBE_BULK(4,:);
+        KCUBE_BULK(8,:) = KCUBE_BULK(2,:) + KCUBE_BULK(3,:) + KCUBE_BULK(4,:);
+        KCUBE_BULK(2:8,:) = KCUBE_BULK(2:8,:) + KCUBE_BULK(1,:);
+        CENTER = (KCUBE_BULK(1,:) + KCUBE_BULK(8,:))/2;
+        CENTER_base = round(CENTER); %remove  to origin
         mode = '3D';
+    otherwise
+        %KCUBE_BULK(2:end,:) = KCUBE_BULK(2:end,:)+KCUBE_BULK(1,:);
 end
-
-%% Create a polyhedron (convex hull of KCUBE_BULK)
-DT = delaunayTriangulation(KCUBE_BULK);  % Delaunay triangulation for polyhedron
-[~, v] = convexHull(DT);  % Compute the convex hull
-
-%% Generate new k-points based on the convex hull
-Vceil = ceil(abs(v));  % Max integer range for tiling
-VceilL = (-Vceil:Vceil).';  % Create the range of multiples
-nVceilL = numel(VceilL);  % Number of points in the expanded mesh
-
+%% creat a polyhedron
+% https://www.mathworks.com/help/matlab/ref/delaunaytriangulation.convexhull.html?searchHighlight=convexhull&s_tid=srchtitle_convexhull_1
+DT = delaunayTriangulation(KCUBE_BULK);% suppse pure 2D
+[~,v] = convexHull(DT);
+% Map ALL Klabel TO [0,1)  ?seems this procedure is totally wrong
+klist = mod(klist,1);
+% klist(klist == 1) = 0;   ?seems we dont need 1 -> 0
+%Display the volume and plot the convex hull.
+% trisurf(C,DT.Points(:,1),DT.Points(:,2),DT.Points(:,3), ...
+%        'FaceColor','cyan')
+% auto V
+Vceil = ceil(abs(v)); VceilL = (-Vceil:Vceil).';nVceilL = length(VceilL);
 switch mode
-    case '2D'  % Expand in 2D
-        SuperL = zeros(nVceilL^2, 3);
+    case '2D'
+        SuperL= zeros(nVceilL^2,3);
         count = 0;
         for i = -Vceil:Vceil
             for j = -Vceil:Vceil
                 count = count + 1;
-                SuperL(count, :) = [i, j, 0] - CENTER_base;  % Offset the lattice center
+                SuperL(count,:) = [i,j,0]-CENTER_base;
             end
         end
-        
-        % Expand the k-list by tiling
-        nklist = size(klist, 1);
-        SuperL = kron(SuperL, ones([nklist, 1]));  % Replicate for each k-point
-        klist_new = repmat(klist, [count, 1]) + SuperL;  % Add shifted k-points
-        
-        % Find the points inside the convex hull
-        ID = pointLocation(DT, klist_new(:, 1:2));
-        
-    case '3D'  % Expand in 3D
-        SuperL = zeros(nVceilL^3, 3);
+        % expand klist
+        nklist = size(klist,1);
+        SuperL = kron(SuperL,ones([nklist 1]));
+        klist_new = repmat(klist,[count,1])+SuperL;
+        %nChooseL = repmat((1:nklist).',[count,1]);
+        %% How to check if a given point lies inside a polygon
+        % https://www.mathworks.com/help/matlab/ref/triangulation.pointlocation.html
+        ID = pointLocation(DT,klist_new(:,1:2));
+        %klist_new = klist_new / Pplane;
+        %klist = klist/Pplane;
+    case '3D'
+        SuperL= zeros(nVceilL^3,3);
         count = 0;
         for i = -Vceil:Vceil
             for j = -Vceil:Vceil
                 for k = -Vceil:Vceil
                     count = count + 1;
-                    SuperL(count, :) = [i, j, k] - CENTER_base;
+                    SuperL(count,:) = [i,j,k]-CENTER_base;
                 end
             end
         end
-        
-        % Expand the k-list by tiling
-        nklist = size(klist, 1);
-        SuperL = kron(SuperL, ones([nklist, 1]));  % Replicate for each k-point
-        klist_new = repmat(klist, [count, 1]) + SuperL;  % Add shifted k-points
-        
-        % Find the points inside the convex hull
-        ID = pointLocation(DT, klist_new);
+        %klist = klist - [0.5,0.5,0.5];
+        % expand klist
+        nklist = size(klist,1);
+        SuperL = kron(SuperL,ones([nklist 1]));
+        klist_new = repmat(klist,[count,1])+SuperL;
+        %nChooseL = repmat((1:nklist).',[count,1]);
+        %% How to check if a given point lies inside a polyhedron
+        % https://www.mathworks.com/help/matlab/ref/triangulation.pointlocation.html
+        ID = pointLocation(DT,klist_new);
 end
+% Map 
+%nChooseL = nChooseL(~isnan(ID));
+klist_new = klist_new(~isnan(ID),:);% +CENTER_base never shift back
 
-%% Filter valid k-points and map them back to [0, 1)
-klist_new = klist_new(~isnan(ID), :);  % Remove points outside the convex hull
-klist_new_map = mod(klist_new, 1);  % Map to unit cell
+klist_new_map = mod(klist_new,1);
+% klist_new_map(klist_new_map == 1) = 0; ?seems we dont need 1 -> 0
 
-%% Interpolate data at new k-points (if provided)
-if ~isempty(DATA_L)
-    [~, reseqL] = ismembertol(klist_new_map, klist, opt.tol, 'ByRows', true);
-    rmlist = reseqL == 0;  % Identify points to be removed
-    
-    if ~sum(rmlist)  % If no points to remove
-        DATA_L_new = DATA_L(reseqL, :);
+
+[~,reseqL] = ismembertol(klist_new_map,klist,opt.tol,'ByRows',true);
+rmlist = reseqL == 0;
+
+if ~sum(rmlist)
+    if ~isempty(DATA_L)
+        DATA_L_new = DATA_L(reseqL,:);
+%         figure()
+%         scatter3(klist_new(:,1),klist_new(:,2),klist_new(:,3),abs(DATA_L_new)*10000,DATA_L_new);view(2);axis equal
     else
-        if ~opt.MeshOutput
-            switch mode
-                case '2D'  % Interpolate in 2D
-                    DATA_L_new = zeros(size(klist_new_map, 1), size(DATA_L, 2));
-                    klist1 = klist(:, 1); klist2 = klist(:, 2);
-                    klistnew1 = klist_new_map(:, 1); klistnew2 = klist_new_map(:, 2);
-                    for i = 1:size(DATA_L, 2)
-                        F = scatteredInterpolant(klist1, klist2, DATA_L(:, i), opt.method);
-                        DATA_L_new(:, i) = F(klistnew1, klistnew2);
-                    end
-                case '3D'  % Interpolate in 3D
-                    DATA_L_new = zeros(size(klist_new_map, 1), size(DATA_L, 2));
-                    klist1 = klist(:, 1); klist2 = klist(:, 2); klist3 = klist(:, 3);
-                    klistnew1 = klist_new_map(:, 1); klistnew2 = klist_new_map(:, 2); klistnew3 = klist_new_map(:, 3);
-                    for i = 1:size(DATA_L, 2)
-                        F = scatteredInterpolant(klist1, klist2, klist3, DATA_L(:, i));
-                        DATA_L_new(:, i) = F(klistnew1, klistnew2, klistnew3);
-                    end
-            end
+        DATA_L_new = DATA_L;
+    end
+else
+    if isempty(DATA_L)
+        DATA_L = ones(size(klist,1),1);
+    end
+    if ~opt.MeshOutput
+        switch mode
+            case '2D'
+                % interp2!!
+                DATA_L_new = zeros(size(klist_new_map,1),size(DATA_L,2));
+                klist1 = klist(:,1); klist2 = klist(:,2);%klist3 = klist(:,3);
+                klistnew1 = klist_new_map(:,1); klistnew2 = klist_new_map(:,2);%klistnew3 = klist_new_map(:,3);
+                for i = 1:size(DATA_L,2)
+                    F = scatteredInterpolant(klist1,klist2,DATA_L(:,i),opt.method);
+                    %meshU = griddata(meshX,meshY,'v4');
+                    DATA_L_new(:,i) = F(klistnew1,klistnew2);
+                end
+            case '3D'
+                % interp3!!
+                DATA_L_new = zeros(size(klist_new_map,1),size(DATA_L,2));
+                klist1 = klist(:,1); klist2 = klist(:,2);klist3 = klist(:,3);
+                klistnew1 = klist_new_map(:,1); klistnew2 = klist_new_map(:,2);klistnew3 = klist_new_map(:,3);
+                for i = 1:size(DATA_L,2)
+                    F = scatteredInterpolant(klist1,klist2,klist3,DATA_L(:,i));
+                    %meshU = griddata(meshX,meshY,meshZ,'linear');
+                    DATA_L_new(:,i) = F(klistnew1,klistnew2,klistnew3);
+                end
         end
+    else
+
     end
 end
-
-%% Convert klist_new back to Cartesian coordinates if needed
+%
 if opt.cart
-    klist_new = klist_new * Gk;  % Convert back to Cartesian
+    klist_new = klist_new*Gk;
 end
-
 end

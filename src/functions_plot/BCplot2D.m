@@ -42,12 +42,15 @@ function varargout = BCplot2D(BCCAR, Grid, Rm, options)
         options.plotmode {mustBeMember(options.plotmode, {'surf', 'contour'})} = 'surf'; % Plotting mode ('surf' or 'contour').
     end
 
-    % Handle missing axes input and create a new figure if necessary
+    % Prepare axes for plotting
     if isempty(options.ax)
-        Fig = Figs(1, 1);  % Create a new figure window
-        ax = Fig.axes(1);  % Use the first axis of the new figure
-    elseif ishandle(options.ax)
-        ax = options.ax;  % Use the provided axes handle if valid
+        [Fig,ax]= Figs(1, 1); % Create new figure
+    else
+        if isvalid(options.ax)
+            ax = options.ax; % Use provided axis handle
+        else
+            [Fig,ax]= Figs(1, 1); % Create new figure
+        end
     end
     
     % Adjust ColorCutMinus if it is set to -1

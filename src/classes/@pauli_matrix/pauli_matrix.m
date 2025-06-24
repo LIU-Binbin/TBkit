@@ -119,9 +119,15 @@ classdef pauli_matrix
         
         % Return symbolic representation of the matrix
         function symmat = sym(PM)
-            symmat = sym(PM.mat);
+            if length(PM) == 1
+                symmat = PM.mat;
+            else
+                for i=1:length(PM)
+                    symmat(:,:,i) = PM(i).mat;
+                end
+            end
+            symmat = sym(symmat);
         end
-        
         % Compute inverse of the matrix
         function PM = inv(PM)
             PM.mat = inv(PM.mat);

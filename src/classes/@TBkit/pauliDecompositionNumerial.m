@@ -1,20 +1,4 @@
 function [CoeForPauli] = pauliDecompositionNumerial(H_double)
-%PAULIDECOMPOSITIONNUMERIAL Decompose 2×2 matrix into Pauli basis
-%
-%   Syntax:
-%       [CoeForPauli] = pauliDecompositionNumerial(H_double)
-%
-%   Description:
-%       Performs Pauli matrix decomposition of 2×2 Hamiltonian matrices.
-%       Returns coefficients for σ₀, σₓ, σᵧ, σ_z basis components.
-%
-%   Inputs:
-%       H_double - 2×2 Hamiltonian matrix (numeric)
-%
-%   Output:
-%       CoeForPauli - 8×1 array of decomposition coefficients
-%
-%   See also: pauliDecomposition
 if ~isequal(   size(H_double) , [2,2])
     error('Pauli Decomposition requires 2*2 Ham!');
 end

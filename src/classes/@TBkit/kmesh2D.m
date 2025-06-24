@@ -41,7 +41,7 @@ if size(Gk,1) < 3 || size(Gk,2) <3
 end
 %
 if options.cartesian
-    Gk_ = vasplib.CartisianMat(Gk,options.dir_seq,options.dir_start);
+    Gk_ = TBkit.CartisianMat(Gk,options.dir_seq,options.dir_start);
     kstart_s  = options.kstart * Gk_ /Gk;
 else
     Gk_ = Gk;
@@ -51,7 +51,7 @@ end
 knum1 = options.knum1+1;
 knum2 = options.knum2+1;
 [~,klist_s_1,~,~] =...
-    vasplib.kpathgen([[0,0,0];options.kdir1],knum1,Gk_,Gk);
+    TBkit.kpathgen([[0,0,0];options.kdir1],knum1,Gk_,Gk);
 %             klist_l = zeros(size(klist_s_1,1),1);
 %             klist_l(1) = sum(sign(klist_s_1(1,:)))*norm(klist_s_1(1,:)*(eye(3)*2*pi));
 %klist_s_1_ = klist_s_1 ;
@@ -61,7 +61,7 @@ knum2 = options.knum2+1;
 %             end
 %             klist_l = klist_l + sum(sign(kstart_s))* norm(kstart_s*(eye(3)*2*pi))*normklist_l;
 [~,klist_s_2,~,~] =...
-    vasplib.kpathgen([[0,0,0];options.kdir2],knum2,Gk_,Gk);
+    TBkit.kpathgen([[0,0,0];options.kdir2],knum2,Gk_,Gk);
 % half-closed half-open
 dk_s_1 = options.kdir1/(options.knum1-1);
 dk_s_2 = options.kdir2/(options.knum2-1);
