@@ -1,4 +1,4 @@
-function [Out,SymMat] = pretty(Tensor,mode,options)
+function [Out,SymMat,SymMatDisplay] = pretty(Tensor,mode,options)
 arguments
     Tensor
     mode  {mustBeMember(mode,{'EQ','latex','Table'})} =  'EQ';
@@ -80,6 +80,10 @@ switch mode
          Out  = array2table( ...
              [A,tensor_names_vector_reduce_mat],'VariableNames',VariableNames);
          SymMat = tensor_names_vector_reduce_mat;
+         symTitle = [str2sym('Tensor'), sym(RowsCellNoSpaces).'];
+         symCol = sym(ColsCellNoSpaces);
+         SymMatDisplay = [symTitle;[symCol,SymMat]];
     otherwise
+         return;
 end
 end

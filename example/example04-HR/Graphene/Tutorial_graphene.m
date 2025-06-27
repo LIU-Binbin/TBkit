@@ -13,7 +13,7 @@ A_vectorL = [0,0,0;1,0,0;0,-1,0];
 B_vectorL = [0,0,0;-1,0,0;0,1,0];
 %%
 Grpahene_TB = Grpahene_TB.set_hop(t,1,2,A_vectorL,'sym');
-Grpahene_TB = Grpahene_TB.set_hop(t,2,1,B_vectorL,'sym')
+Grpahene_TB = Grpahene_TB.set_hop(t,2,1,B_vectorL,'sym');
 %%
 Grpahene_TB.printout;
 %%
