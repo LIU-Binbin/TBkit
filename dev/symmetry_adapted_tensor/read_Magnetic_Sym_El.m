@@ -60,7 +60,7 @@ for i = 1:oper_num
         oper_i_isUnitary = Table_of_Magnetic_Sym_check.unitary_antiunitary{1}(i)==1;
     end
     oper_i_R = reshape(oper_i_list_form(1:9),[3,3])';
-    oper_i_R = R_matrix * oper_i_R\R_matrix;
+    oper_i_R = R_matrix * oper_i_R * R_matrix^(-1);
 
     if options.read_translation
         if FileMode

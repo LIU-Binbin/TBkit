@@ -25,7 +25,7 @@ function Tensor = jahn_symbol(jahn_symbol_Str)
     Tensor.tensor_rank = sum(isletter(outputStr));
     Tensor.jahn  = outputStr;
     %
-    fprintf('%s : %d\n',outputStr,Tensor.tensor_rank);
+    % fprintf('%s : %d\n',outputStr,Tensor.tensor_rank);
     Tensor = CheckPair(Tensor);
     Tensor.n_ele = 3^Tensor.tensor_rank ;
     %
