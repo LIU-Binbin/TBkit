@@ -1,4 +1,4 @@
-function U = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, optionsRm, options)
+function [U,orbL] = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, optionsRm, options,optionsAddition)
 %ROTATION  Rotate a BasisFunc object and compute the inner product with the original.
 %
 %   U = ROTATION(A, Rc, Rf, tf, optionsConvection, optionsOper, optionsRm, options)
@@ -67,6 +67,7 @@ function U = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, optionsRm, 
         options.raw = true;
         options.vpalevel = 6;
         options.center = [0,0,0];
+        optionsAddition.IgnoreOrbL = false;
     end
 
     rightorleft = optionsConvection.rightorleft;
@@ -85,6 +86,14 @@ function U = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, optionsRm, 
         Am = rotate(A, Rc, Rf, tf, rightorleft, optionsCell{:});
     else
         Am = rotate(A, Rc, Rf, tf, rightorleft, 'Oper', optionsOper.Oper, optionsCell{:});
+    end
+    if optionsAddition.IgnoreOrbL
+       for i = 1:length(A)
+           A(i).BForb = Am(i).BForb;
+           orbL(i,:) = Am(i).BForb;
+       end
+    else
+        orbL = [];
     end
     U = InnerProduct(Am, A, 'sym', options.sym);
 end

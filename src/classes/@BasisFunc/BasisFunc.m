@@ -186,7 +186,7 @@ methods(Static)
 end
 %% rotation
 methods
- U = rotation(A,Rc,Rf,tf,optionsConvection,optionsOper,optionsRm,options)
+ [U,orbL] = rotation(A,Rc,Rf,tf,optionsConvection,optionsOper,optionsRm,options,optionsAddition)
  Am = rotate(A,Rc,Rf,tf,rightorleft,optionsOper,options)
  A_Lj = rotaterow(A,Rc,Rf,tf,rightorleft,options)
  BasisFunction = rotateinner(A,abc,RightorLeft,immproper,conjugate,antisymmetry)

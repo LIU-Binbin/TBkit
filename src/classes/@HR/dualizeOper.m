@@ -1,6 +1,12 @@
-function [H_hr, VectorDistMat] = dualizeOper(H_hr, SymOper)
+function [H_hr, VectorDistMat] = dualizeOper(H_hr, SymOper,options)
+arguments
+    H_hr 
+    SymOper 
+    options.associate_orbL = [];
+    options.eta = 1e-6;
+end
 % DUALIZEOPER Apply dual operation to Hamiltonian in HR format [Optimized]
-Accuracy = 1e-6;
+eta = options.eta;
 
 Rf = double(Oper.Rc2Rf(inv(SymOper.R), H_hr.Rm));
 U = SymOper.U;
@@ -16,7 +22,7 @@ NonZeroInvUIndex = find(invU~=0);
 [Possible_mL,Possible_jL] = ind2sub([NBands,NBands], NonZeroInvUIndex);
 
 [valid_T, valid_ilmjL,valid_UinvU] = ...
-    Tij2lm(H_hr, Rf,Possible_iL,Possible_lL,Possible_mL,Possible_jL,U,invU,NBands);
+    Tij2lm(H_hr, Rf,Possible_iL,Possible_lL,Possible_mL,Possible_jL,U,invU,NBands,eta,options.associate_orbL);
 
 % [T,iT] = unique(valid_T,"rows");
 % [unique_lmL] = unique(valid_ilmjL(:,2:3),"rows");
@@ -25,7 +31,7 @@ NonZeroInvUIndex = find(invU~=0);
 % 
 Dim = H_hr.Dim;
 % 
-% % 直接获取唯一行向量，避免冗余操作
+
 % vectorListUnique = unique(H_hr.vectorL(:, 1:Dim), 'rows');
 % 
 % m = size(vectorListUnique, 1);
@@ -139,7 +145,7 @@ end
 
 
 
-function [valid_T, valid_ilmjL,valid_UinvU] = Tij2lm(H_hr, Rf,Possible_iL,Possible_lL,Possible_mL,Possible_jL,U,invU,Nbands,eta)
+function [valid_T, valid_ilmjL,valid_UinvU] = Tij2lm(H_hr, Rf,Possible_iL,Possible_lL,Possible_mL,Possible_jL,U,invU,Nbands,eta,associate_orbL)
 arguments
     H_hr 
     Rf 
@@ -151,9 +157,16 @@ arguments
     invU 
     Nbands 
     eta = 1e-6;
+    associate_orbL = [];
 end
 % Optimized TIJ2LM with vectorization
-orblist = H_hr.orbL;
+% if isempty(associate_orbL)
+    orblist = H_hr.orbL;
+%     orblist2 = H_hr.orbL;
+% else
+%     orblist1= H_hr.orbL;
+%     orblist2 = H_hr.associate_orbL;
+% end
 Norb = size(orblist, 1);
 
 Possible_ilL = [Possible_iL,Possible_lL];

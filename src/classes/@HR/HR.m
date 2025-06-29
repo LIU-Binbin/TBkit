@@ -319,6 +319,11 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = supercell(H_hr,Ns,filename,Rm,sites,Atom_name,Atom_num,findir)
         [H_hr_out,H_hr_pi_plus,H_hr_pi_minus] = realmap(H_hr)
     end
+    %%
+    methods
+        [H_hr_R,OperObj] = rotate(H_hr,OperObj)
+    end
+    %%
     methods (Static,Hidden,Access= protected)
         Hnum_list_wire_iz =  Hnum_list_wire_iz_gen(Hnum_list_xy_iz,vertor_list_xy_iz,iz,WAN_NUM,WAN_NUM_x,WAN_NUM_y,Nslab,Type)
         Poly_priciplayer_mat = Poly_priciplayer_mat_gen(principle_layer)

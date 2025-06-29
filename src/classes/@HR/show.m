@@ -90,7 +90,7 @@ switch mode
             'fast', options.fast);
 
     case 'HOPPING' % Hopping connection plot
-        H_hr = H_hr.rewrite(); % Change To List Type
+        
 
         % First plot NRPTS base
         ax = H_hr.show('NRPTS',...
@@ -100,6 +100,8 @@ switch mode
             'TwoD', options.TwoD);
 
         Rm_ = double(Rm_ * options.scale); % Scaled lattice
+        
+        H_hr = H_hr.rewrite(); % Change To List Type
 
         % Handle coefficient/numeric hopping differently
         if H_hr.coe

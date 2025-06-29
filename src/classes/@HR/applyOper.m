@@ -151,6 +151,8 @@ function H_hr = applyOper(H_hr, SymOper, options)
                 H_hr.HcoeL = HcoeLtmp_r + 1i*HcoeLtmp_i;
             end
             H_hr = H_hr.simplify();
+        else
+            H_hr = applyRU(H_hr, SymOper);
         end
     else
         % Multiple symmetry operations processing
@@ -176,9 +178,14 @@ function H_hr = applyOper(H_hr, SymOper, options)
                 H_hr = H_hr.simplify(options.Accuracy);
             else
                 % Recursive symmetry application
-                H_hr = H_hr.applyOper(SymOper(i), 'generator', 'false');
+                %[H_hr_R(j), H_hr] = applyRU(H_hr, SymOper_tmp(j));
+                H_hr_R(i) = H_hr.applyOper(SymOper(i), 'generator', 'false');
             end
             fprintf('----------   SymVarNum: %d   ----------\n', length(H_hr.symvar_list));
+        end
+        if ~options.generator
+            H_hr = sum(H_hr_R)/nSymOper;
+            H_hr = H_hr.simplify(options.Accuracy);
         end
     end
 end

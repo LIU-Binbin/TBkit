@@ -24,13 +24,13 @@ Ns double = eye(H_hr.Dim);
 Accuracy double = 1e-6;
 end
 if ~(Ns == round(Ns))
-error("sc_red_lat array elements must be integers");
+    error("sc_red_lat array elements must be integers");
 end
-if det(Ns) < Accuracy
-error("Super-cell lattice vectors length/area/volume too close to zero, or zero.");
+if abs(det(Ns)) < Accuracy
+    error("Super-cell lattice vectors length/area/volume too close to zero, or zero.");
 end
 if det(Ns)<0.0
-error("Super-cell lattice vectors need to form right handed system.");
+    warning("Super-cell lattice vectors need to form right handed system.");
 end
 nAccuracy = round(log10(Accuracy));
 orb_init = H_hr.orbL;

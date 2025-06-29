@@ -1,4 +1,4 @@
-function [H_hr_R,H_hr] = applyRU(H_hr,SymOper)
+function [H_hr_R,H_hr] = applyRU(H_hr,SymOper,options)
 %APPLYRU Apply symmetry operation to HR object (tight-binding Hamiltonian)
 %   This function implements symmetry operations on tight-binding Hamiltonians
 %   including handling of vector hopping terms and complex conjugation
@@ -25,6 +25,7 @@ function [H_hr_R,H_hr] = applyRU(H_hr,SymOper)
 arguments
     H_hr HR;
     SymOper     ;
+    options.associate_orbL = [];
 end
 %H_hr_R = H_hr; % Initialize output object
 if SymOper.identity == SymOper
@@ -32,8 +33,11 @@ if SymOper.identity == SymOper
     return;
 end
 % Dualize operator and get transformation matrix
-[H_hr,VectorDistMat] = dualizeOper(H_hr,SymOper);
-
+if isempty(options.associate_orbL )
+    [H_hr,VectorDistMat] = dualizeOper(H_hr,SymOper);
+else
+    [H_hr,VectorDistMat] = dualizeOper(H_hr,SymOper,'associate_orbL',options.associate_orbL );
+end
 % Validate transformation matrix dimensions
 % if size(VectorDistMat,1)~=size(VectorDistMat,2)
 %     error('Dimension mismatch in VectorDistMat - non-square transformation matrix');
