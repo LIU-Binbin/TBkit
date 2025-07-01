@@ -20,9 +20,10 @@ This architecture allows researchers to transition smoothly from ab initio resul
 ### 🔧 **Comprehensive Model Control and Conversion**
 TBkit offers fine-grained control over tight-binding models—from constructing Hamiltonians with various symmetries and basis choices, to transforming between real-space (`HR`), k-space (`Htrig`) representations and kp mode(`HK`). It supports **model editing**, **dimensional reduction**, **symmetry reduction**, **Wannier fitting**, all within a unified framework.
 
-### 📊 **Visualization and Diagnostics**
+### 📊 **Visualization and Solution  **
 
-Built-in support for plotting band structures, density of states, Berry curvature, and more. Model validity and physical interpretability can be visualized and diagnosed efficiently.
+Built-in support for calculating and plotting band structures, density of states, Berry curvature, and more. Model validity and physical properties can be visualized and  solved efficiently.
+
 
 ### ⚙️ **Applications Across Diverse Systems**
 Topological Materials, 4D, Fractal, quasicrystal model and Moiré systems ...
