@@ -97,7 +97,7 @@ switch mode
             'scale', options.scale,...
             'ax', ax,...
             'atomscale', options.atomscale,...
-            'TwoD', options.TwoD);
+            'TwoD', options.TwoD,'vectorL', options.vectorList);
 
         Rm_ = double(Rm_ * options.scale); % Scaled lattice
         
@@ -120,11 +120,20 @@ switch mode
         else
             if isempty(options.Select)
                 % Plot all numeric hoppings
+                %SelectL = H_hr.HnumL == options.Select;
                 Plot_Hopping(H_hr.vectorL, H_hr.HnumL, Rm_, H_hr.orbL,...
                     'ax', ax, 'TwoD', options.TwoD);
             else
                 % Filter numeric selections
-                SelectL = H_hr.HnumL == options.Select;
+                switch length(options.Select)
+                    case 1 
+                        SelectL = abs(H_hr.HnumL) > options.Select;
+                    case 2
+                        SelectL = all(H_hr.vectorL(:,4:5) == options.Select,2);
+                    case 3
+                        SelectL = all(H_hr.vectorL(:,1:3) == options.Select,2);
+                end
+                
                 Plot_Hopping(H_hr.vectorL(SelectL, :), H_hr.HnumL(SelectL),...
                     Rm_, H_hr.orbL, 'ax', ax, 'TwoD', options.TwoD,...
                     'fast',options.fast);

@@ -289,13 +289,16 @@ Graphene_TB_arm_unfold.bandplot('title','Supercell arm -> unfold');
 % Purpose: Demonstrate real-space translation effects
 % Create translation transformation
 [~,Ax] = Figs(1,2); % Fractional coordinates
-Graphene_TB_arm.show('TwoD',1,'ax',Ax(1),'cmap',@hsv);
+Graphene_TB_arm2 = Graphene_TB_arm.supercell_hr([1 0 0;1 1 0;0 0 1]);
+Graphene_TB_arm2.show('TwoD',1,'ax',Ax(1),'cmap',@hsv);
 title(Ax(1),'Original Supercell ')
 % Compare original vs translated models
 translation_vector = [0.5,0.1,0];
-Graphene_TB_arm_translation = Graphene_TB_arm.translation(translation_vector);
+Graphene_TB_arm_translation = Graphene_TB_arm2.translation(translation_vector);
 Graphene_TB_arm_translation.show('TwoD',1,'ax',Ax(2),'cmap',@hsv);
-title(Ax(2),['Translated: [', num2str(translation_vector), ']'])
+title(Ax(2),['Translated: [', num2str(translation_vector), ']']);
+axis(Ax(1),'off');
+axis(Ax(2),'off');
 %% Numerical Filtering
 % Purpose: Remove insignificant hopping terms
 Graphene_TB_arm_n = Graphene_TB_arm.Subsall();

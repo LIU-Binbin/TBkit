@@ -21,8 +21,8 @@ function uiwaveplot(orb_list, WAVECAR_disk, EIGENCAR_disk, norb, Rm, options)
         orb_list
         WAVECAR_disk
         EIGENCAR_disk
-        norb
-        Rm
+        norb = [];
+        Rm = [];
         options.Ecut = [-6, 1];        % Energy cut for plotting.
         options.Scale = 1;             % Scaling factor for wavefunctions.
         options.NumBands = 1;         % Number of bands to display.
@@ -34,7 +34,12 @@ function uiwaveplot(orb_list, WAVECAR_disk, EIGENCAR_disk, norb, Rm, options)
     % Create the figure window for the interactive plot.
     fig = uifigure('Position', options.Position);
     global selectband scatter_handle;
-    
+    if isempty(norb)
+        norb = length(EIGENCAR_disk(:,1));
+    end
+    if isempty(Rm)
+        Rm = POSCAR_read;
+    end
     % Set initial band selection if not provided.
     if isempty(options.selectbands)
         selectband = ceil(norb / 2);

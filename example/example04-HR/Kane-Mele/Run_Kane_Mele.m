@@ -38,7 +38,7 @@ bandplot(EIGENCAR ,[-3,3]);
 
 %% Supercell_hr
 % 通过一个变换矩阵可以对 一个HR对象进行 supercell（旋转+扩胞）
-
+Graphene.show('TwoD',true);axis equal
 Ns = [1,0,0;1 2 0;0 0 1];
 Graphene_semiarmchair_n = Graphene.Subsall.rewrite.supercell_hr(Ns);
 Graphene_semiarmchair_n = Graphene_semiarmchair_n < 'KPOINTS_rectangle';

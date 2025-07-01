@@ -1,5 +1,5 @@
      function [H_sym_pauli,H_sym_pauli_L,H_latex_pauli] = pauliDecomposition(H_sym)
-            if isa(H_sym,'vasplib') || isa(H_sym,'HR') || isa(H_sym,'Htrig') || isa(H_sym,'HK')
+            if isa(H_sym,'TBkit') || isa(H_sym,'HR') || isa(H_sym,'Htrig') || isa(H_sym,'HK')
                 H_sym = H_sym.sym();
             elseif isa(H_sym,'double')
                 H_sym = sym(H_sym);

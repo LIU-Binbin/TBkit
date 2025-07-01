@@ -113,19 +113,19 @@ My = Oper.mirror([0,1,0], double(1i*gamma_matrix(2,3)));     % y镜像
 % 应用对称约束 | Apply symmetry constraints
 Groups_KM = generate_group([C3, Tr, I, Mx, My]);
 KaneMele_test = KaneMele.applyOper([C3,I,Mx,My,Tr], 'generator', true, 'fast', true);
-KaneMele_test = KaneMele_test.GenfromOrth();
+KaneMele_test = KaneMele_test.GenfromOrth('Accuracy',1e-6);
 % 参数替换与化简 | Parameter substitution and simplification
 syms t lambda_SO E_pz T_2 real;
 T_2 = 0; % omit real component <<i,j>>
 Varlist = KaneMele_test.symvar_list;
-KaneMele_test2 = subs(KaneMele_test,Varlist,[lambda_SO,T_2,t,E_pz]);
+KaneMele_test2 = subs(KaneMele_test,Varlist,[T_2,t,E_pz,lambda_SO]);
 disp('最终化简形式 | Final Simplified Form:');
 disp(simplify(rewrite(KaneMele_test2.sym(), 'sincos')));
 %% 
 t  = 1;
 lambda_SO = 0.06;
 E_pz = 0;
-T_2 = 0;
+T_2 = 1;
 [~,Ax] = Figs(2,2);
 KaneMele_test2_n = KaneMele_test2.Subsall();
 EIGENCAR_origin = KaneMele_test2_n.EIGENCAR_gen();
