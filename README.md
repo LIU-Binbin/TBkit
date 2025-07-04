@@ -182,7 +182,7 @@ Have questions, suggestions, or feedback?
   - parkstory@outlook.com  
   - fanyang_tcmp@buaa.edu.cn  
   - yzpeng@buaa.edu.cn  
-  - joljoly < update your email >
+  - p_zhang@buaa.edu.cn
   - You_YiQun@buaa.edu.cn
   - xlsheng@buaa.edu.cn
 
