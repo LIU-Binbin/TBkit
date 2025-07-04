@@ -76,9 +76,9 @@ else
             OperU = roundn(OperObj.U,-6);
             [AOperU,UOperU] = eig(OperU);
             if strcmp(options.ProjectionStruct.field,'imag')
-                [AOperU,Ucheck] = park.sorteig(imag(UOperU),AOperU);
+                [AOperU,Ucheck] = sorteig(imag(UOperU),AOperU);
             elseif strcmp(options.ProjectionStruct.field,'real')
-                [AOperU,Ucheck] = park.sorteig(real(UOperU),AOperU);
+                [AOperU,Ucheck] = sorteig(real(UOperU),AOperU);
             end
         case 'dynamicsign'
             OperU = OperObj.U;
