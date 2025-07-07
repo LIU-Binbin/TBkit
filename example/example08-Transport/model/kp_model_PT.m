@@ -27,16 +27,13 @@ kcube_bulk = krange .* [-0.5 -0.5 -0.5; 1 0 0; 0 1 0; 0 0 1];
 
 mu_list = linspace(-0.2, 0.2, 201);
 %% second-order anomalous Hall effect
-if 1 == 1
-    chi_mu = SOAHC_int(H_kp_n, [1 2 2], klist_cart, mu_list, 'ncore',4 , 'T',20);
-    
-    kcube_ratio = krange^2;
-    chi_mu = chi_mu .* kcube_ratio;
-    chi_mu = chi_mu .* H_kp_n.Rm(3,3) .* 0.1; % 3D to 2D, Ang to nm
-    
-    [fig, ax] = Figs(1,1);
-    plot(mu_list, chi_mu, 'LineWidth', 2, 'Color', 'r')
-    xlabel("\mu (eV)")
-    ylabel("\chi^{int}_{xyy} (nmAV^{-2})")
-end
-%%
+chi_mu = SOAHC_int(H_kp_n, [1 2 2], klist_cart, mu_list, 'ncore',4 , 'T',20);
+
+kcube_ratio = krange^2;
+chi_mu = chi_mu .* kcube_ratio;
+chi_mu = chi_mu .* H_kp_n.Rm(3,3) .* 0.1; % 3D to 2D, Ang to nm
+
+[fig, ax] = Figs(1,1);
+plot(mu_list, chi_mu, 'LineWidth', 2, 'Color', 'r')
+xlabel("\mu (eV)")
+ylabel("\chi^{int}_{xyy} (nmAV^{-2})")

@@ -7,12 +7,12 @@ arguments
     options.T = 50 % Kelvin
     options.eps = 1e-4
 end
-Nbands = Ham.Nbands;
+Nbands = Ham.Basis_num; % do not call Ham.Nbands, it has if so it is slower
 a = tensor_index(1);
 b = tensor_index(2);
 c = tensor_index(3);
 %%
-[EIG_ki, WAV_ki] = Ham.EIGENCAR_gen('klist', kpoint);
+[EIG_ki, WAV_ki] = Ham.EIGENCAR_gen('klist', kpoint, 'printmode', false);
 
 dEnm = repmat(EIG_ki, 1, Nbands) - repmat(EIG_ki', Nbands, 1);
 inv_dEnm = zeros(Nbands, Nbands);
