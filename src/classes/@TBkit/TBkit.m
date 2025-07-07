@@ -64,9 +64,9 @@ classdef TBkit < matlab.mixin.CustomDisplay
         Gk;
         symvar_list;
         Nbands;
-        Hfun;
     end
     properties
+        Hfun;
         Basis;
         orbL = [];
         elementL = [];
@@ -134,9 +134,9 @@ classdef TBkit < matlab.mixin.CustomDisplay
     end
     %% get
     methods
-        function Hfun = get.Hfun(TBkitobj)
-            Hfun = matlabFunction(TBkitobj.Hsym,'Vars',TBkitobj.VarsSeqLcart(1:TBkitobj.Dim));
-        end
+        %function Hfun = get.Hfun(TBkitobj)
+        %    Hfun = matlabFunction(TBkitobj.Hsym,'Vars',TBkitobj.VarsSeqLcart(1:TBkitobj.Dim));
+        %end
         function Gk = get.Gk(TBkitobj)
             Gk = (eye(length(TBkitobj.Rm))*2*pi/(TBkitobj.Rm)).';
         end

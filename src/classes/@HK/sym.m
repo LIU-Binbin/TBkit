@@ -16,5 +16,12 @@ function H_hk_sym = sym(H_hk)
 %
 % Example:
 %   H_mat = sym(Hk); % Get symbolic matrix
-H_hk_sym = H_hk.Hk_sym;
+if H_hk.num
+    H_hk_sym = sym(zeros(H_hk.Basis_num,H_hk.Basis_num));
+    for i =1:H_hk.Kinds
+        H_hk_sym = H_hk_sym + H_hk.HnumL(:,:,i)*H_hk.HsymL_k(i);
+    end
+else
+    H_hk_sym = H_hk.Hk_sym;
+end
 end

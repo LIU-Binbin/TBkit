@@ -258,7 +258,7 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
             % Returns stored numerical parameters and coefficients
             % If empty, inherits from vasplib superclass
             if isempty(H_hk.num) ||  isempty(H_hk.coe)
-                [num_label,coe_label] = NumOrCoe@vasplib(H_hk);
+                [num_label,coe_label] = NumOrCoe@TBkit(H_hk);
                 H_hk.num = num_label;
                 H_hk.coe = coe_label;
             else

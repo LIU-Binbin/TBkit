@@ -50,6 +50,7 @@ switch mode
         end
         H_hk.Hk_num  = subs(H_hk.Hk_sym);
         H_hk.Hsym  = H_hk.Hk_num ;
+        H_hk.num = 1;
     case 'sym'
         H_hk.HcoeL = subs(H_hk.HcoeL);
         H_hk.Trig_to_save = subs(H_hk.Trig_to_save);

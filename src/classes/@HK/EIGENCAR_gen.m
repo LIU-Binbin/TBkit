@@ -100,7 +100,7 @@ for ki =1:kn
         end
     elseif norb_enforce >0
         [A, U]=eigs(Hout,NBANDS,fermi);
-        [A, U]= park.sorteig(U,A);
+        [A, U]= sorteig(U,A);
     else
     end
     EIGENCAR(:,ki) = diag(U);

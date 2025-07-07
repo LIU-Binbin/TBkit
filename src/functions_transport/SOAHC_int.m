@@ -30,11 +30,17 @@ if options.ncore == 1
         chi_abc_mu = chi_abc_mu + SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list, 'eps', eps, 'T', T);
     end
 else
-    pool = parpool(options.ncore);    
+    try
+        pool = parpool(options.ncore);
+    catch
+    end
     parfor ki = 1:nkpts
         chi_abc_mu = chi_abc_mu + SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list, 'eps', eps, 'T', T);
-    end    
-    delete(pool)
+    end
+    try
+        delete(pool)
+    catch
+    end
 end
 toc
 %%

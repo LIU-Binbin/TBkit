@@ -17,6 +17,9 @@ dH_dk_sym(:,:,3) = reshape(HnumL * dsym_dkz.', nbands, nbands);
 % Convert the symbolic derivatives into MATLAB function handles
 H_hk.dH_dk = matlabFunction(dH_dk_sym, 'Vars', [k_x, k_y, k_z]);
 
+% Convert the symbolic derivatives into MATLAB function handles
+% HsymL_fun = matlabFunction( H_hk.HsymL,'Vars',H_hk.VarsSeqLcart(1:H_hk.Dim));
+H_hk.Hfun = matlabFunction(H_hk.sym, 'Vars', [k_x, k_y, k_z]);
 % syms k_x k_y k_z real;
 % 
 % symL = H_hk.HsymL;

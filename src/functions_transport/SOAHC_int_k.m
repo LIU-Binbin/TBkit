@@ -12,9 +12,12 @@ a = tensor_index(1);
 b = tensor_index(2);
 c = tensor_index(3);
 %%
+% H = Ham.Hfun(kpoint(1),kpoint(2),kpoint(3));
+% [WAV_ki,EIG_ki_ ]  = eig((H+H')/2);
+% EIG_ki = diag(EIG_ki_);
 [EIG_ki, WAV_ki] = Ham.EIGENCAR_gen('klist', kpoint, 'printmode', false);
 
-dEnm = repmat(EIG_ki, 1, Nbands) - repmat(EIG_ki', Nbands, 1);
+dEnm = repmat(EIG_ki, 1, Nbands) - repmat(EIG_ki.', Nbands, 1);
 inv_dEnm = zeros(Nbands, Nbands);
 is_degenerated = abs(dEnm) < options.eps;
 inv_dEnm(~is_degenerated) = 1./dEnm(~is_degenerated);

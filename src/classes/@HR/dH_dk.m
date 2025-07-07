@@ -14,7 +14,7 @@ dH_dk_R = zeros(Nbands,Nbands,3);
 eikR = exp(1i*2*pi*vectorList*kpoint.'); % dim = R
 
 for i = 1:3
-    dH_dk_R(:,:,i) = 1i * tensorprod(H_hr.HnumL, eikR.*vectorList_R(:,i), 3, 1);
+    dH_dk_R(:,:,i) = 1i * tensorprod(H_hr.HnumL, eikR.*vectorList_R(:,i), 3, 1); % only for one kpoint?
 end
 %% not tested!
 if strcmp(options.convention,'I')  
