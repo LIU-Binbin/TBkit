@@ -34,5 +34,5 @@ toc
 delete(pool)
 %%
 volume = dot(cross(Ham.Rm(1,:),Ham.Rm(2,:)),Ham.Rm(3,:));
-alpha_mu = alpha_mu * 1^2 / constants.hbar_eV_s^2 / nkpts / volume;
+alpha_mu = alpha_mu * constants.charge_C / constants.hbar_eV_s^2 / nkpts / volume / T;
 end
