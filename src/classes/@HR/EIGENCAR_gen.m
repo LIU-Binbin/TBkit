@@ -73,7 +73,7 @@ if options.show
     end
 end
 % -------------- nargin ------------------
-if length(options.fermi) == 1
+if isscalar(options.fermi)
     fermi = options.fermi;
     dynamic_fermi = false;
 else
@@ -143,9 +143,6 @@ else
     OperMode = 1;
 end
 % -------------- nargin ------------------
-if H_hr.overlap
-    NRPTS_tmp_S = size(H_hr_overlap.vectorL,1);
-end
 if strcmp(H_hr.Type,'list')
     H_hr = H_hr.SliceGen();
 end
@@ -247,12 +244,12 @@ if strcmp(options.convention,'II')
                 %Hout = (Sout)*Hout*inv(Sout);
             end
         else
-            Hout = sum(pagemtimes(HnumList,reshape(FactorListki,[1 1 NRPTS_tmp])),3);
+            Hout = tensorprod(HnumList, FactorListki, 3, 1);
             if Hermite
                 Hout = (Hout+Hout')/2;
             end
             if H_hr.overlap
-                Sout = sum(pagemtimes(SnumList,reshape(FactorListS(:,ki),[1 1 NRPTS_tmp_S])),3);
+                Sout = tensorprod(SnumList, FactorListS(:,ki), 3, 1);
                 Sout = (Sout+Sout')/2;
             end
         end
@@ -352,12 +349,12 @@ elseif strcmp(options.convention,'I')
                 Sout = (Sout+Sout')/2;
             end
         else
-            Hout = sum(pagemtimes(HnumList,reshape(FactorListki,[1 1 NRPTS_tmp])),3).*Hmat_tji;
+            Hout = tensorprod(HnumList, FactorListki, 3, 1).*Hmat_tji;
             if Hermite
                 Hout = (Hout+Hout')/2;
             end
             if H_hr.overlap
-                Sout = sum(pagemtimes(SnumList,reshape(FactorListS(:,ki),[1 1 NRPTS_tmp_S])),3).*Hmat_tji;% ?
+                Sout = tensorprod(SnumList, FactorListS(:,ki), 3, 1) .*Hmat_tji;% ?
                 Sout = (Sout+Sout')/2;
             end
         end

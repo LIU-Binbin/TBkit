@@ -111,7 +111,9 @@ api_path = "src/functions_api";
 %   to_red_sc             - 
 %   write_pj              - map_rule
 %   Ymlsym                - 
-%   Htrig                 - 
+%   Htrig   
+%% Transport functions
+transport_path = "src/functions_transport";
 %% data files
 datas_path = "src/datas";
 %% lib files
@@ -127,5 +129,6 @@ addpath(main_path+"/"+classes_path);
 addpath(main_path+"/"+plot_funcs_path);
 addpath(main_path+"/"+tools_path);
 addpath(main_path+"/"+api_path);
+addpath(main_path+"/"+transport_path);
 addpath(main_path+"/"+datas_path);
 savepath;

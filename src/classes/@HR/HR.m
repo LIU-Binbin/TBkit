@@ -304,6 +304,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hr = deltarule(H_hr,level_cut,mode,options)
         H_hr = alpharule(H_hr,level_cut,mode,options)
         H_hr = shift_Fermi_energy(H_hr, Efermi)
+        dH_dk_xyz = dH_dk(H_hr, kpoint)
         [H_soc_sym, lambda_syms] = SOC_on_site_gen(H_hr)
     end
     %% expand

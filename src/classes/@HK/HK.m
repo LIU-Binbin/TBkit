@@ -47,6 +47,8 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
         %HK_NUM Numeric Hamiltonian
         %   Numeric matrix representation of Hamiltonian
         Hk_num;
+
+        dH_dk;
     end
 
     properties
@@ -307,8 +309,9 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
     end
 
     methods
-        varargout= kp2TB(H_hk,kpoints_f,groups,options)
+        varargout = kp2TB(H_hk,kpoints_f,groups,options)
         varargout = EIGENCAR_gen(H_hk,options)
+        H_hk = get_dH_dk_func(H_hk)
         Kind = k_symbol2Kind(H_hk,k_symbol)
     end
 
