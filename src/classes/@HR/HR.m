@@ -68,6 +68,9 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         Atom_store_smart ;
         Rnn_map          ;
         vectorL_map      ;
+        % try mex
+        mex_initialized = false;
+        mex_handle = [];
     end
     methods (Access = protected)
         propgrp = getPropertyGroups(~)
@@ -352,8 +355,27 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hk = HR2HK(H_hr,kpoints_frac,options)
     end
     methods
+        
         varargout = EIGENCAR_gen(H_hr,options)
         EIGENCARout = EIGENCAR_gen_sparse(H_hr,fermi,norb_enforce,klist_s_tmp)
+    end
+    methods
+        function obj = init_mex(obj)
+            if isempty(obj.mex_handle) || ~obj.mex_initialized
+                % 准备初始化数据
+                init_data = struct(...
+                    'HnumL', obj.HnumL, ...
+                    'vectorList_R', double(obj.vectorL(:,1:obj.Dim)) * obj.Rm);
+
+                % 调用 MEX 初始化
+                obj.mex_handle = mex_hamiltonian('init', init_data);
+            end
+        end
+        [W,D,dH_dk_R] = fft_wrapper(H_hr, klist)
+        % function [W, D, dH_dk_R] = fft(obj, klist)
+        %     obj.init_mex();
+        %     [W, D, dH_dk_R] = mex_hamiltonian_calc(obj.mex_handle, klist);
+        % end
     end
     methods
         H_hr = rewrite(H_hr,options)
