@@ -9,7 +9,7 @@ arguments
     options.eps = 1e-4
     options.batch_size = 1e6  % 默认批次大小 100*100*100
 end
-optionscell = namedargs2cell(options);
+% optionscell = namedargs2cell(options);
 %% prepare dH_dk
 switch class(Ham)
     case "HK"
