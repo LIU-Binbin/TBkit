@@ -79,15 +79,17 @@ else
 end
 WAVECAR  = zeros(H_hk.Basis_num,NBANDS,kn);
 EIGENCAR = zeros(NBANDS,kn);
-HsymL_fun = matlabFunction( H_hk.HsymL,'Vars',H_hk.VarsSeqLcart(1:H_hk.Dim));
+% HsymL_fun = matlabFunction( H_hk.HsymL,'Vars',H_hk.VarsSeqLcart(1:H_hk.Dim));
 for ki =1:kn
-    Input = num2cell(klist_cart_tmp(ki,:));
-    kL = HsymL_fun(Input{:});
-    Hout = H_hk.HnumL;
-    for i =1:H_hk.Kinds
-        Hout(:,:,i) = Hout(:,:,i).*kL(:,i);
-    end
-    Hout = sum(Hout,3);
+    kpoint = klist_cart_tmp(ki,:);
+    % Input = num2cell(klist_cart_tmp(ki,:));
+    % kL = HsymL_fun(Input{:});
+    % Hout = H_hk.HnumL;
+    % for i =1:H_hk.Kinds
+    %     Hout(:,:,i) = Hout(:,:,i).*kL(:,i);
+    % end
+    % Hout = sum(Hout,3);
+    Hout = H_hk.Hfun(kpoint(1), kpoint(2), kpoint(3));
     Hout = (Hout+Hout')/2;
     if norb_enforce <0
         try

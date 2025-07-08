@@ -7,7 +7,7 @@ arguments
     options.T = 50 % Kelvin
     options.eps = 1e-4
 end
-Nbands = Ham.Nbands;
+Nbands = Ham.Basis_num;
 a = tensor_index(1);
 b = tensor_index(2);
 %%
