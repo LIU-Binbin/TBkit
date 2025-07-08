@@ -23,7 +23,9 @@ H_kp_n = H_kp.Subsall();
 %%
 krange = 0.02; % just around the Gamma point
 kcube_bulk = krange .* [-0.5 -0.5 -0.5; 1 0 0; 0 1 0; 0 0 1];
-[klist_cart, klist_frac] = kcubegen3D('Rm', H_kp_n.Rm, 'KCUBE_BULK', kcube_bulk, 'nk', [300 300 1]);
+NK1 = 1500;% 2000 1500 different with 1000
+NK2 = NK1;
+[klist_cart, klist_frac] = kcubegen3D('Rm', H_kp_n.Rm, 'KCUBE_BULK', kcube_bulk, 'nk', [NK1 NK2 1]);
 
 mu_list = linspace(-0.2, 0.2, 201);
 %% second-order anomalous Hall effect
@@ -35,3 +37,4 @@ chi_mu = chi_mu .* H_kp_n.Rm(3,3) .* 0.1; % 3D to 2D, Ang to nm
 plot(mu_list, chi_mu, 'LineWidth', 2, 'Color', 'r')
 xlabel("\mu (eV)")
 ylabel("\chi^{int}_{xyy} (nmAV^{-2})")
+title(['N:',num2str(NK1),'*',num2str(NK2)])

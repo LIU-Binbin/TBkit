@@ -70,12 +70,12 @@ end
 %     end
 % end
 
-%% 批处理计算 NCTE_k for 1e9 1000*1000*1000
+%% for 1e9 1000*1000*1000
 batch_size = min(options.batch_size, nkpts);
 nbatch = ceil(nkpts / batch_size);
 fprintf('Total k-points: %d, batch size: %d, total batches: %d\n', nkpts, batch_size, nbatch);
 
-pb = CmdLineProgressBar('Calculating NCTE: ');  % Progress bar for visualization
+pb = CmdLineProgressBar('Calculating SOAHC: ');  % Progress bar for visualization
 
 tic
 for ibatch = 1:nbatch
@@ -84,7 +84,7 @@ for ibatch = 1:nbatch
     batch_klist = klist(idx_start:idx_end, :);
     kpts_this_batch = size(batch_klist, 1);
     chi_abc_mu_batch = zeros(kpts_this_batch, nmu);
-
+    pb.print(ibatch,nbatch);
     if use_parallel
         parfor ki = 1:kpts_this_batch
             chi_abc_mu_batch(ki,:) = SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list,   T,eps);
@@ -101,6 +101,7 @@ for ibatch = 1:nbatch
     % save(sprintf('alpha_mu_batch_%d.mat', ibatch), 'alpha_mu_batch', 'idx_start', 'idx_end');
 end
 toc
+pb.delete;
 %%
 chi_abc_mu = chi_abc_mu * const_factor;
 end

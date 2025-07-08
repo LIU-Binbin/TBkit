@@ -311,6 +311,7 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
     methods
         varargout = kp2TB(H_hk,kpoints_f,groups,options)
         varargout = EIGENCAR_gen(H_hk,options)
+        [W,D,dH_dk_xyz]= fft(H_hk, kpoint)
         dH_dk_xyz = dH_dk(H_hk, kpoint)
         Kind = k_symbol2Kind(H_hk,k_symbol)
     end

@@ -51,7 +51,7 @@ for ibatch = 1:nbatch
     batch_klist = klist(idx_start:idx_end, :);
     kpts_this_batch = size(batch_klist, 1);
     alpha_mu_batch = zeros(kpts_this_batch, nmu);
-
+ pb.print(ibatch,nbatch);
     if use_parallel
         parfor ki = 1:kpts_this_batch
             alpha_mu_batch(ki,:) = NCTE_k(Ham, tensor_index, batch_klist(ki,:), mu_list, T, eps);
@@ -85,7 +85,7 @@ toc
 % 
 % toc
 
-% pb.delete();  % Delete progress bar when done
+pb.delete();  % Delete progress bar when done
 %%
 alpha_mu = alpha_mu * const_factor;
 %% 自动关闭 pool（可选）

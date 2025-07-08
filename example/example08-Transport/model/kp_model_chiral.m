@@ -23,12 +23,12 @@ H_kp_n = H_kp.Subsall();
 %%
 krange = 0.02; % just around the Gamma point
 kcube_bulk = krange .* [-0.5 -0.5 -0.5; 1 0 0; 0 1 0; 0 0 1];
-[klist_cart, klist_frac] = kcubegen3D('Rm', H_kp_n.Rm, 'KCUBE_BULK', kcube_bulk, 'nk', [50 50 50]);
+[klist_cart, klist_frac] = kcubegen3D('Rm', H_kp_n.Rm, 'KCUBE_BULK', kcube_bulk, 'nk', [300 300 300]);
 
 mu_list = linspace(-0.2, 0.2, 201);
 %%
-alpha_mu = SOAHC_int(H_kp_n, [1 2 3], klist_cart, mu_list, 'ncore',4 , 'T',20);
-
+alpha_mu = NCTE(H_kp_n, [1 2 3], klist_cart, mu_list, 'ncore',4 , 'T',20);
+% ~ 6min
 kcube_ratio = krange^3;
 alpha_mu = alpha_mu .* kcube_ratio;
 
