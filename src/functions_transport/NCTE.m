@@ -13,7 +13,7 @@ optionscell = namedargs2cell(options);
 %% prepare dH_dk
 switch class(Ham)
     case "HK"
-        Ham = Ham.get_dH_dk_func;
+        
     case "HR"
         Ham = Ham.tjmti_gen();
 end
