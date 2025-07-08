@@ -19,7 +19,7 @@ function [klist_cart, klist_l, klist_frac, kpoints_l, kpoints_name] = kpathgen3D
     %% Handle Input Arguments
     % Read POSCAR or KPOINTS file if no inputs are provided
     if nargin < 1
-        POSCAR_read;  % Read POSCAR if no arguments are given
+        Rm = POSCAR_read;  % Read POSCAR if no arguments are given
     end
     
     if nargin < 2

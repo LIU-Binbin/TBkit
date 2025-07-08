@@ -58,6 +58,8 @@ arguments
     options.MarkerEdgeColor = [];
     options.MarkerFaceColor = [];
     options.silent = false;
+    options.plotMode = ''
+    options.legend = []
     optionsplot.density = 1;
     optionsplot.WEIGHTCAR_factor = 1;
     optionsplot.ax = handle([]);
@@ -92,10 +94,21 @@ if isempty(WEIGHTCAR_struct)
 end
 
 %-------- Plot Mode Determination --------
-[plotMode, cmap, nProj, projNames, WEIGHTCAR] = resolvePlotMode(WEIGHTCAR_struct, options);
-
-%-------- Projection Selection --------
-selectedProjs = handleProjectionSelection(plotMode, nProj, options);
+if strcmp(options.plotMode, 'RGB')
+    if ~iscell(WEIGHTCAR_struct) || numel(WEIGHTCAR_struct)~=3
+        error("For RGB mode, WEIGHTCAR must be a cell with 3 kinds of projs.")
+    end
+    plotMode = options.plotMode;
+elseif strcmp(options.plotMode, 'RWB')
+    if ~iscell(WEIGHTCAR_struct) || numel(WEIGHTCAR_struct)>2
+        error("For RWB mode, WEIGHTCAR must be a cell with 1 or 2 kinds of projs.")
+    end
+    plotMode = options.plotMode;
+else
+    [plotMode, cmap, nProj, projNames, WEIGHTCAR] = resolvePlotMode(WEIGHTCAR_struct, options);
+    %-------- Projection Selection --------
+    selectedProjs = handleProjectionSelection(plotMode, nProj, options);
+end
 
 %-------- Axis Preparation --------
 ax = prepareAxis(optionsplot);
@@ -115,7 +128,7 @@ switch plotMode
     case {'bubble_rough','bubble_refined'}
         for Ei=1:Nbands
             plot(ax,klist,EIGENCAR(Ei,:),...
-                'LineWidth',1.0,'Color',[0.1 0.1 0.1],'DisplayName',num2str(Ei),...
+                'LineWidth',options.LineWidth,'Color',[0.1 0.1 0.1],'DisplayName',num2str(Ei),...
                 'HandleVisibility','off');
         end
         optionsplot.ax =ax;
@@ -123,6 +136,65 @@ switch plotMode
         ax = pband_plot_set(klist,EIGENCAR,WEIGHTCAR,projNames,selectedProjs,...
             'cmap',cmap,optionsplotcell{:});% waiting
         legend(ax);
+    case 'RGB'
+        X = klist;
+        
+        WEIGHT_R = WEIGHTCAR_struct{1};
+        WEIGHT_G = WEIGHTCAR_struct{2};
+        WEIGHT_B = WEIGHTCAR_struct{3};
+        
+        for i = 1:size(EIGENCAR,1)
+            Y = [EIGENCAR(i,:); EIGENCAR(i,:)];
+            Z = zeros(size(Y));
+        
+            WEIGHT_RGB_i = [WEIGHT_R(i,:)',WEIGHT_G(i,:)',WEIGHT_B(i,:)'];
+            for j = 1:size(WEIGHT_RGB_i,1)
+                WEIGHT_RGB_i(j,:) = WEIGHT_RGB_i(j,:)/norm(WEIGHT_RGB_i(j,:));
+            end
+            WEIGHT_RGB_i = reshape(WEIGHT_RGB_i, [1 size(WEIGHT_RGB_i)]);
+            WEIGHT_RGB_i = repmat(WEIGHT_RGB_i,2,1,1);
+            surf(ax, X,Y,Z, WEIGHT_RGB_i, ...
+                'EdgeColor', 'interp', 'FaceColor', 'none', 'LineWidth', options.LineWidth, ...
+                'HandleVisibility','off')
+        end
+        
+        if ~isempty(options.legend)
+            plot(ax, -[xmin xmax], [0 0], 'Color','r', 'LineWidth',2)
+            plot(ax, -[xmin xmax], [0 0], 'Color','g', 'LineWidth',2)
+            plot(ax, -[xmin xmax], [0 0], 'Color','b', 'LineWidth',2)
+            legend(ax, options.legend)
+        end
+    case 'RWB'
+        % red-white-blue
+        X = klist;
+        switch numel(WEIGHTCAR_struct)
+            case 2 
+                % red and blue
+                WEIGHT = WEIGHTCAR_struct{1} - WEIGHTCAR_struct{2};
+            case 1          
+                % positive value to red, negative value to blue
+                WEIGHT = WEIGHTCAR_struct{1};
+        end
+        
+        colormap(ax, ColorMap.redblue(length(WEIGHT)));
+        cmax = max(abs(WEIGHT),[],"all");
+        clim(ax, [-cmax, cmax])
+        
+        for i = 1:size(EIGENCAR,1)
+            Y = [EIGENCAR(i,:); EIGENCAR(i,:)];
+            Z = zeros(size(Y)); 
+        
+            WEIGHT_i = WEIGHT(i,:);
+            WEIGHT_i = repmat(WEIGHT_i,2,1);
+            surf(ax, X,Y,Z,WEIGHT_i, ...
+                'EdgeColor', 'interp', 'FaceColor', 'none', 'LineWidth', options.LineWidth, ...
+                'HandleVisibility','off')
+        end
+        if ~isempty(options.legend)
+            plot(ax, -[xmin xmax], [0 0], 'Color','r', 'LineWidth',2)
+            plot(ax, -[xmin xmax], [0 0], 'Color','b', 'LineWidth',2)
+            legend(ax, options.legend)
+        end
 end
 
 
@@ -261,7 +333,7 @@ function varargout = handleMultiProjections(EIGENCAR, klist_l, kpoints_l,kpoints
 
         % Set the title for the current plot
         options.title = titlestring_new;
-        propertyCell = namedargs2cell(options); % Convert named arguments to cell array
+        % propertyCell = namedargs2cell(options); % Convert named arguments to cell array
 
         WEIGHTCAR_struct = WEIGHTCAR_struct_cell{i}; % Get the current WEIGHTCAR structure
         WEIGHTCAR_struct(end) = []; % Remove the last entry from the structure
@@ -342,7 +414,7 @@ end
 
 function ax = prepareAxis(optionsplot)
 if isempty(optionsplot.ax)
-    [Fig,ax] =  Figs(1,1);
+    [~,ax] =  Figs(1,1);
 else
     ax = optionsplot.ax;
 end

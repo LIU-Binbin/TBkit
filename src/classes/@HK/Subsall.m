@@ -44,7 +44,7 @@ if options.get_dH_dk_fun
     nbands = H_hk.Nbands;
     HnumL = reshape(H_hk.HnumL, nbands^2, []);
     
-    dH_dk_sym = zeros(nbands, nbands, 3);
+    dH_dk_sym = sym(zeros(nbands, nbands, 3));
     dH_dk_sym(:,:,1) = reshape(HnumL * dsym_dkx.', nbands, nbands);
     dH_dk_sym(:,:,2) = reshape(HnumL * dsym_dky.', nbands, nbands);
     dH_dk_sym(:,:,3) = reshape(HnumL * dsym_dkz.', nbands, nbands);
