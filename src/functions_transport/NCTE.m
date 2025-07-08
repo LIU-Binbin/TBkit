@@ -38,35 +38,37 @@ eps = options.eps;
 const_factor = constants.charge_C / constants.hbar_eV_s^2 / nkpts / volume / T;
 
 %% 批处理计算 NCTE_k for 1e9 1000*1000*1000
-batch_size = min(options.batch_size, nkpts);
-nbatch = ceil(nkpts / batch_size);
-fprintf('Total k-points: %d, batch size: %d, total batches: %d\n', nkpts, batch_size, nbatch);
-
-pb = CmdLineProgressBar('Calculating NCTE: ');  % Progress bar for visualization
-
+% batch_size = min(options.batch_size, nkpts);
+% nbatch = ceil(nkpts / batch_size);
+% fprintf('Total k-points: %d, batch size: %d, total batches: %d\n', nkpts, batch_size, nbatch);
+% 
+% pb = CmdLineProgressBar('Calculating NCTE: ');  % Progress bar for visualization
+% 
 tic
-for ibatch = 1:nbatch
-    idx_start = (ibatch - 1)*batch_size + 1;
-    idx_end = min(ibatch*batch_size, nkpts);
-    batch_klist = klist(idx_start:idx_end, :);
-    kpts_this_batch = size(batch_klist, 1);
-    alpha_mu_batch = zeros(kpts_this_batch, nmu);
- pb.print(ibatch,nbatch);
+% for ibatch = 1:nbatch
+%     idx_start = (ibatch - 1)*batch_size + 1;
+%     idx_end = min(ibatch*batch_size, nkpts);
+%     batch_klist = klist(idx_start:idx_end, :);
+%     kpts_this_batch = size(batch_klist, 1);
+%     %alpha_mu_batch = zeros(kpts_this_batch, nmu);
+%     alpha_mu_batch = zeros(1, nmu);
+%     pb.print(ibatch,nbatch);
     if use_parallel
-        parfor ki = 1:kpts_this_batch
-            alpha_mu_batch(ki,:) = NCTE_k(Ham, tensor_index, batch_klist(ki,:), mu_list, T, eps);
+        parfor ki = 1:nkpts
+            %alpha_mu_batch(ki,:) =  NCTE_k(Ham, tensor_index, batch_klist(ki,:), mu_list, T, eps);
+            alpha_mu  = alpha_mu + NCTE_k(Ham, tensor_index, klist(ki,:), mu_list, T, eps);
         end
     else
-        for ki = 1:kpts_this_batch
-            alpha_mu_batch(ki,:) = NCTE_k(Ham, tensor_index, batch_klist(ki,:), mu_list, T, eps);
+        for ki = 1:nkpts
+            alpha_mu  = alpha_mu + NCTE_k(Ham, tensor_index, klist(ki,:), mu_list, T, eps);
         end
     end
-
-    alpha_mu = alpha_mu + sum(alpha_mu_batch, 1);
-
-    % 可选保存中间结果，防止崩溃丢失
-    % save(sprintf('alpha_mu_batch_%d.mat', ibatch), 'alpha_mu_batch', 'idx_start', 'idx_end');
-end
+% 
+%     alpha_mu = alpha_mu + alpha_mu_batch;
+% 
+%     % 可选保存中间结果，防止崩溃丢失
+%     % save(sprintf('alpha_mu_batch_%d.mat', ibatch), 'alpha_mu_batch', 'idx_start', 'idx_end');
+% end
 toc
 
 % tic
@@ -85,7 +87,7 @@ toc
 % 
 % toc
 
-pb.delete();  % Delete progress bar when done
+% pb.delete();  % Delete progress bar when done
 %%
 alpha_mu = alpha_mu * const_factor;
 %% 自动关闭 pool（可选）

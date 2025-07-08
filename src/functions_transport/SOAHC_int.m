@@ -71,37 +71,37 @@ end
 % end
 
 %% for 1e9 1000*1000*1000
-batch_size = min(options.batch_size, nkpts);
-nbatch = ceil(nkpts / batch_size);
-fprintf('Total k-points: %d, batch size: %d, total batches: %d\n', nkpts, batch_size, nbatch);
-
-pb = CmdLineProgressBar('Calculating SOAHC: ');  % Progress bar for visualization
+% batch_size = min(options.batch_size, nkpts);
+% nbatch = ceil(nkpts / batch_size);
+% fprintf('Total k-points: %d, batch size: %d, total batches: %d\n', nkpts, batch_size, nbatch);
+% 
+% pb = CmdLineProgressBar('Calculating SOAHC: ');  % Progress bar for visualization
 
 tic
-for ibatch = 1:nbatch
-    idx_start = (ibatch - 1)*batch_size + 1;
-    idx_end = min(ibatch*batch_size, nkpts);
-    batch_klist = klist(idx_start:idx_end, :);
-    kpts_this_batch = size(batch_klist, 1);
-    chi_abc_mu_batch = zeros(kpts_this_batch, nmu);
-    pb.print(ibatch,nbatch);
+% for ibatch = 1:nbatch
+%     idx_start = (ibatch - 1)*batch_size + 1;
+%     idx_end = min(ibatch*batch_size, nkpts);
+%     batch_klist = klist(idx_start:idx_end, :);
+%     kpts_this_batch = size(batch_klist, 1);
+%     chi_abc_mu_batch = zeros(1, nmu);
+%     pb.print(ibatch,nbatch);
     if use_parallel
-        parfor ki = 1:kpts_this_batch
-            chi_abc_mu_batch(ki,:) = SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list,   T,eps);
+        parfor ki = 1:nkpts
+            chi_abc_mu = chi_abc_mu + SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list,   T,eps);
         end
     else
-        for ki = 1:kpts_this_batch
-            chi_abc_mu_batch(ki,:) = SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list,  T,eps);
+        for ki = 1:nkpts
+             chi_abc_mu = chi_abc_mu + SOAHC_int_k(Ham, tensor_index, klist(ki,:), mu_list,  T,eps);
         end
     end
 
-    chi_abc_mu = chi_abc_mu + sum(chi_abc_mu_batch, 1);
-
-    % 可选保存中间结果，防止崩溃丢失
-    % save(sprintf('alpha_mu_batch_%d.mat', ibatch), 'alpha_mu_batch', 'idx_start', 'idx_end');
-end
+%     chi_abc_mu = chi_abc_mu + chi_abc_mu_batch;
+% 
+%     % 可选保存中间结果，防止崩溃丢失
+%     % save(sprintf('alpha_mu_batch_%d.mat', ibatch), 'alpha_mu_batch', 'idx_start', 'idx_end');
+% end
 toc
-pb.delete;
+% pb.delete;
 %%
 chi_abc_mu = chi_abc_mu * const_factor;
 end
