@@ -55,7 +55,7 @@ for k = 1:length(eigval_list)
     end
     HRk.orbL = Vk' * HR.orbL;
     HRk.quantumL = Vk' * HR.quantumL;
-    HRk.orb_symL = Vk' * HR.orb_symL;
+    %HRk.orb_symL = Vk' * HR.orb_symL;
     HR_list{k} = HRk;
 end
 end

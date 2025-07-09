@@ -26,6 +26,7 @@ classdef Oper < group
         antisymmetry = false % Antisymmetry operation flag
         Rf = []              % Local frame rotation matrix
         tf = [0 0 0]         % Local translation
+        TBkitObj             % ConnectTBkitObj
     end
 
     properties (GetAccess = protected, Hidden = true)
@@ -34,7 +35,7 @@ classdef Oper < group
     end
     %% Constuction
     methods
-        function SymOper = Oper(R, U, t, options)
+        function SymOper = Oper(R, U, t, options,optionsbasis)
             %%OPER Constructor for symmetry operator
             % Constructs symmetry operation with spatial, Hilbert space, and symmetry properties
             %
@@ -59,7 +60,7 @@ classdef Oper < group
                 options.conjugate logical = false;
                 options.antisymmetry logical = false;
                 options.strict_eq logical = false;
-                %options.BasisHandle Basis = Basis([]);
+                optionsbasis.TBkitObj  = [];
             end
             %
             if isempty(options.U)
@@ -80,11 +81,17 @@ classdef Oper < group
                 SymOper.t = options.t;
             end
             SymOper.t = integer(SymOper.t);
-
             SymOper.Rf = options.Rlocal;
             SymOper.conjugate = options.conjugate;
             SymOper.antisymmetry = options.antisymmetry;
             SymOper.strict_eq = options.strict_eq;
+            if isnan(SymOper.U)
+                if ~isempty(optionsbasis.TBkitObj)
+                    BasisFunction = BasisFunc(optionsbasis.TBkitObj);
+                    SymOper  = SymOper.attachRm(optionsbasis.TBkitObj.Rm);
+                    SymOper.U = BasisFunction.rotation('Oper',SymOper,'Rm',optionsbasis.TBkitObj.Rm);
+                end
+            end
             %SymOper.BasisHandle = options.BasisHandle ;
         end
     end
