@@ -79,11 +79,11 @@ function [U,orbL] = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, opti
         end
         Rf = optionsOper.Oper.Rf;
         Rc = optionsOper.Oper.R;
-        tf = optionsOper.Oper.tf;
+        tf = optionsOper.Oper.tf;% seize notation; t = tf
         options.conjugate = optionsOper.Oper.conjugate;
         options.antisymmetry = optionsOper.Oper.antisymmetry;
         optionsCell = namedargs2cell(options);
-        Am = rotate(A, Rc, Rf, tf, rightorleft, optionsCell{:});
+        Am = rotate(A, Rc, Rf, tf, rightorleft, optionsCell{:}); % Oper->Basis
     else
         Am = rotate(A, Rc, Rf, tf, rightorleft, 'Oper', optionsOper.Oper, optionsCell{:});
     end
@@ -95,6 +95,6 @@ function [U,orbL] = rotation(A, Rc, Rf, tf, optionsConvection, optionsOper, opti
     else
         orbL = [];
     end
-    U = InnerProduct(Am, A, 'sym', options.sym);
+    U = InnerProduct(Am, A, 'sym', options.sym);% <A,Oper,A> 
 end
 

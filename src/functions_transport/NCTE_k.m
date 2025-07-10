@@ -84,13 +84,16 @@ if a ~= b
     end
     alpha_n = alpha_n - VEC_nn_ki(:,c) .* Omega_n;
 end
+
 % 费米分布计算
 E_minus_mu = EIG_ki - mu_list(:)';  % 自动扩展
 f1 = Fermi_1(E_minus_mu, T);
-% %%
+
+%
 % Nmu = length(mu_list);
 % E_minus_mu = repmat(EIG_ki, 1, Nmu) - repmat(mu_list, Nbands, 1);
 % f1 = Fermi_1(E_minus_mu, T);
 % 
+
 alpha_mu = tensorprod( alpha_n, f1.*E_minus_mu, 1, 1);
 end

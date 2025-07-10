@@ -21,8 +21,8 @@ function [klist_cart,klist_frac,klist_cart_plot,sizemesh,Gk_,Grid] = kmesh2D(Rm,
 %       Grid            - 3D mesh grid
 arguments
     Rm =POSCAR_read;
-    options.knum1   = 51;
-    options.knum2   = 51;
+    options.knum1   = 50;
+    options.knum2   = 50;
     options.kstart  = [-0.5,-0.5,0];
     options.kdir1   = [1,0,0];
     options.kdir2   = [0,1,0];
