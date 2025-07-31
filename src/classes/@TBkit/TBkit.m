@@ -40,7 +40,6 @@ classdef TBkit < matlab.mixin.CustomDisplay
     %
     %   Static Methods:
     %       POSCAR_read      - Read VASP POSCAR file
-    %       kmesh2D          - Generate 2D k-mesh
     %       BerryConnection  - Calculate Berry connection
     %       EIGENSOLVE       - Solve eigenvalue problem
     properties
@@ -163,14 +162,12 @@ classdef TBkit < matlab.mixin.CustomDisplay
         [klist_l,kpoints_l,kpoints_name] = kpath_information(TBkitobj)
         TBkitobj = kpathgen3D(TBkitobj,KPOINTS_name,nodes,kpoints_name_tmp)
         [Rm,sites,Atom_name,Atom_num] = POSCAR_gen(TBkitobj,filename,Rm,sites,Atom_name,Atom_num)
-        [klist_dos,klist1,klist2]=kmesh3D(TBkitobj,mesh,kz,mode,options)
         [num_label,coe_label] = NumOrCoe(TBkitobj)
         varargout = klist_show(TBkitobj,options)
         varargout = PARCHG_gen(varargin)
     end
     methods(Static)
         [kloop1_frac,kloop2_frac,kloop1_cart,kloop2_cart,klist_l,kstart_frac,kstart_cart] = kloop2D(Rm,options)
-        [klist_cart,klist_frac,klist_cart_plot,sizemesh,Gk_,Grid] = kmesh2D(Rm,options,optionsEdge)
         [klist_cart,klist_frac] = kloop1D(kpoint_frac,Orientation,radius,opt)
     end
     methods

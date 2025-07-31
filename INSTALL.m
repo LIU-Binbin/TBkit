@@ -87,7 +87,6 @@ api_path = "src/functions_api";
 
 %
 % TOOLS
-%   kmesh3D               - To generate k-mesh for DOSplot or 2D-Bandplot
 %   kpathgen3D            - To generate klist for caculation and plot
 %   DOSCAR_gen            - nargin
 %   EIGENCAR2IMG          - nargin
@@ -121,10 +120,13 @@ lib_path = "/lib";
 %% export_fig files
 export_fig_path = "/lib/export_fig";
 %%
+Annotate_path = "/lib/Annotate";
+%%
 main_path = pwd;
 addpath(main_path+"/src");
 addpath(main_path+lib_path)
 addpath(main_path+export_fig_path);
+addpath(main_path+Annotate_path);
 addpath(main_path+"/"+classes_path);
 addpath(main_path+"/"+plot_funcs_path);
 addpath(main_path+"/"+tools_path);

@@ -99,7 +99,7 @@ switch options.mode
             TBkitobj.Rm = POSCAR_read(options.POSCAR);
             kfermiarc = Y;
             kmesh = X;
-            [klist,klist1,klist2]=kmesh3D(TBkitobj,kmesh,kfermiarc,'fermiarc');
+            [~, klist, klist1, klist2] = kmeshgen(TBkitobj.Rm, [kfermiarc; 0 0 0], 'Nk1',kmesh(1), 'Nk2',kmesh(2));
             if options.cartisian
                 %options.output = 'refined';
                 klist = klist*TBkitobj.Gk;

@@ -30,7 +30,9 @@ H_kp_n.bandplot([-0.2 0.6]);
 %%
 krange = 0.06; % just around the Gamma point
 kcube_bulk = krange .* [-0.5 -0.5 -0.5; 1 0 0; 0 1 0; 0 0 1];
-[klist_cart, klist_frac] = kcubegen3D('Rm', H_kp_n.Rm, 'KCUBE_BULK', kcube_bulk, 'nk', [300 300 300]);
+Nk1 = 500;
+Nk2 = Nk1;
+klist_cart = kmeshgen(H_kp_n.Rm, kcube_bulk, "Nk1", Nk1, "Nk2", Nk2, "full_edge",true);
 
 mu_list = linspace(-0.02, 0.02, 201);
 %%

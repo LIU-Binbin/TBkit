@@ -59,6 +59,7 @@ tic
         parfor ki = 1:nkpts
             BCPCAR(ki,:)  =  BCP_k(Ham, tensor_index, klist(ki,:), selectbands);
         end
+        delete(pool)
     else
         for ki = 1:nkpts
             BCPCAR(ki,:)  =   BCP_k(Ham, tensor_index, klist(ki,:), selectbands);

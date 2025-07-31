@@ -1,38 +1,20 @@
-function [nodes_s, nodes_r] = findnodes(Ham_obj, opts, kopts)
-% Find the nodes (energy gap minima) in the Brillouin zone for a given Hamiltonian object.
-% 
-% Usage:
-%   [nodes_s, nodes_r] = findnodes(Ham_obj, opts, kopts)
-%
-% Inputs:
-%   Ham_obj      - Hamiltonian object (can be of types 'HR', 'Htrig', 'HK').
-%   opts         - Options structure with fields:
-%       .Num_Occupied  - Number of occupied bands (default: 0, i.e., half of bands).
-%       .Gap_Threshold  - Energy gap threshold for detecting nodes (default: 0.0001).
-%   kopts        - K-point options structure with fields:
-%       .nk             - Number of k-points in each dimension [nk1, nk2, nk3].
-%       .vk             - K-point grid vectors.
-%       .original_point - Shift for the k-points to a different origin.
-%       .mode           - Node search mode: 'corner' or 'center' (default: 'corner').
-%
-% Outputs:
-%   nodes_s      - Nodes in fractional coordinates.
-%   nodes_r      - Nodes in real-space coordinates.
-
+function [nodes_s, nodes_r] = findnodes(Ham_obj, options)
 arguments
     Ham_obj TBkit  % Hamiltonian object (must be of class 'TBkit').
-    opts.Num_Occupied int8 = 0  % Default: 0 (half of the bands are occupied).
-    opts.Gap_Threshold double = 0.0001  % Default threshold for gap.
+    options.Num_Occupied int8 = 0  % Default: 0 (half of the bands are occupied).
+    options.Gap_Threshold double = 0.0001  % Default threshold for gap.
     
-    kopts.nk int8 = [10 10 10];  % Number of k-points in each direction [nk1, nk2, nk3].
-    kopts.vk = [1 0 0; 0 1 0; 0 0 1];  % K-point grid vectors (default identity matrix).
-    kopts.original_point = [-0.5 -0.5 -0.5];  % Original point to shift the k-points.
-    kopts.mode {mustBeMember(kopts.mode, {'corner', 'center'})} = 'corner';  % Node search mode.
-    kopts.edge {mustBeMember(kopts.edge, {'half', 'full'})} = "half";  % Edge specification for nodes.
+    options.kstart(1,3) double = [0 0 0]
+    options.kdir1 (1,3) double = [1 0 0]
+    options.kdir2 (1,3) double = [0 1 0]
+    options.kdir3 (1,3) double = [0 0 1]
+    options.Nk1 double = 10
+    options.Nk2 double = 10
+    options.Nk3 double = 10
 end
 
 % Convert named arguments to cell for use in functions
-koptscell = namedargs2cell(kopts);
+optscell = namedargs2cell(options);
 
 % Set number of occupied bands
 if opts.Num_Occupied == 0
@@ -42,8 +24,7 @@ else
     occu = opts.Num_Occupied;
 end
 
-% Generate k-point meshes (both fractional and real-space)
-[klist_s, klist_r] = kmesh_gen(Ham_obj, [], koptscell{:});
+[~, klist_frac] = kmeshgen(Ham_obj.Rm, optscell{:});
 
 % Define function to calculate the energy gap at a given k-point
 switch class(Ham_obj)
@@ -54,7 +35,7 @@ switch class(Ham_obj)
         get_gap_kpoint = @(kpoint) get_gap_Hfun(Hfun, kpoint, occu);
 end
 
-nkpts = size(klist_s, 1);  % Total number of k-points
+nkpts = size(klist_frac, 1);  % Total number of k-points
 nodes_tmp = [];            % Temporary array to store nodes
 
 % Search for nodes with energy gap below threshold using optimization
@@ -64,7 +45,7 @@ count = 0;  % Counter for the number of nodes found
 % Loop over all k-points to find nodes
 for i = 1:nkpts
     % Minimize the energy gap at each k-point using fminsearch
-    [kout, gapout] = fminsearch(get_gap_kpoint, klist_s(i, :));
+    [kout, gapout] = fminsearch(get_gap_kpoint, klist_frac(i, :));
     
     % If energy gap is smaller than the threshold, consider it a node
     if gapout < opts.Gap_Threshold
