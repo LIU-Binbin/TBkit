@@ -1,20 +1,20 @@
-function [nodes_s, nodes_r] = findnodes(Ham_obj, options)
+function [nodes_s, nodes_r] = findnodes(Ham_obj, opts, kopts)
 arguments
     Ham_obj TBkit  % Hamiltonian object (must be of class 'TBkit').
-    options.Num_Occupied int8 = 0  % Default: 0 (half of the bands are occupied).
-    options.Gap_Threshold double = 0.0001  % Default threshold for gap.
+    opts.Num_Occupied int8 = 0  % Default: 0 (half of the bands are occupied).
+    opts.Gap_Threshold double = 0.0001  % Default threshold for gap.
     
-    options.kstart(1,3) double = [0 0 0]
-    options.kdir1 (1,3) double = [1 0 0]
-    options.kdir2 (1,3) double = [0 1 0]
-    options.kdir3 (1,3) double = [0 0 1]
-    options.Nk1 double = 10
-    options.Nk2 double = 10
-    options.Nk3 double = 10
+    kopts.kstart(1,3) double = [0 0 0]
+    kopts.kdir1 (1,3) double = [1 0 0]
+    kopts.kdir2 (1,3) double = [0 1 0]
+    kopts.kdir3 (1,3) double = [0 0 1]
+    kopts.Nk1 double = 10
+    kopts.Nk2 double = 10
+    kopts.Nk3 double = 10
 end
 
 % Convert named arguments to cell for use in functions
-optscell = namedargs2cell(options);
+optscell = namedargs2cell(kopts);
 
 % Set number of occupied bands
 if opts.Num_Occupied == 0
@@ -66,11 +66,8 @@ if isempty(nodes_tmp)
     return;
 end
 
-% Ensure k-points are within the valid Brillouin zone (if nk = 1 for any direction)
-for i = 1:3
-    if kopts.nk(i) == 1
-        nodes_tmp(:, i) = 0;  % Set k-point components to 0 if nk = 1
-    end
+if kopts.Nk3 == 1
+    nodes_tmp(:, 3) = 0;  % Set k-point components to 0 if nk = 1
 end
 
 % Convert k-points to fractional coordinates
@@ -82,7 +79,7 @@ switch class(Ham_obj)
 end
 
 % Shift k-points to a user-defined block
-nodes_s = kshift(nodes_s, [kopts.original_point; kopts.vk]);  % Apply the user-defined shift
+nodes_s = kshift(nodes_s, [kopts.kstart; kopts.kdir1; kopts.kdir2; kopts.kdir3]);  % Apply the user-defined shift
 nodes_s = uniquetol(nodes_s, 1e-4, 'ByRows', true);  % Remove duplicates with tolerance
 
 % Convert fractional k-points back to real-space coordinates
