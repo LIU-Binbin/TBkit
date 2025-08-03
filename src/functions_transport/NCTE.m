@@ -35,19 +35,19 @@ nkpts = size(klist, 1);
 volume = dot(cross(Ham.Rm(1,:),Ham.Rm(2,:)),Ham.Rm(3,:));
 T = options.T;
 eps = options.eps;
-const_factor = constants.charge_C / constants.hbar_eV_s^2 / nkpts / volume / T;
+const_factor = (constants.charge_C / T / constants.hbar_eV_s) * (volume / nkpts) / constants.hbar_eV_s;
 %%
 if use_parallel
     parfor ki = 1:nkpts
         alpha_mu  = alpha_mu + NCTE_k(Ham, tensor_index, klist(ki,:), mu_list, T, eps);
     end
-    delete(pool)
+    %delete(pool)
 else
     for ki = 1:nkpts
         alpha_mu  = alpha_mu + NCTE_k(Ham, tensor_index, klist(ki,:), mu_list, T, eps);
     end
 end
-toc
+% toc
 %%
 alpha_mu = alpha_mu * const_factor;
 end

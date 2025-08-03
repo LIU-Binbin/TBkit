@@ -16,7 +16,7 @@ inv_dEnm = zeros(Nbands, Nbands);
 is_degenerated = abs(dEnm) < options.eps;
 inv_dEnm(~is_degenerated) = 1./dEnm(~is_degenerated);
 %%
-dH_dk_xyz = Ham.dH_dk(kpoint);
+dH_dk_xyz = Ham.dH_dk_fun(kpoint(1),kpoint(2),kpoint(3));
 VEC_ki = zeros(Nbands, Nbands, 3);
 for i = 1:3
     VEC_ki(:,:,i) = WAV_ki' * dH_dk_xyz(:,:,i) * WAV_ki;
