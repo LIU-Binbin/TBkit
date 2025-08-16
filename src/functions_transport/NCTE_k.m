@@ -31,6 +31,9 @@ for i = 1:3
     VEC_ki(:,:,i) = WAV_ki' * dH_dk_xyz(:,:,i) * WAV_ki;
     VEC_nn_ki(:,i)= real(diag(VEC_ki(:,:,i)));
 end
+    VEC_ki_c = VEC_ki(:,:,c);
+    VEC_ki_a = VEC_ki(:,:,a);
+    VEC_ki_b = VEC_ki(:,:,b);
 %%
 alpha_n = zeros([Nbands,1]);
 % % Nbands = 18; vectorized same with JIT
@@ -59,7 +62,7 @@ if b ~= c
     Omega_n = zeros([Nbands,1]);
     for n = 1:Nbands
         for m = 1:Nbands
-            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki(n,m,b) * VEC_ki(m,n,c)) * inv_dEnm_sq(n,m);
+            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki_b(n,m) * VEC_ki_c(m,n)) * inv_dEnm_sq(n,m);
         end
     end
     alpha_n = alpha_n + VEC_nn_ki(:,a) .* Omega_n;
@@ -69,17 +72,17 @@ if c ~= a
     Omega_n = zeros([Nbands,1]);
     for n = 1:Nbands
         for m = 1:Nbands
-            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki(n,m,c) * VEC_ki(m,n,a)) * inv_dEnm_sq(n,m);
+            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki_c(n,m) * VEC_ki_a(m,n)) * inv_dEnm_sq(n,m);
         end
     end
     alpha_n = alpha_n + VEC_nn_ki(:,b) .* Omega_n;
 end
-
+% 
 if a ~= b
     Omega_n = zeros([Nbands,1]);
     for n = 1:Nbands
         for m = 1:Nbands
-            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki(n,m,a) * VEC_ki(m,n,b)) * inv_dEnm_sq(n,m);
+            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki_a(n,m) * VEC_ki_b(m,n)) * inv_dEnm_sq(n,m);
         end
     end
     alpha_n = alpha_n - VEC_nn_ki(:,c) .* Omega_n;
@@ -87,13 +90,20 @@ end
 
 % 费米分布计算
 E_minus_mu = EIG_ki - mu_list(:)';  % 自动扩展
-f1 = Fermi_1(E_minus_mu, T);
+if isscalar(T)
+    f1 = Fermi_1(E_minus_mu, T);
+    %
+    % Nmu = length(mu_list);
+    % E_minus_mu = repmat(EIG_ki, 1, Nmu) - repmat(mu_list, Nbands, 1);
+    % f1 = Fermi_1(E_minus_mu, T);
+    %
+    alpha_mu = tensorprod( alpha_n, f1.*E_minus_mu, 1, 1);
+else
+    for iT = 1:length(T)
+        Ttmp = T(iT);
+        f1 = Fermi_1(E_minus_mu, Ttmp);
+        alpha_mu{iT} = tensorprod( alpha_n, f1.*E_minus_mu, 1, 1);
+    end
+end
 
-%
-% Nmu = length(mu_list);
-% E_minus_mu = repmat(EIG_ki, 1, Nmu) - repmat(mu_list, Nbands, 1);
-% f1 = Fermi_1(E_minus_mu, T);
-% 
-
-alpha_mu = tensorprod( alpha_n, f1.*E_minus_mu, 1, 1);
 end

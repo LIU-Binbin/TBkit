@@ -1,4 +1,4 @@
-function [EIGENCAR_3D,klist1,klist2,WEIGHTCAR_3D,WAVECAR_3D] = EIGENCAR_gen_3D(H_hr,kmesh,k3d,options)
+function [EIGENCAR_3D,klist1,klist2,WEIGHTCAR_3D,WAVECAR_3D] = EIGENCAR_gen_3D(H_hk,kmesh,k3d,options)
 % EIGENCAR_GEN_3D Generate 3D eigenstate data from HR Hamiltonian
 %
 %   [EIGENCAR_3D,klist1,klist2,WEIGHTCAR_3D,WAVECAR_3D] = EIGENCAR_GEN_3D(H_hr,kmesh,k3d,options)
@@ -30,13 +30,13 @@ function [EIGENCAR_3D,klist1,klist2,WEIGHTCAR_3D,WAVECAR_3D] = EIGENCAR_gen_3D(H
 %       [Your Name] ([Your Email])
 %       [Creation Date]
 arguments
-    H_hr HR
+    H_hk HK
     kmesh = [100,100];
     k3d = [-0.5, -0.5, 0; 1, 0, 0; 0, 1, 0];
     options.output ='raw_data';
-    options.LWAVE = false;
     options.cartisian = true;
     options.fin_dir = 3;
+    options.LWAVE = 1;
     options.ProjectionMethod = 'slab';
     options.ProjectionStruct = struct('discrimination',0.1,'center',[0.5,0.5,0.5],'orientation',2,'sign',false);
     options.WEIGHTCAR = false;
@@ -45,12 +45,12 @@ arguments
 end
 options2 = rmfield(options,{'output','cartisian','fin_dir'});
 optionsCell = namedargs2cell(options2);
-[~, H_hr.klist_frac, klist1, klist2] = kmeshgen(H_hr.Rm, [k3d; 0 0 0], 'Nk1',kmesh(1), 'Nk2',kmesh(2));
+[H_hk.klist_cart, H_hk.klist_frac, klist1, klist2] = kmeshgen(H_hk.Rm, [k3d; 0 0 0], 'Nk1',kmesh(1), 'Nk2',kmesh(2));
 if options.WEIGHTCAR
-    [EIGENCAR_3D,WAVECAR_3D,WEIGHTCAR_3D] = H_hr.EIGENCAR_gen(...
+    [EIGENCAR_3D,WAVECAR_3D,WEIGHTCAR_3D] = H_hk.EIGENCAR_gen(...
         optionsCell{:});
 else
-    [EIGENCAR_3D,WAVECAR_3D] = H_hr.EIGENCAR_gen('LWAVE',options.LWAVE);
+    [EIGENCAR_3D,WAVECAR_3D] = H_hk.EIGENCAR_gen();
     WEIGHTCAR_3D = [];
 end
 if options.LWAVE
@@ -59,7 +59,7 @@ else
 end
 if options.cartisian
     options.output = 'refined';
-    klist = H_hr.klist_frac*H_hr.Gk;
+    klist = H_hk.klist_frac*H_hk.Gk;
 end
 if options.LWAVE
     WEIGHTCAR_3D = WAVECAR_3D;

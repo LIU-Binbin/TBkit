@@ -43,7 +43,7 @@ end
 %% distribution of Berry-connection polarizability (BCP)
 if 1 == 1
     krange = 0.0637*2; % just around the Gamma point
-    kcube_bulk = krange .* [-0.5 -0.5 0; 1 0 0; 0 1 0; 0 0 1];
+    kcube_bulk = krange .* [-0.5 -0.5 0; 1 0 0; 0 1 0; 0 0 0];
     Nk1 = 300;
     Nk2 = Nk1;
     [klist_cart,~,~,~,~,Grid] = kmeshgen(H_kp_n.Rm, ...

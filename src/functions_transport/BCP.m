@@ -5,6 +5,7 @@ arguments
     klist double = [0,0,0];
     optionsParallel.ncore = 4
     options.selectbands = [];
+    options.eps = 1e-4;
 end
 % optionscell = namedargs2cell(options);
 %% prepare dH_dk
@@ -28,13 +29,13 @@ end
 %%
 Nbands = Ham.Basis_num();
 if isempty(options.selectbands)
-    selectbands = 1:(Nbands/2);
+    selectbands = 1:(Nbands);
 else
     selectbands = options.selectbands;
 end
 nkpts = size(klist, 1);
 BCPCAR = zeros(nkpts,length(selectbands));
-
+eps = options.eps;
 
 % volume = dot(cross(Ham.Rm(1,:),Ham.Rm(2,:)),Ham.Rm(3,:));
 
@@ -57,12 +58,12 @@ tic
 %     pb.print(ibatch,nbatch);
     if use_parallel
         parfor ki = 1:nkpts
-            BCPCAR(ki,:)  =  BCP_k(Ham, tensor_index, klist(ki,:), selectbands);
+            BCPCAR(ki,:)  =  BCP_k(Ham, tensor_index, klist(ki,:), selectbands,eps);
         end
         delete(pool)
     else
         for ki = 1:nkpts
-            BCPCAR(ki,:)  =   BCP_k(Ham, tensor_index, klist(ki,:), selectbands);
+            BCPCAR(ki,:)  =   BCP_k(Ham, tensor_index, klist(ki,:), selectbands,eps);
         end
     end
 

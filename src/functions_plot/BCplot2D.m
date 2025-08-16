@@ -82,7 +82,13 @@ function varargout = BCplot2D(BCCAR, Grid, Rm, options)
         end
         
         % Create a surface plot of BCCAR data
-        h = surf(ax, Grid1, Grid2, Grid3, BCCAR, 'EdgeColor', 'none');
+        %h = surf(ax, Grid1, Grid2, Grid3, BCCAR, 'EdgeColor', 'none');
+        switch options.plotmode
+            case 'surf'
+                h = surf(ax, Grid1, Grid2, Grid3, BCCAR, 'EdgeColor', 'none');
+            case 'contour'
+                h = contourf(ax, Grid1, Grid2, BCCAR, 'EdgeColor', 'none');  % Contour plot
+        end
     else
         % If BCCAR is a vector, interpolate to create a mesh
         X = Grid(:, 1);  % X coordinates
@@ -111,7 +117,7 @@ function varargout = BCplot2D(BCCAR, Grid, Rm, options)
             case 'surf'
                 h = surf(ax, meshX, meshY, meshZ, meshU, 'EdgeColor', 'none');
             case 'contour'
-                h = contourf(ax, meshX, meshY, meshU);  % Contour plot
+                h = contourf(ax, meshX, meshY, meshU, 'EdgeColor', 'none');  % Contour plot
         end
     end
 

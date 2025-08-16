@@ -3,6 +3,7 @@ arguments
     H_hk HK
     options.mode {mustBeMember(options.mode,{'num','file','gen','sym'})}= 'num';
     options.get_dH_dk_fun logical = true
+    options.get_dH_dk_dk_fun logical = false
 end
 
 if exist('para.mat','file') && strcmp(options.mode,'file')
@@ -51,5 +52,31 @@ if options.get_dH_dk_fun
     
     % Convert the symbolic derivatives into MATLAB function handles
     H_hk.dH_dk_fun = matlabFunction(dH_dk_sym, 'Vars', [k_x, k_y, k_z]);
+end
+if options.get_dH_dk_dk_fun
+    symL = H_hk.HsymL;
+    
+    dsym_dkx = diff(symL, k_x);  % Derivative with respect to k_x
+    dsym_dky = diff(symL, k_y);  % Derivative with respect to k_y
+    dsym_dkz = diff(symL, k_z);  % Derivative with respect to k_z
+    
+    nbands = H_hk.Nbands;
+    HnumL = reshape(H_hk.HnumL, nbands^2, []);
+    
+    dH_dk_dk_sym = sym(zeros(nbands, nbands, 3,3));
+    dH_dk_dk_sym(:,:,1,1) = reshape(HnumL * dsym_dkx.', nbands, nbands);
+    dH_dk_dk_sym(:,:,1,2) = reshape(HnumL * dsym_dky.', nbands, nbands);
+    dH_dk_dk_sym(:,:,1,3) = reshape(HnumL * dsym_dkz.', nbands, nbands);
+
+    dH_dk_dk_sym(:,:,2,1) = reshape(HnumL * dsym_dkx.', nbands, nbands);
+    dH_dk_dk_sym(:,:,2,2) = reshape(HnumL * dsym_dky.', nbands, nbands);
+    dH_dk_dk_sym(:,:,2,3) = reshape(HnumL * dsym_dkz.', nbands, nbands);
+
+    dH_dk_dk_sym(:,:,3,1) = reshape(HnumL * dsym_dkx.', nbands, nbands);
+    dH_dk_dk_sym(:,:,3,2) = reshape(HnumL * dsym_dky.', nbands, nbands);
+    dH_dk_dk_sym(:,:,3,3) = reshape(HnumL * dsym_dkz.', nbands, nbands);
+    
+    % Convert the symbolic derivatives into MATLAB function handles
+    H_hk.dH_dk_dk_fun = matlabFunction(dH_dk_dk_sym, 'Vars', [k_x, k_y, k_z]);
 end
 end
