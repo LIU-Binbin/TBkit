@@ -9,11 +9,17 @@ Graphene = Graphene<'POSCAR';
 Graphene = Graphene<'KPOINTS';
 search_range = [1 1 0];
 maxR = 2.5;
-Accuracy = 2;
-Graphene = Graphene.nn_sk_smart(search_range, Accuracy ,maxR);
+Accuracy = 1e-3;
+Graphene = Graphene.nn(search_range, Accuracy ,maxR);
 [Rnn,~,~,~] = Graphene.nn_information();
+%% 
+% 我们指定level_cut = 1，也就是最高只考虑到最近邻项，跨原胞的跃迁也仅考虑到相邻原胞，传入函数，得到的是一个符号化的TB模型，符号化的哈密顿量矩阵储存在HR类的HcoeL属性中。调用symvar_list可以显示自动生成的待定参数名称。此时，其HnumL属性是由空矩阵构成的，手动为生成参数赋值后，就可以用Subsall转化得到数值化的TB模型。查看其下的HnumL，此时应当已成为了非空矩阵，求解本征值后，就可以在布里渊区绘制能带。
+
+Graphene = Graphene.H_TBSK_gen('level_cut',1,'per_dir',[1 1 0]);
+Graphene.symvar_list
+VppP_1 = 1;
+VppP_2 = 0.2;
 level_cut = 1;
-Graphene = Graphene.H_TB_gen_SK('level_cut',1,'per_dir',[1 1 0]);
 % list mode
 Graphene_list = rewrite(Graphene);
 Graphene = rewrite(Graphene_list,'rewind',true);
@@ -23,7 +29,7 @@ printout(Graphene);
 %Graphene_list.show('HOPPING','scale', 2.4560000896,'atomscale',0.1,'TwoD',true);
 %%
 Graphene_hk = Graphene_list.HR2HK();
-sym(Graphene_hk);
+sym(Graphene_hk)
 %%
 Graphene_htrig = Graphene_list.HR2Htrig();
 latex(Graphene_htrig);

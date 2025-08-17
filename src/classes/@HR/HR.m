@@ -355,7 +355,6 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
         H_hk = HR2HK(H_hr,kpoints_frac,options)
     end
     methods
-        
         varargout = EIGENCAR_gen(H_hr,options)
         EIGENCARout = EIGENCAR_gen_sparse(H_hr,fermi,norb_enforce,klist_s_tmp)
     end
@@ -372,7 +371,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
             end
         end
         [W,D,dH_dk_R] = fft_wrapper(H_hr, klist)
-        % function [W, D, dH_dk_R] = fft(obj, klist)
+        [W, D, dH_dk_R] = fft(klist_cart, rotate_cart)
         %     obj.init_mex();
         %     [W, D, dH_dk_R] = mex_hamiltonian_calc(obj.mex_handle, klist);
         % end
