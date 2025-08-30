@@ -2,7 +2,8 @@ function [nodes_s, nodes_r] = findnodes(Ham_obj, opts, kopts)
 arguments
     Ham_obj TBkit  % Hamiltonian object (must be of class 'TBkit').
     opts.Num_Occupied int8 = 0  % Default: 0 (half of the bands are occupied).
-    opts.Gap_Threshold double = 0.0001  % Default threshold for gap.
+    opts.Gap_Threshold double = 1e-4  % Default threshold for gap.
+    opts.kpoint_tolerance double = 1e-4
     
     kopts.kstart(1,3) double = [0 0 0]
     kopts.kdir1 (1,3) double = [1 0 0]
@@ -80,7 +81,7 @@ end
 
 % Shift k-points to a user-defined block
 nodes_s = kshift(nodes_s, [kopts.kstart; kopts.kdir1; kopts.kdir2; kopts.kdir3]);  % Apply the user-defined shift
-nodes_s = uniquetol(nodes_s, 1e-4, 'ByRows', true);  % Remove duplicates with tolerance
+nodes_s = uniquetol(nodes_s, opts.kpoint_tolerance, 'ByRows', true);  % Remove duplicates with tolerance
 
 % Convert fractional k-points back to real-space coordinates
 nodes_r = nodes_s * Ham_obj.Gk;  % Multiply by reciprocal lattice vectors to get real-space coordinates

@@ -208,8 +208,8 @@ classdef TBkit < matlab.mixin.CustomDisplay
     methods(Static)
     end
     methods
-        Chern_number = Chern(TBkitobj,options,options_Chern)
-        [BCCAR,Grid,BC_WAVECAR,klist_r_plot] = BC_2D(TBkitobj,optionsK,options,optionsPlot)
+        Chern = ChernNumber(TBkitobj, tensor_index, optionsK, options)
+        [BCCAR, Grid] = BerryCurvature_2D(TBkitobj, optionsK, options)
         [BFCAR,BF_WAVECAR,klist_l,WAVELOOPCAR] = WilsonLoop(TBkitobj,optionsK,options)
         [BFCAR,WEIGHTCAR,klist_l] = ProjectedWilsonLoop(TBkitobj,options)
         [nested_BFCAR,nested_BF_ALL,klist_l] = nested_WilsonLoop(TBkitobj,optionsK,options,optionsNested)
@@ -234,21 +234,14 @@ classdef TBkit < matlab.mixin.CustomDisplay
         [BF,BF_WAVE,Wan] = wancenter_1D(WAVECAR_loop,mode)
         F = BerryConnection(W1,W2)
         F = Berryphase_2D()
-        [BC_2D,BCL] = BerryCuvature_2D(WAVECAR,sizemesh,options)
-        BC = BerryCuvature_Discrete_2D(VV,Vk1,Vk2,Vk1k2)
-        BC = nBerryCuvature_Discrete_2D(VV,Vk1,Vk2,Vk1k2)
-        BC = BerryCuvature_Discrete_3D(VV,Vk1,Vk2,Vk3,Vk1k2,Vk2k3,Vk3k1)
     end
     methods(Static)
         F = BerryPhaseLine_fun(Fun,kloopr,options)
         F = BerryPhaseLine_definition_sym_i(Hsym,options)
         [BFCAR,BF_WAVECAR,klist_l] = WilsonLoop_fun(Hfun,optionsK,options)
-        [BCCAR,Grid,klist_r_plot] = BerryCuvature_fun(Hfun,optionsK,options,optionsPlot)
         BC = BC_definition(Hsym,para1,para2,epsilon,options)
         Bc = BC_kubo_sym(Hsym,para1,para2,epsilon,options)
         A_1 = BerryConnection_definition(Eigenvector_sym,para1)
-        Bc = BerryCurvature_definition(A_1,A_2,para1,para2)
-        Bc = Berry_curvature_D2(Eigenvector_sym,para1,para2)
     end
     methods(Static)
         HoutL = HCAR_gen(Hfun,klist_cart,Norb)

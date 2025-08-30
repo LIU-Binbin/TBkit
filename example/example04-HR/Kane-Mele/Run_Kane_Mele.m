@@ -157,13 +157,5 @@ orb_list = n_disk.orbL;
 waveplot(orb_list,WaveFunc,'WaveSize',3);
 axis equal
 view(0,90)
-return;
 %% 参考文献
-% DOI: 10.1103/PhysRevLett.124.166804 
-% 
-%
-%%
-[BCCAR,Grid,BC_WAVECAR,klist_r_plot] = BC_2D(Kane_Mele_n,...
-    'knum1',201,'knum2',201,'BAND_index',2,...
-    'plot',false);
-% surf(Grid(:,:,1),Grid(:,:,2),BCCAR)
+% DOI: 10.1103/PhysRevLett.124.166804

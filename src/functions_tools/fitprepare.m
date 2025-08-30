@@ -30,7 +30,7 @@ if isempty(dH)
     end
     SubsIndexL = find(SubsIndexL);
     % FITobj.HnumL(num_seqL) = FITobj.HcoeL(num_seqL);
-    FITobj.HcoeL  = FITobj.HcoeL(SubsIndexL);
+    % FITobj.HcoeL  = FITobj.HcoeL(SubsIndexL);
     FITobj.num  = true;
     FITobj.coe  = true;
 else

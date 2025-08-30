@@ -10,6 +10,7 @@ arguments
     options.Nk2 double = 1
     options.Nk3 double = 1
     options.full_edge logical = false
+    options.dimension int8 = 3
 end
 %%
 if isempty(Rm)
@@ -29,6 +30,13 @@ else
     vk = [options.kdir1; options.kdir2; options.kdir3];
 end
 Nkvec = [options.Nk1, options.Nk2, options.Nk3];
+%%
+if options.dimension == 2
+    vk(3,:) = 0;
+    Nkvec(3) = 1;
+elseif options.dimension == 3
+
+end
 %%
 if options.full_edge
     klist_k1 = linspace3([0 0 0], vk(1,:), Nkvec(1));
