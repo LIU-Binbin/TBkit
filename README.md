@@ -180,7 +180,9 @@ Have questions, suggestions, or feedback?
 - Or contact the developers directly via email:
 
   - parkstory@outlook.com  
-  - fanyang_tcmp@buaa.edu.cn  
+  - fanyang_tcmp@buaa.edu.cn
+  - bbliu@buaa.edu.cn
+  - bo_li@buaa.edu.cn
   - yzpeng@buaa.edu.cn  
   - p_zhang@buaa.edu.cn
   - You_YiQun@buaa.edu.cn
