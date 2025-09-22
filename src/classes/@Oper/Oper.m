@@ -27,6 +27,7 @@ classdef Oper < group
         Rf = []              % Local frame rotation matrix
         tf = [0 0 0]         % Local translation
         TBkitObj             % ConnectTBkitObj
+        Rm
     end
 
     properties (GetAccess = protected, Hidden = true)
@@ -60,7 +61,8 @@ classdef Oper < group
                 options.conjugate logical = false;
                 options.antisymmetry logical = false;
                 options.strict_eq logical = false;
-                optionsbasis.TBkitObj  = [];
+                options.Rm = [];
+                optionsbasis.TBkitObj  = [];   
             end
             %
             if isempty(options.U)
@@ -80,7 +82,8 @@ classdef Oper < group
             else
                 SymOper.t = options.t;
             end
-            SymOper.t = integer(SymOper.t);
+            SymOper.t = (SymOper.t);
+
             SymOper.Rf = options.Rlocal;
             SymOper.conjugate = options.conjugate;
             SymOper.antisymmetry = options.antisymmetry;
@@ -91,6 +94,9 @@ classdef Oper < group
                     SymOper  = SymOper.attachRm(optionsbasis.TBkitObj.Rm);
                     SymOper.U = BasisFunction.rotation('Oper',SymOper,'Rm',optionsbasis.TBkitObj.Rm);
                 end
+            end
+            if ~isempty(options.Rm)
+                SymOper  = SymOper.attachRm(options.Rm);
             end
             %SymOper.BasisHandle = options.BasisHandle ;
         end

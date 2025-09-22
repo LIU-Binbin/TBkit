@@ -49,6 +49,7 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
         Hk_num;
 
         dH_dk_fun;
+        dH_dk_dk_fun;
     end
 
     properties
@@ -313,6 +314,7 @@ classdef HK < TBkit & matlab.mixin.CustomDisplay
         [EIGENCAR_3D,klist1,klist2,WEIGHTCAR_3D,WAVECAR_3D] = EIGENCAR_gen_3D(H_hk,kmesh,k3d,options)
         varargout = EIGENCAR_gen(H_hk,options)
         [W,D,dH_dk_xyz]= fft(H_hk, kpoint)
+        [W,D,dH_dk_xyz,dH_dk_dk_xyz] = fft_2(H_hk, kpoint)
         dH_dk_xyz = dH_dk(H_hk, kpoint)
         Kind = k_symbol2Kind(H_hk,k_symbol)
     end

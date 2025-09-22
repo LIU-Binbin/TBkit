@@ -1,15 +1,21 @@
-function Omega_ab = BerryCurvature_nk(Ham, tensor_index, kpoint, options)
+function [Omega_ab,VEC_ki] = BerryCurvature_nk(Ham, tensor_index, kpoint, options)
 arguments
     Ham TBkit
     tensor_index (1,2) double
     kpoint (1,3) double
     options.eps = 1e-4
+    options.rotate_cart = [];
 end
 Nbands = Ham.Basis_num;
 a = tensor_index(1);
 b = tensor_index(2);
 %%
-[WAV_ki,EIG_ki,dH_dk_xyz] = Ham.fft(kpoint);
+if isempty(options.rotate_cart)
+    [WAV_ki,EIG_ki,dH_dk_xyz] = Ham.fft(kpoint);
+else
+    [WAV_ki,EIG_ki,dH_dk_xyz] = Ham.fft(kpoint,options.rotate_cart);
+end
+
 
 dEnm = repmat(EIG_ki, 1, Nbands) - repmat(EIG_ki', Nbands, 1);
 inv_dEnm = zeros(Nbands, Nbands);

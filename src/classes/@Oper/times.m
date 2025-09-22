@@ -12,8 +12,13 @@ if m == 1 && n ==1
     end
     SymOper_out.R =  SymOper1.R*(SymOper2.R);
     SymOper_out.t =  mod(SymOper2.t*SymOper1.R.'+SymOper1.t,1);
-    %SymOper_out.t =  mod(SymOper2.t*SymOper1.R.'+SymOper1.t,1);
+    try
+    SymOper_out.Rf =  SymOper1.Rf*(SymOper2.Rf);    
+    SymOper_out.tf =  mod(SymOper2.tf*SymOper1.Rf+SymOper1.tf,1);
+    catch
+    end
     SymOper_out.conjugate = xor(SymOper1.conjugate,SymOper2.conjugate);
+    SymOper_out.tf =    SymOper_out.t;
     SymOper_out.antisymmetry = xor(SymOper1.antisymmetry,SymOper2.antisymmetry);
     SymOper_out.strict_eq = SymOper1.strict_eq || SymOper2.strict_eq;
 else

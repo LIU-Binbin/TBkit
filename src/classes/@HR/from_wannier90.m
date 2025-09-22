@@ -137,7 +137,7 @@ end
 %% Validation functions
 function validateFilename(fname)
 %VALIDFILENAME Ensure correct filename input type
-    if ~(ischar(fname) || (iscell(fname) && numel(fname)==2))
+    if ~((ischar(fname) || isstring(fname)) || (iscell(fname) && numel(fname)==2))
         error('Filename must be string or 2-element cell array');
     end
 end

@@ -171,7 +171,7 @@ function H_hr = applyOper(H_hr, SymOper, options)
                 H_hr_R = H_hr;
                 for j = 1:nSymOper_tmp
                     pb.print(j, nSymOper_tmp);
-                    [H_hr_R(j), H_hr] = applyRU(H_hr, SymOper_tmp(j));
+                    [H_hr_R(j), ~] = applyRU(H_hr, SymOper_tmp(j));
                 end
                 pb.delete();
                 H_hr = sum(H_hr_R)/nSymOper_tmp;

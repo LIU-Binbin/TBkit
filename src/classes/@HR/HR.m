@@ -326,6 +326,7 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
     %%
     methods
         [H_hr_R,OperObj] = rotate(H_hr,OperObj)
+        H_hr = symmetrization(H_hr,OperObj,opt)
     end
     %%
     methods (Static,Hidden,Access= protected)
@@ -371,7 +372,8 @@ classdef HR < TBkit & matlab.mixin.CustomDisplay
             end
         end
         [W,D,dH_dk_R] = fft_wrapper(H_hr, klist)
-        [W, D, dH_dk_R] = fft(klist_cart, rotate_cart)
+        [W, D, dH_dk_R] = fft(H_hr,klist_cart, rotate_cart)
+        [W,D,dH_dk_R,dH_dk_dk_R] = fft_2(H_hr, klist_cart)
         %     obj.init_mex();
         %     [W, D, dH_dk_R] = mex_hamiltonian_calc(obj.mex_handle, klist);
         % end

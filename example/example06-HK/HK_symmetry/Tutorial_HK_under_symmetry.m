@@ -56,7 +56,6 @@ BHZ_PT_after_P = BHZ_PT.applyOper(I)
 BHZ_PT_after_P.symvar_list
 
 %% 
-% 
 
 BHZ_building1 = HK(4,2);
 BHZ_building1 = BHZ_building1 <= 'POSCAR';
