@@ -27,6 +27,8 @@
 %   - Coupling terms are inserted between central and satellite Hamiltonians,
 %     and optionally between satellites to enforce C3 symmetry.
 %   - Hermiticity is enforced explicitly at the end.
+%  The theoretical formulation of the construction is in the supplementary
+%  materials of the paper.
 
 function Hm = construct_moire_H(HR, Vmijs, R, restore_C3z)
 arguments

@@ -19,7 +19,7 @@ Efermi = 0;                                     % Fermi level (can shift as need
 EIGENCAR = HR_TB.EIGENCAR_gen() - Efermi;       % Generate eigenvalues
 [fig,ax] = bandplot(EIGENCAR,[-2,2], ...
     'title','wannier-dft','Color','b', ...
-    'POSCAR','POSCAR','KPOINTS','KPOINTS_NP');
+    'POSCAR','POSCAR - rhobuhedrical','KPOINTS','KPOINTS_NP');
 
 %% Compare with DFT band structure
 !cp EIGENVAL-primitive EIGENVAL;                % Load primitive cell EIGENVAL
@@ -93,7 +93,7 @@ Efermi = 0.1400;
 bandplot3d(EIGENCAR_edge(:,:,107:110)-Efermi,klist1,klist2, ...
     'Ecut',[0,0.01],'ax',Ax,'xlabel','k_x','ylabel','k_y','title',Efermi);
 
-%% Moiré coupling benchmark
+%% Moiré coupling estimation
 HR_TB_bk1 = Kane_Mele_tot_n_slab < 'KPOINTS_Mcoupling';
 klist = HR_TB_bk1.klist_frac();
 Rm=0.25;
@@ -104,21 +104,24 @@ Rz = [cos(theta), -sin(theta), 0;
 klist_rot = (Rz * (klist*HR_TB_bk1.Gk)')'/HR_TB_bk1.Gk;
 
 % Compute slab eigenstates on original and rotated k-paths
-[EIGENCAR_slab,WAVECAR_disk,~]  = Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',true,'ProjectionMethod','slab','klist',klist);
-[EIGENCAR_slab1,WAVECAR_disk1,~]= Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',true,'ProjectionMethod','slab','klist',klist_rot);
+[EIGENCAR_slab,WAVECAR_disk,~]  = Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',false,'ProjectionMethod','slab','klist',klist);
+[EIGENCAR_slab1,WAVECAR_disk1,~]= Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',false,'ProjectionMethod','slab','klist',klist_rot);
 
-%% Evaluate moire coupling strength
+%% Evaluate the moire coupling factor <C3z>
+clear SYMCAR1
 kn = length(klist(:,1));
 for i = 1:kn
-    SYMCAR1(:,:,i) = ( double(WAVECAR_disk(:,107:110,i))' * double(WAVECAR_disk1(:,107:110,i)) );
+    SYMCAR1(:,:,i) = ( double(WAVECAR_disk(:,107:108,i))' * double(WAVECAR_disk1(:,107:108,i)) ); % select the target surface band
 end
 
 % Average coupling strength
 for k = 1:length(SYMCAR1)
-    spec_norm(k) = abs(mean(diag(SYMCAR1(:,:,k))));
+    % spec_norm(k) = abs(mean(diag(SYMCAR1(:,:,k))));
+    spec_norm(k) = norm((SYMCAR1(:,:,k)));
 end
 figure;
 x_vec = linspace(0, 0.33, length(spec_norm));
 plot(x_vec,spec_norm') 
+ylim([0,1])
 xlabel('moireBZ/BZ');
-ylabel('Moire coupling strength at Km');
+ylabel('Moire coupling factor at Km');

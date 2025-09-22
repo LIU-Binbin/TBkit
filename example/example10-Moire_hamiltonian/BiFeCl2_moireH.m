@@ -102,7 +102,7 @@ N = Graphene_test2_n.WAN_NUM;
 klist_cart = Graphene_test2_n.klist_cart * R;
 
 % Define moiré coupling potential
-v0 = 0.016;
+v0 = 0.012;
 Vm = subs(Vmo.sym, Vmo.symvar_list, [v0, v0, v0]);
 
 % Construct moiré Hamiltonian function
@@ -128,9 +128,10 @@ kpoints_name= Graphene_test2_n.kpoints_name;
 bandplot(EIGENCAR, [-0.2, 0.1], klist_l, kpoints_l, kpoints_name);
 
 %% Fermi surface calculation for moiré bands
-kmesh = [51, 151];
+kmesh = [151, 151];
 method = 'area';
 radius = 0.0129;
+lk    = 3;
 blk = 7; %num of diagoanl block 
 
 if method == 'area'
