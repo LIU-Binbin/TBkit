@@ -62,12 +62,14 @@ for i = 1:Npair
         Origin_Nj = OriginSeq(CheckList(j));
         %
         if Origin_Ni ~= Origin_Nj
-            tensor_symmed_mat(Origin_Ni,:) =  tensor_symmed_mat(Origin_Ni,:);
-            tensor_symmed_mat(Origin_Nj,:) = -tensor_symmed_mat(Origin_Ni,:);
+            TempTensor_mat = tensor_symmed_mat(Origin_Ni,:)-tensor_symmed_mat(Origin_Nj,:);
+            %TempTensor_mat = tensor_symmed_mat(Origin_Ni,:)-tensor_symmed_mat(Origin_Nj,:);
+            tensor_symmed_mat(Origin_Ni,:) =  TempTensor_mat;
+            tensor_symmed_mat(Origin_Nj,:) = -TempTensor_mat;
         else
             TempTensor_mat = tensor_symmed_mat(Origin_Ni,:)-tensor_symmed_mat(Origin_Nj,:);
             tensor_symmed_mat(Origin_Ni,:) = TempTensor_mat;
-            tensor_symmed_mat(Origin_Nj,:) = TempTensor_mat;
+            tensor_symmed_mat(Origin_Nj,:) = -TempTensor_mat;
         end
     end
 end

@@ -59,7 +59,7 @@ switch mode
 
          NRows = 3^(tensor_rank-Nselect);
          NCols = 3^Nselect;
-         tensor_names_vector_reduce_mat = reshape(tensor_names_vector_reduce_reseq,[NCols NRows]);
+         tensor_names_vector_reduce_mat = reshape(tensor_names_vector_reduce_reseq,[ NRows NCols]).';
 
          Num_Mat_sort_str_Rows = num2str(Num_Mat_sort(:,Nselect+1:end));
          Num_Mat_sort_str_Cols = num2str(Num_Mat_sort(1:NRows:n_ele,1:Nselect));
