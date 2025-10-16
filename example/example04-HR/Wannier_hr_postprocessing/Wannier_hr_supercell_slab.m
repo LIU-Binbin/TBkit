@@ -93,10 +93,9 @@ Efermi = 0.1400;
 bandplot3d(EIGENCAR_edge(:,:,107:110)-Efermi,klist1,klist2, ...
     'Ecut',[0,0.01],'ax',Ax,'xlabel','k_x','ylabel','k_y','title',Efermi);
 
-%% Moiré coupling estimation
+%% Moiré coupling estimation at Km with changing moiré lattice
 HR_TB_bk1 = Kane_Mele_tot_n_slab < 'KPOINTS_Mcoupling';
 klist = HR_TB_bk1.klist_frac();
-Rm=0.25;
 theta = 2*pi/3;
 Rz = [cos(theta), -sin(theta), 0;
       sin(theta),  cos(theta), 0;

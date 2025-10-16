@@ -128,9 +128,8 @@ kpoints_name= Graphene_test2_n.kpoints_name;
 bandplot(EIGENCAR, [-0.2, 0.1], klist_l, kpoints_l, kpoints_name);
 
 %% Fermi surface calculation for moiré bands
-kmesh = [151, 151];
+kmesh = [351, 351];
 method = 'area';
-radius = 0.0129;
 lk    = 3;
 blk = 7; %num of diagoanl block 
 
@@ -161,11 +160,46 @@ end
 EIGENCAR_3Dsh = reshape(EIGENCAR.', kmesh(1), kmesh(2), []);
 
 %% Plot moiré Fermi surface
-Efermi = 0.0;
+Efermi = 0.0; % -0.08;
 bandplot3d(EIGENCAR_3Dsh-Efermi, ...
     reshape(klist_cart(:,1),kmesh), ...
     reshape(klist_cart(:,2),kmesh), ...
     'Ecut',[-0.0020,0.002], 'xlabel',Efermi);
+
+
+
+%% Moiré coupling estimation at Km with changing moiré lattice for the effective model
+Graphene_test2_n1 = Graphene_test2_n < 'KPOINTS_Mcoupling';
+klist = Graphene_test2_n1.klist_frac();
+theta = 2*pi/3;
+Rz = [cos(theta), -sin(theta), 0;
+      sin(theta),  cos(theta), 0;
+      0,           0,          1];
+klist_rot = (Rz * (klist*Graphene_test2_n1.Gk)')'/Graphene_test2_n1.Gk;
+
+% Compute slab eigenstates on original and rotated k-paths
+[~,WAVECAR,~]  = Graphene_test2_n.EIGENCAR_gen('WEIGHTCAR',true,'klist',klist);
+[~,WAVECAR_1,~]= Graphene_test2_n.EIGENCAR_gen('WEIGHTCAR',true,'klist',klist_rot);
+
+%% Evaluate the moire coupling factor <C3z> for the target moiré band
+clear SYMCAR1
+kn = length(klist(:,1));
+for i = 1:kn
+    SYMCAR1(:,:,i) = ( double(WAVECAR(:,1,i))' * double(WAVECAR_1(:,1,i)) ); % select the target surface band
+end
+
+% Average coupling strength
+for k = 1:length(SYMCAR1)
+    spec_norm(k) = norm((SYMCAR1(:,:,k)));
+end
+figure;
+x_vec = linspace(0, 1, length(spec_norm));
+plot(x_vec,spec_norm') 
+ylim([0,1])
+xlabel('moireBZ/BZ');
+ylabel('Moire coupling factor at Km');
+
+
 
 %% construct_moire_H.m
 % Construct the Moiré Hamiltonian from a tight-binding model from HR class.
@@ -197,65 +231,65 @@ bandplot3d(EIGENCAR_3Dsh-Efermi, ...
 %     and optionally between satellites to enforce C3 symmetry.
 %   - Hermiticity is enforced explicitly at the end.
 
-function Hm = construct_moire_H(HR, Vmijs, R, restore_C3z)
-arguments
-    HR
-    Vmijs
-    R                  % Ratio mBZ/BZ
-    restore_C3z logical = true;
-end
-
-% Extract reciprocal lattice vectors from parent HR
-Gk = HR.Gk;
-
-% Construct Moiré reciprocal lattice vectors
-Gm = R * Gk; 
-Gm(3,:) = -Gm(1,:) + Gm(2,:);   % Third vector for hexagonal symmetry
-N = HR.WAN_NUM;                 % Number of Wannier orbitals per unit cell
-
-% Define symbolic momentum variables
-syms k_x k_y k_z real;
-
-% Parent Hamiltonian as function of k
-Hfun = matlabFunction(HR.sym, 'Vars', [k_x, k_y, k_z]);
-
-% Extend Gm to include both +Gm and -Gm shifts
-Gm = [Gm; -Gm];
-
-% Construct block-diagonal Hamiltonian: center + 6 neighbors
-Hblocks = cell(7,1);
-Hblocks{1} = Hfun(k_x, k_y, k_z);  % central block
-for i = 1:6
-    k_shift = [k_x, k_y, k_z] - Gm(i,:);
-    Hblocks{i+1} = Hfun(k_shift(1), k_shift(2), k_shift(3));
-end
-Hm = blkdiag(Hblocks{:}); 
-
-% Add couplings between central block and each satellite
-for i = 1:6
-    row_idx = 1:N;
-    col_idx = (N*i + 1):(N*(i+1));
-    
-    % Insert Hermitian coupling
-    Hm(row_idx, col_idx) = Vmijs;
-    % Hm(col_idx, row_idx) = Vmijs';
-end
-
-% Optionally restore C3z symmetry by adding couplings between satellites
-for i = 1:6
-    j = mod(i,6) + 1;  % next neighbor index (1..6 cyclic)
-    idx_i = (N*i + 1):(N*(i+1));
-    idx_j = (N*j + 1):(N*(j+1));
-    
-    if restore_C3z
-        Hm(idx_i, idx_j) = Vmijs;
-        Hm(idx_j, idx_i) = Vmijs';
-    end
-end
-
-% Enforce Hermiticity explicitly
-Hm = (Hm + Hm')/2;
-
-% Convert symbolic Hamiltonian into function handle @(kx,ky,kz)
-Hm = matlabFunction(Hm, 'Vars', [k_x, k_y, k_z]);
-end
+% function Hm = construct_moire_H(HR, Vmijs, R, restore_C3z)
+% arguments
+%     HR
+%     Vmijs
+%     R                  % Ratio mBZ/BZ
+%     restore_C3z logical = true;
+% end
+% 
+% % Extract reciprocal lattice vectors from parent HR
+% Gk = HR.Gk;
+% 
+% % Construct Moiré reciprocal lattice vectors
+% Gm = R * Gk; 
+% Gm(3,:) = -Gm(1,:) + Gm(2,:);   % Third vector for hexagonal symmetry
+% N = HR.WAN_NUM;                 % Number of Wannier orbitals per unit cell
+% 
+% % Define symbolic momentum variables
+% syms k_x k_y k_z real;
+% 
+% % Parent Hamiltonian as function of k
+% Hfun = matlabFunction(HR.sym, 'Vars', [k_x, k_y, k_z]);
+% 
+% % Extend Gm to include both +Gm and -Gm shifts
+% Gm = [Gm; -Gm];
+% 
+% % Construct block-diagonal Hamiltonian: center + 6 neighbors
+% Hblocks = cell(7,1);
+% Hblocks{1} = Hfun(k_x, k_y, k_z);  % central block
+% for i = 1:6
+%     k_shift = [k_x, k_y, k_z] - Gm(i,:);
+%     Hblocks{i+1} = Hfun(k_shift(1), k_shift(2), k_shift(3));
+% end
+% Hm = blkdiag(Hblocks{:}); 
+% 
+% % Add couplings between central block and each satellite
+% for i = 1:6
+%     row_idx = 1:N;
+%     col_idx = (N*i + 1):(N*(i+1));
+% 
+%     % Insert Hermitian coupling
+%     Hm(row_idx, col_idx) = Vmijs;
+%     % Hm(col_idx, row_idx) = Vmijs';
+% end
+% 
+% % Optionally restore C3z symmetry by adding couplings between satellites
+% for i = 1:6
+%     j = mod(i,6) + 1;  % next neighbor index (1..6 cyclic)
+%     idx_i = (N*i + 1):(N*(i+1));
+%     idx_j = (N*j + 1):(N*(j+1));
+% 
+%     if restore_C3z
+%         Hm(idx_i, idx_j) = Vmijs;
+%         Hm(idx_j, idx_i) = Vmijs';
+%     end
+% end
+% 
+% % Enforce Hermiticity explicitly
+% Hm = (Hm + Hm')/2;
+% 
+% % Convert symbolic Hamiltonian into function handle @(kx,ky,kz)
+% Hm = matlabFunction(Hm, 'Vars', [k_x, k_y, k_z]);
+% end
