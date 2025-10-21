@@ -9,7 +9,8 @@ arguments
     optionsK.Nk1 double = 50
     optionsK.Nk2 double = 50
 
-    options.BAND_index = [];
+    options.BAND_index = []
+    options.eps = 1e-4
 end
 optionsKcell = namedargs2cell(optionsK);
 optionsCell = namedargs2cell(options);

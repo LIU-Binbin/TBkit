@@ -3,9 +3,9 @@ arguments
     Ham_obj TBkit  % Hamiltonian object (must be of class 'TBkit').
     opts.Num_Occupied int8 = 0  % Default: 0 (half of the bands are occupied).
     opts.Gap_Threshold double = 1e-4  % Default threshold for gap.
-    opts.kpoint_tolerance double = 1e-4
+    opts.kpoint_tolerance double = 1e-3
     
-    kopts.kstart(1,3) double = [0 0 0]
+    kopts.kstart(1,3) double = [-0.5 -0.5 -0.5]
     kopts.kdir1 (1,3) double = [1 0 0]
     kopts.kdir2 (1,3) double = [0 1 0]
     kopts.kdir3 (1,3) double = [0 0 1]

@@ -3,7 +3,7 @@ arguments
     m = 1
     n = 1
     options.FontName = 'Helvetica'
-    options.FontSize
+    options.FontSize = 0
     options.FigSize {mustBeMember(options.FigSize, ["auto", "standard", "wide"])} = "auto";
     options.Position = [];
 end
@@ -37,7 +37,7 @@ switch options.FigSize
 
         FontSize = 24;
 end
-if exist('options.FontSize','var')
+if options.FontSize ~= 0
     FontSize = options.FontSize;
 end
 %%
@@ -72,6 +72,8 @@ for i = 1:m
             'FontName', options.FontName, ...
             'FontSize', FontSize, ...
             'Layer', 'top')
+        xtickangle(axes(i,j), 0)
+        ytickangle(axes(i,j), 0)
     end
 end
 end

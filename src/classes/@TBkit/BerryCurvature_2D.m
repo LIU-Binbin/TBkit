@@ -9,7 +9,8 @@ arguments
     optionsK.Nk1 double = 51
     optionsK.Nk2 double = 51
 
-    options.BAND_index = []; 
+    options.BAND_index = []
+    options.eps = 1e-4
     % options.ncore = 1
 end
 %%
@@ -42,11 +43,11 @@ clear fft
 tic
 if isempty(options.BAND_index)
     for ki = 1:nkpts
-        BCCAR(ki) = BerryCurvature_k(Ham, tensor_index, klist(ki,:), mu);
+        BCCAR(ki) = BerryCurvature_k(Ham, tensor_index, klist(ki,:), mu, "eps", options.eps);
     end
 else
     for ki = 1:nkpts
-        Omega = BerryCurvature_nk(Ham, tensor_index, klist(ki,:));
+        Omega = BerryCurvature_nk(Ham, tensor_index, klist(ki,:), "eps", options.eps);
         BCCAR(ki) = sum(Omega(options.BAND_index));
     end
 end
