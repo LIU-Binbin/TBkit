@@ -1,5 +1,5 @@
-function Gen_LxLyLz()
-[orbL, elementL, quantumL] = wout_read();
+function [Lx, Ly, Lz] = Gen_LxLyLz()
+[orbL, elementL, quantumL, SpinfulFlag] = wout_read();
 %%
 ZeroMat = zeros(size(orbL,1));
 for i = 1:size(orbL,1)
@@ -20,12 +20,17 @@ for i = 1:size(EQup,1)
     L(i,:) = Y_lm(EQup(i,3), EQup(i,4) ,'An',ielement);
 end
 
-I2 = sym(eye(2));
+if SpinfulFlag
+    I2 = sym(eye(2));
 
-Lx = kron(I2, (L.Lplus+L.Lminus)/sym(2));
-Ly = kron(I2, (L.Lplus-L.Lminus)/sym(2i));
-Lz = kron(I2, (L.Lz));
-
+    Lx = kron(I2, (L.Lplus+L.Lminus)/sym(2));
+    Ly = kron(I2, (L.Lplus-L.Lminus)/sym(2i));
+    Lz = kron(I2, (L.Lz));
+else
+    Lx = (L.Lplus+L.Lminus)/sym(2);
+    Ly = (L.Lplus-L.Lminus)/sym(2i);
+    Lz = (L.Lz);
+end
 Lx = M'*Lx/M';
 Ly = M'*Ly/M';
 Lz = M'*Lz/M';
@@ -34,13 +39,14 @@ Lx(logical(ZeroMat)) = 0;
 Ly(logical(ZeroMat)) = 0;
 Lz(logical(ZeroMat)) = 0;
 %% wannier tools use inner uudd basis
-WAN_NUM = length(Lx);
-
-udud2uudd = [1:2:(WAN_NUM-1),2:2:(WAN_NUM)];
-Lx = Lx(udud2uudd,udud2uudd);
-Ly = Ly(udud2uudd,udud2uudd);
-Lz = Lz(udud2uudd,udud2uudd);
-
+if SpinfulFlag
+    WAN_NUM = length(Lx);
+    
+    udud2uudd = [1:2:(WAN_NUM-1),2:2:(WAN_NUM)];
+    Lx = Lx(udud2uudd,udud2uudd);
+    Ly = Ly(udud2uudd,udud2uudd);
+    Lz = Lz(udud2uudd,udud2uudd);
+end
 %% write to file
 fid1 = fopen('Lx.dat', 'w');
 fid2 = fopen('Ly.dat', 'w');

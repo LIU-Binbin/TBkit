@@ -1,4 +1,4 @@
-function [orbL, elementL, quantumL] = wout_read(filename, POSCAR_name,options)
+function [orbL, elementL, quantumL, SpinfulFlag] = wout_read(filename, POSCAR_name,options)
 %WOUT_READ Parse wannier90.wout files to extract orbital and quantum number data
 %
 %   Inputs:
@@ -37,12 +37,31 @@ if options.UsePOSCAR_Cordinates
     orbL = orbL_Atom(idx,:);
 end
 quantumL = [];              % Placeholder for quantum numbers
-TestL = [orbL,quantumL];
-if has_duplicate_rows_tol(TestL)
-    SpinfulFlag = 1;
+
+if isempty(SpinfulFlag)
+    for i = 1:2
+        idxIon =  idx(i);
+        elementname = remove_atom_numbers(sites(idxIon).name);
+        element_data = table2array(elements(...
+            char(elementname), {'atom_number','n'}));
+        l = projectionData(i,4);
+        mr = projectionData(i,5);
+        tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr)];
+        quantumL = [quantumL;tmpquantumL];
+    end
+
+    testL = [orbL(1:2,:), quantumL];
+    
+    if has_duplicate_rows_tol(testL)
+        SpinfulFlag = true;
+    else
+        SpinfulFlag = false;
+    end
+    quantumL = [];
 end
-if SpinfulFlag
-    spin = 1/2;
+
+spin = 1/2;
+if SpinfulFlag  
     for i = 1:Nbands
         idxIon =  idx(i);
         elementname = remove_atom_numbers(sites(idxIon).name);
@@ -68,7 +87,7 @@ else
         elementL(i,:) = element_data(1) ;
         l = projectionData(i,4);
         mr = projectionData(i,5);
-        tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr),nan];
+        tmpquantumL = [element_data(2),projectionData(i,4),lmr2m(l,mr),spin];
         quantumL = [quantumL;tmpquantumL];
     end
 end
@@ -201,7 +220,6 @@ try
             else
                 SpinfulFlag = false;
             end
-
         end
 
         % Extract number of Wannier functions
