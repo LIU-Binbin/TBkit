@@ -79,7 +79,7 @@ if iscell(EIGENCAR)
     color = options.Color; % Use specified color scheme
 else
     Nbands = size(EIGENCAR, 1); % Number of bands from matrix
-    if ischar(options.Color) || isnumeric(options.Color)
+    if ischar(options.Color) || isstring(options.Color) || isnumeric(options.Color)
         color = options.Color; % Use specified color if it's a char or numeric
     else
         color = [rand, rand, rand]; % Random color if no valid color specified

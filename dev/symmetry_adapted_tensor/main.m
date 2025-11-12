@@ -1,5 +1,5 @@
-%% Symmetry Adapted Tensor
-%% 手动定义对称性操作的例子
+%[text] # Symmetry Adapted Tensor
+%[text] ## Examples for specifying the operators manually
 % P = Oper.inversion();
 % Mx = Oper.mirror([1,0,0]);
 % My = Oper.mirror([0,1,0]);
@@ -10,26 +10,28 @@
 % C3z = Oper.rotation(1/3,[0,0,1]);
 % S6x = Mx*C6x;
 % S6z = Mz*C6z;
-%% 必须指明晶系
-Msg = read_Magnetic_Sym_El([152,34],"hexagonal");
-gen_list = Msg;
-%% 3rd 
-jahn_symbol_Str = 'aeVVV';
+%%
+Msg = read_Magnetic_Sym_El([166,98]);
+Gen_list = Msg;
+
+jahn_symbol_Str = 'eV3';
 Tensor = jahn_symbol(jahn_symbol_Str);
 
-for i = 1:length(gen_list)
-    Tensor = group_transformation(Tensor, gen_list(i));
+for i = 1:length(Gen_list)
+    Tensor = group_transformation(Tensor, Gen_list(i));
 end
-% name of the numerical tensor
-[~, ~, SymMatDisplay] = pretty(Tensor,"Table");
-SymMatDisplay
-%%
-jahn_symbol_Str = 'eV4';
-Tensor4 = jahn_symbol(jahn_symbol_Str);
 
-for i = 1:length(gen_list)
-    Tensor4 = group_transformation(Tensor4, gen_list(i));
-end
-% name of the numerical tensor
-[Table, SymMat, SymMatDisplay]= pretty(Tensor4,"Table");
-SymMatDisplay
+[~, ~, SymMatDisplay] = pretty(Tensor,"Table"); %[output:7ea1fcb1]
+SymMatDisplay %[output:16c11ae5]
+
+%[appendix]{"version":"1.0"}
+%---
+%[metadata:view]
+%   data: {"layout":"inline"}
+%---
+%[output:7ea1fcb1]
+%   data: {"dataType":"text","outputData":{"text":"Independent Elements: 4\n","truncated":false}}
+%---
+%[output:16c11ae5]
+%   data: {"dataType":"symbolic","outputData":{"name":"SymMatDisplay","value":"\\left(\\begin{array}{cccccccccc}\n\\mathrm{Tensor} & 11 & 21 & 31 & 12 & 22 & 32 & 13 & 23 & 33\\\\\n1 & \\chi_{1,1,1}  & 0 & 0 & 0 & -\\chi_{1,1,1}  & -\\chi_{2,3,1}  & 0 & -\\chi_{2,1,3}  & 0\\\\\n2 & 0 & -\\chi_{1,1,1}  & \\chi_{2,3,1}  & -\\chi_{1,1,1}  & 0 & 0 & \\chi_{2,1,3}  & 0 & 0\\\\\n3 & 0 & \\chi_{3,2,1}  & 0 & -\\chi_{3,2,1}  & 0 & 0 & 0 & 0 & 0\n\\end{array}\\right)"}}
+%---

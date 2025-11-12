@@ -52,6 +52,11 @@ if options.overlap
 % Regular Hamiltonian processing (no overlap)    
 else
     % Read single Hamiltonian file
+    if strcmp(filename, 'wannier90_hr.dat')
+        if ~exist(filename,"file") && exist('wannier90_symmed_hr.dat',"file")
+            filename = 'wannier90_symmed_hr.dat';
+        end
+    end
     [dataArray, NRPT_list, NRPTS, NUM_WAN] = HR.hrdat_read(filename);
     
     % Matrix format processing

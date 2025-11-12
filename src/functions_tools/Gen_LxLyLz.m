@@ -1,44 +1,107 @@
-function [Lx, Ly, Lz] = Gen_LxLyLz()
+function [Lx, Ly, Lz] = Gen_LxLyLz(fast)
+arguments
+    fast logical = true % only work for wannier90-3.1.0
+end
 [orbL, elementL, quantumL, SpinfulFlag] = wout_read();
 %%
-ZeroMat = zeros(size(orbL,1));
-for i = 1:size(orbL,1)
-    for j = 1:size(orbL,1)
-        ZeroMat(i,j) = ~all(orbL(i,:)==orbL(j,:));
+if fast
+    L_p(1,:) = Y_lm(1,  0);
+    L_p(2,:) = Y_lm(1,  1);
+    L_p(3,:) = Y_lm(1, -1);
+
+    Lx_p = (L_p.Lplus+L_p.Lminus)/sym(2);
+    Ly_p = (L_p.Lplus-L_p.Lminus)/sym(2i);
+    Lz_p =  L_p.Lz;
+
+    L_d(1,:) = Y_lm(2,  0);
+    L_d(2,:) = Y_lm(2,  1);
+    L_d(3,:) = Y_lm(2, -1);
+    L_d(4,:) = Y_lm(2,  2);
+    L_d(5,:) = Y_lm(2, -2);
+
+    Lx_d = (L_d.Lplus+L_d.Lminus)/sym(2);
+    Ly_d = (L_d.Lplus-L_d.Lminus)/sym(2i);
+    Lz_d =  L_d.Lz;
+
+    change_site = ~(diff(orbL(:,1))==0 & diff(orbL(:,2))==0 & diff(orbL(:,3))==0);
+    change_L    = diff(quantumL(:,1))~=0 | diff(quantumL(:,2))~=0;
+    change_points = find(change_site | change_L) + 1;
+    starts = [1; change_points];
+    
+    Lx_all = [];
+    Ly_all = [];
+    Lz_all = [];
+    for i = 1:length(starts)
+        switch quantumL(starts(i), 2)
+            case 0
+                Lx = 0;
+                Ly = 0;
+                Lz = 0;
+            case 1
+                Lx = Lx_p;
+                Ly = Ly_p;
+                Lz = Lz_p;
+            case 2
+                Lx = Lx_d;
+                Ly = Ly_d;
+                Lz = Lz_d;
+        end
+    
+        Lx_all = blkdiag(Lx_all, Lx);
+        Ly_all = blkdiag(Ly_all, Ly);
+        Lz_all = blkdiag(Lz_all, Lz);
     end
-end
+    Lx = Lx_all;
+    Ly = Ly_all;
+    Lz = Lz_all;
 
-EqnumL = [elementL,quantumL];
-[EqnumLsort,sort_label] = sortrows(EqnumL,5,"descend");
-M  = TBkit.P2M(sort_label); 
-EQup = EqnumLsort(EqnumLsort(:,end) > 0,:);
-
-clear L
-for i = 1:size(EQup,1)
-    ielement = EQup(i,1);
-    %assume(symvar,'real');
-    L(i,:) = Y_lm(EQup(i,3), EQup(i,4) ,'An',ielement);
-end
-
-if SpinfulFlag
-    I2 = sym(eye(2));
-
-    Lx = kron(I2, (L.Lplus+L.Lminus)/sym(2));
-    Ly = kron(I2, (L.Lplus-L.Lminus)/sym(2i));
-    Lz = kron(I2, (L.Lz));
+    if SpinfulFlag
+        I2 = sym(eye(2));
+    
+        Lx = kron(Lx, I2);
+        Ly = kron(Ly, I2);
+        Lz = kron(Lz, I2);
+    end
 else
-    Lx = (L.Lplus+L.Lminus)/sym(2);
-    Ly = (L.Lplus-L.Lminus)/sym(2i);
-    Lz = (L.Lz);
+    ZeroMat = zeros(size(orbL,1));
+    for i = 1:size(orbL,1)
+        for j = 1:size(orbL,1)
+            ZeroMat(i,j) = ~all(orbL(i,:)==orbL(j,:));
+        end
+    end
+    
+    EqnumL = [elementL,quantumL];
+    [EqnumLsort,sort_label] = sortrows(EqnumL,5,"descend");
+    M  = TBkit.P2M(sort_label); 
+    EQup = EqnumLsort(EqnumLsort(:,end) > 0,:);
+    
+    clear L
+    for i = 1:size(EQup,1)
+        ielement = EQup(i,1);
+        %assume(symvar,'real');
+        L(i,:) = Y_lm(EQup(i,3), EQup(i,4) ,'An',ielement);
+    end
+    
+    if SpinfulFlag
+        I2 = sym(eye(2));
+    
+        Lx = kron(I2, (L.Lplus+L.Lminus)/sym(2));
+        Ly = kron(I2, (L.Lplus-L.Lminus)/sym(2i));
+        Lz = kron(I2, (L.Lz));
+    else
+        Lx = (L.Lplus+L.Lminus)/sym(2);
+        Ly = (L.Lplus-L.Lminus)/sym(2i);
+        Lz = (L.Lz);
+    end
+    Lx = M'*Lx/M';
+    Ly = M'*Ly/M';
+    Lz = M'*Lz/M';
+    % 
+    Lx(logical(ZeroMat)) = 0;
+    Ly(logical(ZeroMat)) = 0;
+    Lz(logical(ZeroMat)) = 0;
 end
-Lx = M'*Lx/M';
-Ly = M'*Ly/M';
-Lz = M'*Lz/M';
-% 
-Lx(logical(ZeroMat)) = 0;
-Ly(logical(ZeroMat)) = 0;
-Lz(logical(ZeroMat)) = 0;
-%% wannier tools use inner uudd basis
+%% QtransF use inner uudd basis
 if SpinfulFlag
     WAN_NUM = length(Lx);
     
@@ -48,15 +111,11 @@ if SpinfulFlag
     Lz = Lz(udud2uudd,udud2uudd);
 end
 %% write to file
-fid1 = fopen('Lx.dat', 'w');
-fid2 = fopen('Ly.dat', 'w');
-fid3 = fopen('Lz.dat', 'w');
-for k = 1:numel(Lx)
-    fprintf(fid1, '%.16e %.16e\n', real(Lx(k)), imag(Lx(k)));
-    fprintf(fid2, '%.16e %.16e\n', real(Ly(k)), imag(Ly(k)));
-    fprintf(fid3, '%.16e %.16e\n', real(Lz(k)), imag(Lz(k)));
-end
-fclose(fid1);
-fclose(fid2);
-fclose(fid3);
+Lx_line = reshape(double(Lx), numel(Lx), 1);
+Ly_line = reshape(double(Ly), numel(Ly), 1);
+Lz_line = reshape(double(Lz), numel(Lz), 1);
+
+writematrix([real(Lx_line), imag(Lx_line)], "Lx.dat", 'Delimiter',' ')
+writematrix([real(Ly_line), imag(Ly_line)], "Ly.dat", 'Delimiter',' ')
+writematrix([real(Lz_line), imag(Lz_line)], "Lz.dat", 'Delimiter',' ')
 end
