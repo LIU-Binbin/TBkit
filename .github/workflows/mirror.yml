@@ -1,0 +1,33 @@
+name: Mirror Upstream
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # 每 12 小时自动同步一次
+  workflow_dispatch:         # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo (your mirror repo)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Add upstream
+        run: |
+          git remote add upstream https://github.com/BUAA-TCMP/TBkit.git
+          git fetch upstream --prune
+
+      - name: Merge upstream -> your repo
+        run: |
+          git push origin --mirror
+          # 如果你不想 mirror（保留自己修改），改为：
+          # git merge upstream/main
+          # git push origin main
+
+      - name: Set Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
