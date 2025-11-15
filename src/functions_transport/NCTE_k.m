@@ -1,108 +1,144 @@
-function alpha_mu = NCTE_k(Ham, tensor_index, kpoint,mu_list, T, eps)
+function alpha_mu = NCTE_k(Ham, tensor_index, kpoint, mu_list, T, eps, Coeffs)
+% --------------------------------------------------------
+% NCTE_k
+%   Compute nonlinear chiral thermoelectric kernel α_{abc}(k, μ, T)
+%   Single-index mode:   tensor_index = [a,b,c] → alpha_mu (1 × Nmu)
+%   All-27 mode:         tensor_index = []      → alpha_mu (27 × Nmu)
+% --------------------------------------------------------
 arguments
     Ham TBkit
-    tensor_index (1,3) double
+    tensor_index double = []
     kpoint double
     mu_list double
-    T = 50 % Kelvin
-    eps = 1e-4
+    T double = 50
+    eps double = 1e-4
+    Coeffs double = [1 1 -1]
 end
-Nbands = Ham.Basis_num;
-a = tensor_index(1);
-b = tensor_index(2);
-c = tensor_index(3);
-% T = options.T;
-% eps = options.eps;
-%%
-% [EIG_ki, WAV_ki] = Ham.EIGENCAR_gen('klist', kpoint, 'printmode', false);
-% dH_dk_xyz = Ham.dH_dk(kpoint);
-[WAV_ki,EIG_ki,dH_dk_xyz] = Ham.fft(kpoint);
- dEnm = EIG_ki - EIG_ki';  % 能级差矩阵
-% dEnm = repmat(EIG_ki, 1, Nbands) - repmat(EIG_ki', Nbands, 1);
 
+Nbands = Ham.Basis_num;
+
+% default coeffs
+if isempty(Coeffs)
+    c1 = 1; c2 = 1; c3 = -1;
+else
+    c1 = Coeffs(1); c2 = Coeffs(2); c3 = Coeffs(3);
+end
+
+% ---------------- Eigen + dH/dk ----------------
+[WAV,EIG,dH] = Ham.fft(kpoint);
+EIG = EIG(:);
+
+dEnm = EIG - EIG.';
 inv_dEnm_sq = zeros(Nbands);
 valid = abs(dEnm) > eps;
-% inv_dEnm(~is_degenerated) = 1./dEnm(~is_degenerated);
-inv_dEnm_sq(valid) = 1./(dEnm(valid).^2);
-%%
-VEC_ki = zeros(Nbands, Nbands, 3);
-VEC_nn_ki = zeros(Nbands, 3);
+inv_dEnm_sq(valid) = 1 ./ (dEnm(valid).^2);
+
+% ---------------- velocity matrices ----------------
+V   = zeros(Nbands, Nbands, 3);
+Vnn = zeros(Nbands, 3);
 for i = 1:3
-    VEC_ki(:,:,i) = WAV_ki' * dH_dk_xyz(:,:,i) * WAV_ki;
-    VEC_nn_ki(:,i)= real(diag(VEC_ki(:,:,i)));
+    tmp      = WAV' * dH(:,:,i) * WAV;
+    V(:,:,i) = tmp;
+    Vnn(:,i) = real(diag(tmp));
 end
-    VEC_ki_c = VEC_ki(:,:,c);
-    VEC_ki_a = VEC_ki(:,:,a);
-    VEC_ki_b = VEC_ki(:,:,b);
-%%
-alpha_n = zeros([Nbands,1]);
-% % Nbands = 18; vectorized same with JIT
-% $ Nbands = 36; JIT better than vectorized
-% if b ~= c
-%     ImV = imag(VEC_ki(:,:,b) .* conj(VEC_ki(:,:,c)));
-%     Omega_n = -2 * sum(ImV .* inv_dEnm_sq, 2);
-%     alpha_n = alpha_n + VEC_nn_ki(:,a) .* Omega_n;
-% end
-% 
-% if c ~= a
-%     ImV = imag(VEC_ki(:,:,c) .* conj(VEC_ki(:,:,a)));
-%     Omega_n = -2 * sum(ImV .* inv_dEnm_sq, 2);
-%     alpha_n = alpha_n + VEC_nn_ki(:,b) .* Omega_n;
-% end
-% 
-% if a ~= b
-%     ImV = imag(VEC_ki(:,:,a) .* conj(VEC_ki(:,:,b)));
-%     Omega_n = -2 * sum(ImV .* inv_dEnm_sq, 2);
-%     alpha_n = alpha_n - VEC_nn_ki(:,c) .* Omega_n;
-% end
 
+% ---------------- Energy factors ----------------
+mu_list    = mu_list(:).';
+E_minus_mu = EIG - mu_list;    % Nbands × Nmu
 
+% --------------------------------------------------------
+%  Case A: single index (a,b,c)
+% --------------------------------------------------------
+if ~isempty(tensor_index)
+    if numel(tensor_index) ~= 3
+        error("NCTE_k:InvalidIndex", "tensor_index must be empty or a 1x3 vector.");
+    end
+    a = tensor_index(1);
+    b = tensor_index(2);
+    c = tensor_index(3);
+    
+    alpha_n = zeros(Nbands,1);
 
-if b ~= c
-    Omega_n = zeros([Nbands,1]);
-    for n = 1:Nbands
-        for m = 1:Nbands
-            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki_b(n,m) * VEC_ki_c(m,n)) * inv_dEnm_sq(n,m);
+    if b ~= c
+        ImV   = imag( V(:,:,b) .* conj(V(:,:,c)) );
+        Omega = -2 * sum(ImV .* inv_dEnm_sq, 2);
+        alpha_n = alpha_n + c1 * Vnn(:,a) .* Omega;
+    end
+
+    if c ~= a
+        ImV   = imag( V(:,:,c) .* conj(V(:,:,a)) );
+        Omega = -2 * sum(ImV .* inv_dEnm_sq, 2);
+        alpha_n = alpha_n + c2 * Vnn(:,b) .* Omega;
+    end
+
+    if a ~= b
+        ImV   = imag( V(:,:,a) .* conj(V(:,:,b)) );
+        Omega = -2 * sum(ImV .* inv_dEnm_sq, 2);
+        alpha_n = alpha_n + c3 * Vnn(:,c) .* Omega;
+    end
+
+    % --------- temperature loop (vectorized in μ) ----------
+    if isscalar(T)
+        f1 = Fermi_1(E_minus_mu, T);       % Nbands × Nmu
+        W  = f1 .* E_minus_mu;            % Nbands × Nmu
+        alpha_mu = alpha_n.' * W;         % 1 × Nmu   (只转置小向量 alpha_n)
+    else
+        NT = numel(T);
+        alpha_mu = cell(1,NT);
+        for it = 1:NT
+            f1 = Fermi_1(E_minus_mu, T(it));
+            W  = f1 .* E_minus_mu;
+            alpha_mu{it} = alpha_n.' * W; % 1 × Nmu
         end
     end
-    alpha_n = alpha_n + VEC_nn_ki(:,a) .* Omega_n;
+    return;
 end
 
-if c ~= a
-    Omega_n = zeros([Nbands,1]);
-    for n = 1:Nbands
-        for m = 1:Nbands
-            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki_c(n,m) * VEC_ki_a(m,n)) * inv_dEnm_sq(n,m);
+% --------------------------------------------------------
+%  Case B: all 27 tensors
+% --------------------------------------------------------
+alpha_n_all = zeros(Nbands,27);
+idx = 0;
+
+for a = 1:3
+    for b = 1:3
+        for c = 1:3
+            idx = idx + 1;
+            col = zeros(Nbands,1);
+
+            if b ~= c
+                ImV   = imag( V(:,:,b) .* conj(V(:,:,c)) );
+                Omega = -2 * sum(ImV .* inv_dEnm_sq, 2);
+                col   = col + c1 * Vnn(:,a) .* Omega;
+            end
+            if c ~= a
+                ImV   = imag( V(:,:,c) .* conj(V(:,:,a)) );
+                Omega = -2 * sum(ImV .* inv_dEnm_sq, 2);
+                col   = col + c2 * Vnn(:,b) .* Omega;
+            end
+            if a ~= b
+                ImV   = imag( V(:,:,a) .* conj(V(:,:,b)) );
+                Omega = -2 * sum(ImV .* inv_dEnm_sq, 2);
+                col   = col + c3 * Vnn(:,c) .* Omega;
+            end
+
+            alpha_n_all(:,idx) = col;
         end
     end
-    alpha_n = alpha_n + VEC_nn_ki(:,b) .* Omega_n;
-end
-% 
-if a ~= b
-    Omega_n = zeros([Nbands,1]);
-    for n = 1:Nbands
-        for m = 1:Nbands
-            Omega_n(n) = Omega_n(n) - 2*imag(VEC_ki_a(n,m) * VEC_ki_b(m,n)) * inv_dEnm_sq(n,m);
-        end
-    end
-    alpha_n = alpha_n - VEC_nn_ki(:,c) .* Omega_n;
 end
 
-% 费米分布计算
-E_minus_mu = EIG_ki - mu_list(:)';  % 自动扩展
+% ---------- final μ,T combination ----------
 if isscalar(T)
-    f1 = Fermi_1(E_minus_mu, T);
-    %
-    % Nmu = length(mu_list);
-    % E_minus_mu = repmat(EIG_ki, 1, Nmu) - repmat(mu_list, Nbands, 1);
-    % f1 = Fermi_1(E_minus_mu, T);
-    %
-    alpha_mu = tensorprod( alpha_n, f1.*E_minus_mu, 1, 1);
+    f1 = Fermi_1(E_minus_mu, T);      % Nbands × Nmu
+    W  = f1 .* E_minus_mu;           % Nbands × Nmu
+    alpha_mu = alpha_n_all.' * W;    % 27 × Nmu   (只转置 Nbands×27，小矩阵)
 else
-    for iT = 1:length(T)
-        Ttmp = T(iT);
-        f1 = Fermi_1(E_minus_mu, Ttmp);
-        alpha_mu{iT} = tensorprod( alpha_n, f1.*E_minus_mu, 1, 1);
+    NT = numel(T);
+    alpha_mu = cell(1,NT);
+    for it = 1:NT
+        f1 = Fermi_1(E_minus_mu, T(it));
+        W  = f1 .* E_minus_mu;
+        alpha_mu{it} = alpha_n_all.' * W;   % 27 × Nmu
     end
 end
 
