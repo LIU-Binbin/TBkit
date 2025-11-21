@@ -3,6 +3,7 @@ arguments
     Tensor
     mode  {mustBeMember(mode,{'EQ','latex','Table'})} =  'EQ';
     options.silent = false;
+    options.DisplayForm {mustBeMember(options.DisplayForm,{'123','xyz'})} =  '123';
 end
 n_ele = Tensor.n_ele;
 tensor_rank = Tensor.tensor_rank;
@@ -83,7 +84,33 @@ switch mode
          symTitle = [str2sym('Tensor'), sym(RowsCellNoSpaces).'];
          symCol = sym(ColsCellNoSpaces);
          SymMatDisplay = [symTitle;[symCol,SymMat]];
+         if strcmp(options.DisplayForm,'xyz')
+             SymMat= replaceSymbolicElements(SymMat);
+            SymMatDisplay = replaceSymbolicElements(SymMatDisplay);
+         end
+
     otherwise
          return;
 end
+end
+
+function newSymMat = replaceSymbolicElements(SymMatDisplay)
+% 替换符号矩阵中的特定字符
+% 去掉','，将1->x, 2->y, 3->z
+
+    
+    [rows, cols] = size(SymMatDisplay);
+    newSymMat = sym(zeros(rows, cols));
+    
+    for i = 1:rows
+        for j = 1:cols
+            element_str = char(SymMatDisplay(i,j));
+            % 执行替换
+            element_str = strrep(element_str, ',', '');  % 去掉逗号
+            element_str = strrep(element_str, '1', 'x'); % 1->x
+            element_str = strrep(element_str, '2', 'y'); % 2->y
+            element_str = strrep(element_str, '3', 'z'); % 3->z
+            newSymMat(i,j) = str2sym(element_str);
+        end
+    end
 end

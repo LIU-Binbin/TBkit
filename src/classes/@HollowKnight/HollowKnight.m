@@ -529,6 +529,7 @@ classdef HollowKnight %(Abstract) A base class for hollow objects, extending its
         Smat = repmat(Ssingle, [size(A, 1), size(B, 1)]);
         for i = 1:size(A, 1)
             for j = 1:size(B, 1)
+                %fprintf('%d/%d, %d/%d\n',i,size(A, 1),j,size(B, 1));
                 % Compute the inner product for each pair of rows
                 Smat(i, j) = InnerProduct_row(A(i, :), B(j, :), optionsCell{:});
             end

@@ -104,12 +104,51 @@ KaneMele= KaneMele.nn([1,1,0],1e-2,1.15);
 KaneMele = KaneMele.init('level_cut',2,"onsite",1,'fast',true);
 
 % 定义复杂对称操作 | Define complex symmetries
-C3 = Oper.rotation(1/3, [0,0,1], false, double(expm(-1i*(pi/3)*gamma_matrix(2,4)))); % 自旋轨道耦合旋转
-Tr = Oper.time_reversal(3, double(-1i*gamma_matrix(4,5)));  % 时间反演
-I = Oper.inversion(3, double(-gamma_matrix(1)));            % 空间反演
-Mx = Oper.mirror([1,0,0], double(1i*gamma_matrix(2,5)));     % x镜像
-My = Oper.mirror([0,1,0], double(1i*gamma_matrix(2,3)));     % y镜像
+C3 = Oper.rotation(1/3, [0,0,1], false, double(expm(-1i*(pi/3)*gamma_matrix(2,4))),'Rm',KaneMele.Rm); % 自旋轨道耦合旋转
+Tr = Oper.time_reversal(3, double(-1i*gamma_matrix(4,5)),'Rm',KaneMele.Rm);  % 时间反演
+I = Oper.inversion(3, double(-gamma_matrix(1)),'Rm',KaneMele.Rm);            % 空间反演
+Mx = Oper.mirror([1,0,0], double(1i*gamma_matrix(2,5)),'Rm',KaneMele.Rm);     % x镜像
+My = Oper.mirror([0,1,0], double(1i*gamma_matrix(2,3)),'Rm',KaneMele.Rm);     % y镜像
 
+% 应用对称约束 | Apply symmetry constraints
+Groups_KM = generate_group([C3, Tr, I, Mx, My]);
+KaneMele_test = KaneMele.applyOper([C3,I,Mx,My,Tr], 'generator', true, 'fast', true);
+KaneMele_test = KaneMele_test.GenfromOrth('Accuracy',1e-6);
+% 参数替换与化简 | Parameter substitution and simplification
+syms t lambda_SO E_pz T_2 real;
+T_2 = 0; % omit real component <<i,j>>
+Varlist = KaneMele_test.symvar_list;
+KaneMele_test2 = subs(KaneMele_test,Varlist,[T_2,t,E_pz,lambda_SO]);
+disp('最终化简形式 | Final Simplified Form:');
+disp(simplify(rewrite(KaneMele_test2.sym(), 'sincos')));
+%% Kane-Mele模型案例 | Kane-Mele Model By Basis
+% 初始化Kane-Mele模型 | Initialize Kane-Mele model
+
+clear;
+KaneMele = HR(4);
+KaneMele = KaneMele < 'POSCAR_KM';  % 读取拓扑绝缘体结构 | Read topological insulator structure
+KaneMele.Rm = double(KaneMele.Rm);
+KaneMele.orbL = double(KaneMele.orbL);
+KaneMele.quantumL = [1 1 0  1/2;
+    1 1 0  1/2;
+    1 1 0  -1/2;
+    1 1 0  -1/2;
+    ];
+
+KaneMele= KaneMele.nn([1,1,0],1e-2,1.15);
+%
+KaneMele = KaneMele.init('level_cut',2,"onsite",1,'fast',true);
+
+% 定义复杂对称操作 | Define complex symmetries
+C3 = Oper.rotation(1/3, [0,0,1], 'TBkitObj',KaneMele); % 自旋轨道耦合旋转
+Tr = Oper.time_reversal(3, 'TBkitObj',KaneMele);  % 时间反演
+I = Oper.inversion(3, 'TBkitObj',KaneMele);            % 空间反演
+Mx = Oper.mirror([1,0,0], 'TBkitObj',KaneMele);    % x镜像
+My = Oper.mirror([0,1,0], 'TBkitObj',KaneMele);    % y镜像
+BasisFuncL  = BasisFunc(KaneMele);
+BasisFuncL.dispAll
+[C3, Tr, I, Mx, My]
+%% 
 % 应用对称约束 | Apply symmetry constraints
 Groups_KM = generate_group([C3, Tr, I, Mx, My]);
 KaneMele_test = KaneMele.applyOper([C3,I,Mx,My,Tr], 'generator', true, 'fast', true);
@@ -133,12 +172,21 @@ EIGENCAR_origin = KaneMele_test2_n.EIGENCAR_gen();
 bandplot(EIGENCAR_origin,'ax',Ax(1),'title','KM:t = 1, \lambda_{SO} = 0.06');
 KaneMele_test2_n.HnumL = KaneMele_test2_n.HnumL + 0.1*rand(size(KaneMele_test2_n.HnumL));
 
+for k =  1:20
+KaneMele_test2_n = KaneMele_test2_n.set_hop(0.1,randi([1,4],1),randi([1,4],1),randi([-5,5],1,3),'add');
+end
 
 KaneMele_test2_n.bandplot('ax',Ax(2),'title','KM:t = 1, \lambda_{SO} = 0.06,Error:0.1')
-KaneMele_test3_n = KaneMele_test2_n.applyOper([C3,I,Mx,My,Tr], 'generator', true);
+KaneMele_test3_n = KaneMele_test2_n.symmetrization([C3, Tr, I, Mx, My], 'generator', true);
+KaneMele_test3_n = KaneMele_test3_n.symmetrization([C3, Tr, I, Mx, My], 'generator', true);
+
+
 EIGENCAR_sym = KaneMele_test3_n.EIGENCAR_gen();
 bandplot(EIGENCAR_sym,'ax',Ax(3),'title','KM:t = 1, \lambda_{SO} = 0.06,Error:0.1,sym');
 bandplot({EIGENCAR_origin,EIGENCAR_sym},'ax',Ax(4),'title','KM-vs-sym','Color',[1 0 0;0 0 1],'legends',["KM","KM-sym"]);
 for i =1:4
     axis(Ax(i),'normal');
 end
+%% 
+KaneMele_test2_n.list();
+KaneMele_test3_n.list();

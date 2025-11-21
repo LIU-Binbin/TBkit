@@ -8,8 +8,8 @@ function alpha_mu = NCTE_k(Ham, tensor_index, kpoint, mu_list, T, eps, Coeffs)
 arguments
     Ham TBkit
     tensor_index double = []
-    kpoint double
-    mu_list double
+    kpoint double = []
+    mu_list double = []
     T double = 50
     eps double = 1e-4
     Coeffs double = [1 1 -1]

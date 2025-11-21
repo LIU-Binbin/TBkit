@@ -69,7 +69,7 @@ function dirstring = init_v2w(SOCFLAG, Erange, options)
         Nbands = size(EIGENCAR, 1);  % Get the total number of bands
         wannier90_win_gen(SOCflag, num_bands, num_wan, Nmin, Nmax, Nbands,win_info);  % Generate Wannier90 input with selected bands
     else
-        wannier90_win_gen(SOCflag, 10, num_wan, 1, 10, 10,win_info);  % Generate default Wannier90 input if no bands are selected
+        wannier90_win_gen(SOCflag, 10, num_wan, 1, 10, 10);  % Generate default Wannier90 input if no bands are selected
     end
 
     %% Completion message

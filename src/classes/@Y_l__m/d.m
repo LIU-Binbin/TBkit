@@ -14,7 +14,7 @@ if (m1 <=0 ||(m1>0 && abs(m2)> m1))&& m2 <0
     SymExpr = Y_l__m.d(j,-m2,-m1,seed);
     return;
 end
-if isinteger(j)
+if mod(j,1)==0
     if m1==0 && m2 == 0
         SymExpr = legendreP(j,cos(theta));
         return
@@ -74,11 +74,15 @@ switch j
                     case 2
                         SymExpr = 1/4*(cos(theta)+1)^2;
                     case 1
-                        SymExpr = -1/2*sin(theta)*(cos(theta)+1);
+                        % (B) 修正：d^2_{2,1} = -2 cos^3(θ/2) sin(θ/2)
+                        SymExpr = 2*cos(theta/2)^3 * sin(theta/2);
                     case -1
-                        SymExpr = sqrt(3)/2*(-cos(theta)+1)*cos(theta/2);
+                        SymExpr = 2*cos(theta/2) * sin(theta/2)^3;
+
                     case -2
-                        SymExpr = -1/2*sin(theta)*(-cos(theta)+1);
+                        % (C) 修正：d^2_{2,-2} = sin^4(θ/2)
+                        % 也可以写成 ((1-cosθ)/2)^2，这里用半角最直接
+                        SymExpr = sin(theta/2)^4;
                     case 0
                         SymExpr = sqrt(3/8)*sin(theta)^2;
                 end

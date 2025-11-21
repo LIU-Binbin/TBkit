@@ -1,8 +1,8 @@
-function [W,D,dH_dk_R] = fft(H_hr, klist_cart, precomputed)
+function [W,D,dH_dk_R] = fft(H_hr, klist_cart, rotate_cart)
 arguments
     H_hr HR
     klist_cart % cart
-    precomputed = [] ; % 可选缓存
+    rotate_cart = [] ; % 可选缓存
 end
 persistent HnumList vectorList_R NBANDS NRPTS
 if isempty(HnumList)
@@ -13,7 +13,7 @@ if isempty(HnumList)
     NRPTS = H_hr.NRPTS;
 end
 
-
+% klist_cart = klist_cart;
 % 计算因子：exp(i * R · k)
 phase = exp(1i * (vectorList_R * klist_cart(:)));  % M×1
 
@@ -34,6 +34,25 @@ for i = 1:3
     %dH_dk_R(:,:,i) = dH;
     %dH_dk_R(:,:,i) = (dH + dH') / 2;  % Hermitian修正 ?
 end
+
+% if isempty(rotate_cart)
+%     return;
+% else
+%     % dH_dk_R_new(:,:,1) = rotate_cart(1,1)*dH_dk_R(:,:,1) + ...
+%     %                      rotate_cart(1,2)*dH_dk_R(:,:,2) + ...
+%     %                      rotate_cart(1,3)*dH_dk_R(:,:,3);
+%     % dH_dk_R_new(:,:,2) = rotate_cart(2,1)*dH_dk_R(:,:,1) + ...
+%     %                      rotate_cart(2,2)*dH_dk_R(:,:,2) + ...
+%     %                      rotate_cart(2,3)*dH_dk_R(:,:,3);
+%     % dH_dk_R_new(:,:,3) = rotate_cart(3,1)*dH_dk_R(:,:,1) + ...
+%     %                      rotate_cart(3,2)*dH_dk_R(:,:,2) + ...
+%     %                      rotate_cart(3,3)*dH_dk_R(:,:,3);
+%     % if sum(sum(dH_dk_R - dH_dk_R_new)) == 0
+%     %     warning("!");
+%     %     pause
+%     % end
+%     % dH_dk_R = dH_dk_R_new;
+% end
 
 % dH_dk_R = zeros(NBANDS, NBANDS, 3);
 % for dir = 1:3  % x,y,z方向

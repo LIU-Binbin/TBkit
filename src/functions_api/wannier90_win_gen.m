@@ -11,6 +11,7 @@ arguments
 end
 fid = fopen('wannier90.win.bk','w');
 if isempty(win_info)
+    win_info_mode = 0;
 else
     win_info_mode = 1;
 end

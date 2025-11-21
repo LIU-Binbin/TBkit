@@ -24,6 +24,7 @@ function Tensor = jahn_symbol(jahn_symbol_Str)
     outputStr = regexprep(jahn_symbol_Str, '([A-Za-z])(\d+)', '${repmat($1, 1, str2double($2))}');
     Tensor.tensor_rank = sum(isletter(outputStr));
     Tensor.jahn  = outputStr;
+    Tensor.jahn_pure  = regexprep(outputStr, '[\(\)\[\]\{\}\<\>]', '');
     %
     % fprintf('%s : %d\n',outputStr,Tensor.tensor_rank);
     Tensor = CheckPair(Tensor);

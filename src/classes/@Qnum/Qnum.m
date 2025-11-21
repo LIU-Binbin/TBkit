@@ -209,6 +209,9 @@ classdef Qnum < HollowKnight
             end
             %%%%%%%%%%% Orbital Rotation %%%%%%%%%%% 
             Y_lmTmp = Y_lm(A.l,A.m); % only one |l,m>
+            % ----- 强制调用父类 Y_l__m 的 rotateinner() -----
+            %Y_lmTmp_rotate = Y_lmTmp.rotateinner( ...
+            %    abc,RightorLeft,immproper,conjugate,antisymmetry );
             Y_lmTmp_rotate = Y_lmTmp(1).rotateinner(abc,RightorLeft,immproper,conjugate,antisymmetry);
             if length(Y_lmTmp)>1
                 Y_lmTmp_rotate = [Y_lmTmp_rotate,Y_lmTmp(2).rotateinner(abc,RightorLeft,immproper,conjugate,antisymmetry)];

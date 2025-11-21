@@ -1,4 +1,4 @@
-function alpha_mu = NCTE(Ham, tensor_index, klist, mu_list, optionsParallel, options)
+function alpha_mu = NCTE(Ham, tensor_index, klist, mu_list, optionsParallel, options,optionsAdapt)
 % PARAMETERS
 % ----------
 % Ham    : TBkit HK/HR object
@@ -29,12 +29,11 @@ arguments
     options.eps = 1e-4
     options.batch_size = 1e6  % 默认批次大小 100*100*100
     options.Coeffs = [1 1 -1];
-    options.adapt.enable (1,1) logical = false
-    options.adapt.importance_factor (1,1) double {mustBePositive} = 0.2
-    options.adapt.min_keep (1,1) double {mustBePositive} = 32
-    options.adapt.reuse_samples (1,1) logical = true
-    options.adapt.mesh_shape double = []
-    options.adapt.refine_factor (1,1) double {mustBePositive} = 1
+    optionsAdapt.AdapteEnable (1,1) logical = false
+    optionsAdapt.min_keep (1,1) double {mustBePositive} = 32
+    optionsAdapt.mesh_shape double = []
+    optionsAdapt.refine_factor (1,1) double {mustBePositive} = 1
+    optionsAdapt.Rm = [];
 end
 
 % optionscell = namedargs2cell(options);
@@ -46,26 +45,39 @@ switch class(Ham)
 end
 
 clear fft;
-%% start matlab parallel pool (if needed)
-use_parallel = (optionsParallel.ncore > 1);
-if use_parallel
-    pool = gcp('nocreate');
-    if isempty(pool) || pool.NumWorkers ~= optionsParallel.ncore
-        if ~isempty(pool)
-            delete(pool);
-        end
-        pool = parpool(optionsParallel.ncore);
-    end
-end
 % ------------- Basic info -----------------------
 Nmu = numel(mu_list);
 Nk  = size(klist,1);
-
+Nk_effect = Nk*(optionsAdapt.refine_factor^3);
 % Output shape:
 if isempty(tensor_index)
     alpha_mu = zeros(27, Nmu);
 else
     alpha_mu = zeros(1, Nmu);
+end
+
+if isvector(klist) && length(klist) ==3
+    optionsAdapt.mesh_shape = klist;
+    kcube_bulk = krange .* [ ...
+    -0.5  -0.5  -0.5   % v0
+     1     0     0     % v0 + a1
+     0     1     0     % v0 + a2
+     0     0     1 ];  % v0 + a3
+
+Nk = klist;
+
+%% ========================= 生成 k 点 ================================
+klist = kmeshgen( ...
+    H_kp_n.Rm, ...
+    kcube_bulk, ...
+    "Nk1", Nk1, ...
+    "Nk2", Nk1, ...
+    "Nk3", Nk1, ...
+    "full_edge", false);
+end
+
+if isempty(optionsAdapt.Rm) 
+    optionsAdapt.Rm = Ham.Rm;
 end
 
 T   = options.T;
@@ -75,15 +87,18 @@ eps = options.eps;
 volume = dot(cross(Ham.Rm(1,:),Ham.Rm(2,:)), Ham.Rm(3,:));
 
 const_factor = (constants.charge_C / T / constants.hbar_eV_s) ...
-    * (volume / Nk) ...
+    * (volume / Nk_effect) ...
     / constants.hbar_eV_s;
 %%
 % ------------------------------------------------
 %   MAIN LOOP OVER k-POINTS
 % ------------------------------------------------
-k_point_fun = @(kpt) NCTE_k(Ham, tensor_index, kpt, mu_list, T, eps, options.Coeffs);
+kfun = @(kpt) NCTE_k(Ham, tensor_index, kpt, mu_list, T, eps, options.Coeffs);
 
-alpha_mu = kloop_accumulate(klist, k_point_fun, alpha_mu, optionsParallel, options.adapt);
+options_par = namedargs2cell(optionsParallel);
+options_adp = namedargs2cell(optionsAdapt);
+
+alpha_mu = kloop_accumulate(klist, kfun, alpha_mu, options_par{:}, options_adp{:});
 
 %% -------- Multiply physical prefactor ----------
 alpha_mu = alpha_mu * const_factor;

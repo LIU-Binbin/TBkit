@@ -1,8 +1,7 @@
-function [W,D,dH_dk_R,dH_dk_dk_R] = fft_2(H_hr, klist_cart, precomputed)
+function [W,D,dH_dk_R,dH_dk_dk_R] = fft_2(H_hr, klist_cart)
 arguments
     H_hr HR
     klist_cart % cart
-    precomputed = [] ; % 可选缓存
 end
 
 % try
