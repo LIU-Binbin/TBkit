@@ -34,7 +34,7 @@ Hk = (Hk + Hk') / 2;  % Hermitian 修正
 for i = 1:3
     dH_dk_R(:,:,i) = 1i * tensorprod(HnumList , phase.*vectorList_R(:,i), 3, 1);
     for j = 1:3
-        dH_dk_dk_R(:,:,i,j) = 1i * tensorprod(HnumList , phase.*vectorList_R(:,i).*vectorList_R(:,j), 3, 1);
+        dH_dk_dk_R(:,:,i,j) = - tensorprod(HnumList , phase.*vectorList_R(:,i).*vectorList_R(:,j), 3, 1);
     end
 end
 

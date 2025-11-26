@@ -76,11 +76,18 @@ switch fitmethod
         else
             try
                 SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
-                SubsHnumL = [SubsHnumL(SubsIndexL)];
+                if ndims(FITobj.HcoeL) == ndims(SubsIndexL) && numel(FITobj.HcoeL) == numel(SubsIndexL)
+                else
+                    SubsHnumL = [SubsHnumL(SubsIndexL)];
+                end
             catch
                 Varlist = FITobj.symvar_list;
                 SubsHnumL = double(subs(FITobj.HcoeL,Varlist,parameters));
-                SubsHnumL = [SubsHnumL(SubsIndexL)];
+                if ndims(FITobj.HcoeL) == ndims(SubsIndexL) && numel(FITobj.HcoeL) == numel(SubsIndexL)
+
+                else
+                    SubsHnumL = [SubsHnumL(SubsIndexL)];
+                end
             end
             FITobj_n = FITobj;
             FITobj_n.HnumL(SubsIndexL) = FITobj_n.HnumL(SubsIndexL) + SubsHnumL;
