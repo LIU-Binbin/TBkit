@@ -30,15 +30,7 @@ QWZ_3D = QWZ_3D ...
     +Term(A*k_y ,tau_y )...
     +Term(E0k   ,tau_0 )...
     +Term(M     ,tau_z );...
-QWZ_3D = QWZ_3D.Subsall('sym');
-QWZ_3D = QWZ_3D <'POSCAR_2';
-%%
-QWZ_3D_kp = QWZ_3D.sym()
-%QWZ_3D_kp_pauli = QWZ_3D.pauliDecomposition
-% kp2TB
 
-QWZ_3D_TB= QWZ_3D.kp2TB();
-QWZ_3D_TB.list();
 % Para
 
 % unit eV 
@@ -59,6 +51,17 @@ b      =  1       ;
 c      =  1       ;
 % NumTB
 
+QWZ_3D = QWZ_3D.Subsall();
+QWZ_3D = QWZ_3D <'POSCAR_2';
+%%
+QWZ_3D_kp = QWZ_3D.sym()
+%QWZ_3D_kp_pauli = QWZ_3D.pauliDecomposition
+% kp2TB
+
+QWZ_3D_TB= QWZ_3D.kp2TB();
+QWZ_3D_TB.list();
+
+
 QWZ_3D_TB_n = QWZ_3D_TB.Subsall();
 QWZ_3D_TB_n = QWZ_3D_TB_n <'KPOINTS_4';
 %% Bulk
@@ -74,6 +77,8 @@ bandplot(EIGENCAR,[-2,2],'title',"WSM-TETRA",'POSCAR','POSCAR_4','KPOINTS','KPOI
 [~,Ax]= Figs(1,3);
 bandplot3d(EIGENCAR_3D(:,:,1),klist1,klist2,'ax',Ax(1),'WEIGHTCAR',-ones(101),'xlabel','k_x','ylabel','k_y','cmap',[0,0,1;1,0,0],'FaceAlpha',0.5);
 bandplot3d(EIGENCAR_3D(:,:,2),klist1,klist2,'ax',Ax(1),'WEIGHTCAR',ones(101),'xlabel','k_x','ylabel','k_y','cmap',[0,0,1;1,0,0],'FaceAlpha',0.5);
+
+return;
 %% DSM
 % Dsm 单点直接采用 
 % 
