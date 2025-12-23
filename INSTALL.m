@@ -130,6 +130,7 @@ addpath(main_path+Annotate_path);
 addpath(main_path+"/"+classes_path);
 addpath(main_path+"/"+plot_funcs_path);
 addpath(main_path+"/"+tools_path);
+addpath(main_path+"/"+tools_path+"/symmetry_adapted_tensor");
 addpath(main_path+"/"+api_path);
 addpath(main_path+"/"+transport_path);
 addpath(main_path+"/"+datas_path);

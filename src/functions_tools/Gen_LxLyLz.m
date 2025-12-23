@@ -1,8 +1,20 @@
-function [Lx, Ly, Lz] = Gen_LxLyLz(fast)
+function [Lx, Ly, Lz] = Gen_LxLyLz(hr, fast)
 arguments
+    hr = []
     fast logical = true % only work for wannier90-3.1.0
 end
-[orbL, elementL, quantumL, SpinfulFlag] = wout_read();
+if isempty(hr)
+    [orbL, elementL, quantumL, SpinfulFlag] = wout_read();
+else
+    orbL = hr.orbL;
+    elementL = hr.elementL;
+    quantumL = hr.quantumL;
+    if sum(quantumL(:,4)) == 0
+        SpinfulFlag = true;
+    else
+        SpinfulFlag = false;
+    end
+end
 %%
 if fast
     L_p(1,:) = Y_lm(1,  0);

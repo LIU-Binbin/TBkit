@@ -14,6 +14,11 @@
 Msg = read_Magnetic_Sym_El([166,98]);
 Gen_list = Msg;
 
+% AHC_1st     = 'a{V2}';
+% AHC_2nd_QMD = 'a{V2}V';
+% AHC_2nd_BCD = '{V2}V';
+% SHC         = 'eV3';
+
 jahn_symbol_Str = 'eV3';
 Tensor = jahn_symbol(jahn_symbol_Str);
 
