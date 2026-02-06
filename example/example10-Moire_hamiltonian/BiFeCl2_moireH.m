@@ -116,7 +116,7 @@ for j = 1:numk
     kpt = klist_cart(j,:);
     Hmk = Hm(kpt(1),kpt(2),kpt(3));
     [A, U] = eig(Hmk);
-    [A, U] = park.sorteig(U, A);
+    [A, U] = TBkit.sorteig(U, A);
     WAVECAR(:,:,j) = A;
     EIGENCAR(:, j) = diag(U);
 end
@@ -128,18 +128,20 @@ kpoints_name= Graphene_test2_n.kpoints_name;
 bandplot(EIGENCAR, [-0.2, 0.1], klist_l, kpoints_l, kpoints_name);
 
 %% Fermi surface calculation for moiré bands
-kmesh = [351, 351];
+kmesh = [101, 101]; % Used [351, 351] in the paper but will take much longer time;
 method = 'area';
 lk    = 3;
 blk = 7; %num of diagoanl block 
 
 if method == 'area'
     [klist_cart, klist_frac, klist_r_plot, sizemesh, Gk_, Grid] = ...
-        vasplib.kmesh2D(Graphene_test2_n.Rm/R, ...
-        'knum1', kmesh(1), 'knum2', kmesh(2), ...
-        'kstart', [-lk, -lk, 0]/2, ...
-        'kdir1', lk*[1 0 0], ...
-        'kdir2', lk*[0 1 0]);
+    kmeshgen(Graphene_test2_n.Rm/R, [], ...
+    'Nk1', kmesh(1), 'Nk2', kmesh(2), ...
+    'kstart', [-lk, -lk, 0]/2, ...
+    'kdir1', lk*[1 0 0], ...
+    'kdir2', lk*[0 1 0], ...
+    'dimension', 2, ...                
+    'full_edge', true);               
 end
 
 clear WAVECAR EIGENCAR
@@ -151,7 +153,7 @@ for j = 1:numk
     Hmk = Hm(kpt(1),kpt(2),kpt(3));
     Hmk = (Hmk + Hmk')/2;
     [A, U] = eig(Hmk);
-    [A, U] = park.sorteig(U, A);
+    [A, U] = TBkit.sorteig(U, A);
     WAVECAR(:,:,j)=A;
     EIGENCAR(:, j)=diag(U);
 end
@@ -198,4 +200,3 @@ plot(x_vec,spec_norm')
 ylim([0,1])
 xlabel('moireBZ/BZ');
 ylabel('Moire coupling factor at Km');
-

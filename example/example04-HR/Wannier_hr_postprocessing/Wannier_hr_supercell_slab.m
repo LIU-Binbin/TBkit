@@ -47,7 +47,7 @@ HR_TBsup = HR_TB_bks.reseq(res_mat);
 HR_TBsup = HR_TBsup < 'KPOINTS_hex_3D';
 Efermi = 0;
 EIGENCARs = HR_TBsup.EIGENCAR_gen() - Efermi;
-bandplot(EIGENCARs,[-5,10],'title','wannier-dft','Color','b', ...
+[~, ax] = bandplot(EIGENCARs,[-5,10],'title','wannier-dft','Color','b', ...
     'POSCAR','POSCAR_6','KPOINTS','KPOINTS_hex_3D');
 
 %% Supercell DFT band structure
@@ -79,9 +79,9 @@ Kane_Mele_tot_n_slab = Kane_Mele_tot_n_slab < 'KPOINTS_hex_2D';
     Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',true,'ProjectionMethod','slab');
 
 coolwarm = ColorMap.Matplotlib('coolwarm');
-pbandplot_surf(abs(WEIGHTCAR_slab),EIGENCAR_slab, ...
+pbandplot(abs(WEIGHTCAR_slab),EIGENCAR_slab, ...
     'POSCAR','POSCAR_6','KPOINTS','KPOINTS_hex_2D', ...
-    'cmap',coolwarm(size(coolwarm)/2+1:end,:), ...
+    'cmap',@(varargin) coolwarm(size(coolwarm,1)/2+1:end,:), ... 
     'Ecut',[-1,3],'Linewidth',2);
 
 %% Fermi surface plot
@@ -103,8 +103,8 @@ Rz = [cos(theta), -sin(theta), 0;
 klist_rot = (Rz * (klist*HR_TB_bk1.Gk)')'/HR_TB_bk1.Gk;
 
 % Compute slab eigenstates on original and rotated k-paths
-[EIGENCAR_slab,WAVECAR_disk,~]  = Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',false,'ProjectionMethod','slab','klist',klist);
-[EIGENCAR_slab1,WAVECAR_disk1,~]= Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',false,'ProjectionMethod','slab','klist',klist_rot);
+[EIGENCAR_slab,WAVECAR_disk]  = Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',false,'ProjectionMethod','slab','klist',klist);
+[EIGENCAR_slab1,WAVECAR_disk1]= Kane_Mele_tot_n_slab.EIGENCAR_gen('LWAVE',true,'WEIGHTCAR',false,'ProjectionMethod','slab','klist',klist_rot);
 
 %% Evaluate the moire coupling factor <C3z>
 clear SYMCAR1
